@@ -61,7 +61,9 @@ plan = NFFT(N,M)
 
 To compute the NDFT using **trafo** or **trafo_direct**, both **x** and **fhat** must be set:
 ```
-
+X = np.array([[abs(np.sin(i + j)) for j in range(d)] for i in range(M)])
+fhat = np.array([np.cos(k) + 1.0j * np.sin(k) for k in range(Ns)])
+plan.trafo()
 ```
 
 Requirements

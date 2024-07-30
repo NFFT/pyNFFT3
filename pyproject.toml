@@ -1,0 +1,10 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pyNFFT3"
+version = "0.0.1"
+description = "Python interface for the NFFT C library"
+readme = "README.md"
+requires-python = ">=3.10"

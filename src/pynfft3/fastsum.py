@@ -1,4 +1,3 @@
-import warnings
 import ctypes
 import numpy as np
 from .flags import *
@@ -280,8 +279,6 @@ class FASTSUM:
         
         if not hasattr(self, 'alpha'):
             raise ValueError("alpha has not been set.")
-        
-        print("c=",self.c)
 
         ptr = fastsumlib.jfastsum_trafo(self.plan)
         self.f = ptr

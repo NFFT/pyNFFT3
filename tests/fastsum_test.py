@@ -1,5 +1,3 @@
-import warnings
-import ctypes
 import numpy as np
 from src.pynfft3.flags import *
 from src.pynfft3.fastsum import *
@@ -55,3 +53,5 @@ E_infty = np.linalg.norm(error_vector, np.inf) / np.linalg.norm(plan.alpha, 1)
 # Print the errors
 print("E_2: ", E_2)
 print("E_infty: ", E_infty)
+
+#TODO: Add tests to check for large error values

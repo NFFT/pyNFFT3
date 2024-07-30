@@ -1,5 +1,3 @@
-import warnings
-import ctypes
 import numpy as np
 from src.pynfft3.flags import *
 from src.pynfft3.NFFT import *
@@ -58,3 +56,5 @@ norm_euclidean_adj = np.linalg.norm(f1 - plan_adj.fhat)
 norm_infinity_adj = np.linalg.norm(f1 - plan_adj.fhat, np.inf)
 print("Euclidean norm for transpose test:", norm_euclidean_adj)
 print("Infinity norm for transpose test:", norm_infinity_adj)
+
+#TODO: Add tests to check for large error values

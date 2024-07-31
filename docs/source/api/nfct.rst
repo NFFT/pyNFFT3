@@ -1,10 +1,10 @@
-``pyNFFT3.nfct`` - core NFCT functionalities
+``pyNFFT3.NFCT`` - core NFCT functionalities
 =============================================
 
-.. automodule:: pynfft3.nfct
+.. automodule:: pyNFFT3
 
 NFCT Class
 ----------
 
-.. autoclass:: pynfft3.nfct.NFCT
-   :members:
+.. .. autoclass:: pyNFFT3.NFCT.NFCT
+..    :members:

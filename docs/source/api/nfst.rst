@@ -1,10 +1,10 @@
-``pyNFFT3.nfst`` - core NFST functionalities
+``pyNFFT3.NFST`` - core NFST functionalities
 =============================================
 
-.. automodule:: pynfft3.nfst
+.. automodule:: pyNFFT3
 
 NFST Class
 ----------
 
-.. autoclass:: pynfft3.nfst.NFST
-   :members:
+.. .. autoclass:: pyNFFT3.NFST.NFST
+..    :members:

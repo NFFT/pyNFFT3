@@ -1,6 +1,6 @@
 import numpy as np
-from src.pynfft3.flags import *
-from src.pynfft3.fastsum import *
+from src.pyNFFT3.flags import *
+from src.pyNFFT3.fastsum import *
 
 d = 2
 N = 5
@@ -28,19 +28,13 @@ phi = np.random.rand(M) * (2 * np.pi)
 Y = np.column_stack((r * np.cos(phi), r * np.sin(phi)))
 plan.y = Y
 
-print("X: ",plan.x)
-print("Y: ",plan.y)
-print("alpha: ",plan.alpha)
-
 # Test trafo
 plan.fastsum_trafo()
 f1 = np.copy(plan.f)
-print("f1: ",f1)
 
 # Test trafo exact
 plan.fastsum_trafo_exact()
 f2 = np.copy(plan.f)
-print("f2: ",f2)
 
 # Calculate the error vector
 error_vector = f1 - f2

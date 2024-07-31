@@ -312,9 +312,7 @@ class FASTSUM:
         
         if not hasattr(self, 'alpha'):
             raise ValueError("alpha has not been set.")
-        
-        print("c=",self.c)
-        
+                
         ptr = fastsumlib.jfastsum_exact(self.plan)
         self.f = ptr
 

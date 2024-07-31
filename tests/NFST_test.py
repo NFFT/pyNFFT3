@@ -1,6 +1,6 @@
 import numpy as np
-from src.pynfft3.flags import *
-from src.pynfft3.NFST import *
+from src.pyNFFT3.flags import *
+from src.pyNFFT3.NFST import *
 
 # N = np.array([16], dtype='int32') # 1d
 # N = np.array([16, 8], dtype='int32') # 2d

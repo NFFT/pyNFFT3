@@ -1,4 +1,4 @@
-``pynfft.nfft`` - core NFFT functionalities
+``pyNFFT3.nfft`` - core NFFT functionalities
 ===========================================
 
 .. automodule:: nfft

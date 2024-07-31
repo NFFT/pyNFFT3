@@ -1,10 +1,10 @@
 ``pyNFFT3.nfft`` - core fastsum functionalities
-===========================================
+===============================================
 
-.. automodule:: fastsum
+.. automodule:: pynfft3.fastsum
 
 fastsum Class
-----------
+--------------
 
-.. autoclass:: fastsum.fastsum
+.. autoclass:: pynfft3.fastsum.fastsum
    :members:

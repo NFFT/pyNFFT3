@@ -1,6 +1,8 @@
+API Contents
+===============
+
 .. toctree::
 
-   /api/nfft
-   /api/nfct
-   /api/nfst
-   /api/fastsum
+   /api/nfft.rst
+   /api/nfct.rst
+   /api/nfst.rst

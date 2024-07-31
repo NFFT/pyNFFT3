@@ -11,6 +11,7 @@ pyNFFT3 documentation
 <https://docs.python.org/3/library/ctypes.html>`. 
 
 **pyNFFT3** currently provides the following fast algorithms:
+
 - nonequispaced fast Fourier transform (NFFT) 
 - nonequispaced fast cosine transform (NFCT) 
 - nonequispaced fast sine transform (NFST)
@@ -21,6 +22,7 @@ Contents
 
 .. toctree::
    :maxdepth: 2
+
    tutorial.rst
    api.rst
 

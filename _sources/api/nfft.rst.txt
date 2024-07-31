@@ -1,10 +1,10 @@
 ``pyNFFT3.nfft`` - core NFFT functionalities
-===========================================
+=============================================
 
-.. automodule:: nfft
+.. automodule:: pynfft3.nfft
 
 NFFT Class
 ----------
 
-.. autoclass:: nfft.NFFT
+.. autoclass:: pynfft3.nfft.NFFT
    :members:

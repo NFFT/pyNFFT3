@@ -39,7 +39,7 @@ autodoc_default_options = {
 from sphinx.ext.autodoc import ClassDocumenter, _
 
 add_line = ClassDocumenter.add_line
-line_to_delete = _(u'Bases: %s') % u':class:`object`'
+line_to_delete = _('Bases: %s') % ':py:class:`object`'
 
 def add_line_no_object_base(self, text, *args, **kwargs):
     if text.strip() == line_to_delete:

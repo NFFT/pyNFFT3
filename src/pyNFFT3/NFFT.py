@@ -28,7 +28,7 @@ nfftlib.jnfft_adjoint_direct.argtypes = [ctypes.POINTER(nfft_plan)]
 
 class NFFT:
     """
-    A class to perform non-equispaced fast Fourier transforms (NFFT)
+    Class to perform non-equispaced fast Fourier transforms (NFFT)
     considering a D-dimensional trigonometric polynomial.
     Just N and M are required for initializing a plan.
     """

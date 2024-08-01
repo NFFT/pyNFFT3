@@ -75,6 +75,9 @@ nfftlib.jnfft_trafo_direct.argtypes = [ctypes.POINTER(nfft_plan)]
 nfftlib.jnfft_adjoint_direct.argtypes = [ctypes.POINTER(nfft_plan)]
 
 class NFFT:
+    """
+    A class to perform Non-uniform Fast Fourier Transform (NFFT).
+    """
     def __init__(self, N, M, n=None, m=default_window_cut_off, f1=None, f2=f2_default):
         self.plan = nfftlib.jnfft_alloc()
         self.N = N  # bandwidth tuple
@@ -192,6 +195,50 @@ class NFFT:
     def init(self):
         return self.nfft_init()
     
+    @property
+    def x(self):
+        return self._X
+
+    @x.setter 
+    def x(self, value):
+        if value is not None:
+            if not (isinstance(value,np.ndarray) and value.dtype == np.float64 and value.flags['C']):
+                raise RuntimeError("x has to be C-continuous, numpy float64 array")
+            if self.D == 1:
+                nfftlib.jnfft_set_x.restype = np.ctypeslib.ndpointer(dtype=np.float64, ndim=2, shape=self.M, flags='C')
+            else:
+                nfftlib.jnfft_set_x.restype = np.ctypeslib.ndpointer(dtype=np.float64, ndim=2, shape=(self.M,self.D), flags='C')
+            self._X = nfftlib.jnfft_set_x(self.plan, value)
+    
+    @property
+    def f(self):
+        return self._f
+    
+    @f.setter 
+    def f(self, value):
+        if value is not None:
+            if not (isinstance(value,np.ndarray) and value.dtype == np.complex128 and value.flags['C']):
+                raise RuntimeError("f has to be C-continuous, numpy complex128 array")
+            nfftlib.jnfft_set_f.restype = np.ctypeslib.ndpointer(np.complex128, ndim=1, shape=self.M, flags='C') 
+            self._f = nfftlib.jnfft_set_f(self.plan, value)
+
+    @property
+    def fhat(self):
+        return self._fhat
+    
+    @fhat.setter 
+    def fhat(self, value):
+        if value is not None:
+            if not (isinstance(value,np.ndarray) and value.dtype == np.complex128 and value.flags['C']):
+                raise RuntimeError("fhat has to be C-continuous, numpy complex128 array") 
+            Ns = np.prod(self.N)
+            nfftlib.jnfft_set_fhat.restype = np.ctypeslib.ndpointer(np.complex128, ndim=1, shape=Ns, flags='C') 
+            self._fhat = nfftlib.jnfft_set_fhat(self.plan, value)
+
+    @property
+    def num_threads(self):
+        return nfftlib.nfft_get_num_threads()
+
     # # nfft trafo direct [call with NFFT.trafo_direct outside module]
     # """
     #     nfft_trafo_direct(P)
@@ -315,53 +362,3 @@ class NFFT:
 
     def adjoint(self):
         return self.nfft_adjoint()
-
-    @x.setter 
-    def x(self, value):
-        if value is not None:
-            if not (isinstance(value,np.ndarray) and value.dtype == np.float64 and value.flags['C']):
-                raise RuntimeError("x has to be C-continuous, numpy float64 array")
-            if self.D == 1:
-                nfftlib.jnfft_set_x.restype = np.ctypeslib.ndpointer(dtype=np.float64, ndim=2, shape=self.M, flags='C')
-            else:
-                nfftlib.jnfft_set_x.restype = np.ctypeslib.ndpointer(dtype=np.float64, ndim=2, shape=(self.M,self.D), flags='C')
-            self._X = nfftlib.jnfft_set_x(self.plan, value)
-        
-    @f.setter 
-    def f(self, value):
-        if value is not None:
-            if not (isinstance(value,np.ndarray) and value.dtype == np.complex128 and value.flags['C']):
-                raise RuntimeError("f has to be C-continuous, numpy complex128 array")
-            nfftlib.jnfft_set_f.restype = np.ctypeslib.ndpointer(np.complex128, ndim=1, shape=self.M, flags='C') 
-            self._f = nfftlib.jnfft_set_f(self.plan, value)
-    
-    @fhat.setter 
-    def fhat(self, value):
-        if value is not None:
-            if not (isinstance(value,np.ndarray) and value.dtype == np.complex128 and value.flags['C']):
-                raise RuntimeError("fhat has to be C-continuous, numpy complex128 array") 
-            Ns = np.prod(self.N)
-            nfftlib.jnfft_set_fhat.restype = np.ctypeslib.ndpointer(np.complex128, ndim=1, shape=Ns, flags='C') 
-            self._fhat = nfftlib.jnfft_set_fhat(self.plan, value)
-
-    @property
-    def x(self):
-        '''Array for sampling nodes.'''
-        return self._X
-    
-    @property
-    def f(self):
-        return self._f
-    
-    @property
-    def fhat(self):
-        return self._fhat
-
-    @property
-    def num_threads(self):
-        return nfftlib.nfft_get_num_threads()
-    
-    @property
-    def N(self):
-        '''The multiband limit of the trigonometric polynomial f.'''
-        return self._N

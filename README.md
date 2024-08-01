@@ -16,7 +16,7 @@ The pyNFFT3 package can be installed via pip:
 pip install pynfft
 ```
 
-Read the [documentation](https://nfft.github.io/pyNFFT3/stable/) for specific usage information.
+Read the [documentation](https://nfft.github.io/pyNFFT3/) for specific usage information.
 
 Requirements
 ------------

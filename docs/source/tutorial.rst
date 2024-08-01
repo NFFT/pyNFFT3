@@ -1,43 +1,14 @@
 Tutorials
 ==========
 
-Here you will find example usage for:
-
-(table of contents here)
-
 Using NFFT
 ----------
 
-Fields:
-*******
-
-- **N**: the multiband limit of the trigonometric polynomial *f*.
-- **M**: the number of nodes.
-- **n**: the oversampling per dimension.
-- **m**: the window size. A larger m results in more accuracy but at a higher computational cost.
-- **f1**: the NFFT flags.
-- **f2**: the FFTW flags.
-- **x**: array for sampling nodes.
-- **f**: array for NFFT values or coefficients for the adjoint NFFT.
-- **fhat**: the Fourier coefficients for the NFFT or values for the adjoint NFFT.
-- **D**: the number of dimensions, is equal to the length of **N**.
-- **init_done**: boolean to indicate if the NFFT plan is initialized.
-- **finalized**: boolean to indicate if the NFFT plan is finalized.
-
-Methods:
-********
-
-- **__init__**: constructor for the NFFT plan.
-- **__del__**: destructor for the NFFT plan.
-- **finalize_plan**: finalizes an NFFT plan. This function does not have to be called by the user.
-- **init**: initializes the NFFT plan in C. This function does not have to be called by the user.
-- **trafo**: computes the NDFT using the fast NFFT algorithm.
-- **trafo_direct**: computes the NDFT via naive matrix-vector multiplication.
-- **adjoint**: computes the adjoint NDFT using the fast adjoint NFFT algorithm.
-- **adjoint_direct**: computes the adjoint NDFT using naive matrix-vector multiplication.
-
 View the `test file <https://github.com/NFFT/pyNFFT3/blob/main/tests/NFFT_test.py>`_
 for a detailed example of all function uses.
+
+Or view the `API reference <https://github.com/NFFT/pyNFFT3/blob/main/docs/source/api/nfft.rst>`_
+for the class methods and attributes.
 
 To start using NFFT, first import the class:
 

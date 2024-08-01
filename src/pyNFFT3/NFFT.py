@@ -4,54 +4,6 @@ from .flags import *
 from . import nfftlib
 from . import nfft_plan
 
-# """
-# NFFT{D}
-
-# A NFFT (nonequispaced fast Fourier transform) plan, where D is the dimension. 
-
-# Considering a D-dimensional trigonometric polynomial
-
-# ```math
-# f colon mathbb{T}^D \to mathbb{C}, \; f(\pmb{x}) colon = \sum_{\pmb{k} \in I_{\pmb{N}}^D} \hat{f}_{\pmb{k}} \, mathrm{e}^{-2 \pi mathrm{i} \, \pmb{k} cdot \pmb{x}}
-# ```
-
-# with an index set ``I_{\pmb{N}}^D coloneqq \left\{ \pmb{k} \in mathbb{Z}^D: - \frac{N_i}{2} \leq k_i \leq \frac{N_i}{2} - 1, \, i = 1,2,\ldots,D \right\}`` where ``\pmb{N} \in (2mathbb{N})^{D}`` is the multibandlimit. 
-# The NDFT (nonequispaced discrete Fourier transform) is its evaluation at ``M \in mathbb{N}`` arbitrary points ``\pmb{x}_j \in [-0.5,0.5)^D`` for ``j = 1, \ldots, M``,
-
-# ```math
-# f(\pmb{x}_j) colon = \sum_{\pmb{k} \in I^D_{\pmb{N}}} \hat{f}_{\pmb{k}} \, mathrm{e}^{-2 \pi mathrm{i} \, \pmb{k} cdot \pmb{x}_j}
-# ```
-
-# with given coefficients ``\hat{f}_{\pmb{k}} \in mathbb{C}``. The NFFT is an algorithm for the fast evaluation of the NDFT and the adjoint problem, the fast evaluation of the adjoint NDFT
-
-# ```math
-# \hat{h}_{\pmb{k}} coloneqq \sum^{M}_{j = 1} f_j \, mathrm{e}^{-2 \pi mathrm{i} \, pmb{k} cdot pmb{x}_j}, \, pmb{k} \in I_{pmb{N}}^D,
-# ```
-
-# for given coefficients ``f_j \in mathbb{C}, j =1,2,\ldots,M``. Note that in general, the adjoint NDFT is not the inverse transform of the NDFT.
-
-# # Fields
-# * `N` - the multibandlimit ``(N_1, N_2, \ldots, N_D)`` of the trigonometric polynomial ``f``.
-# * `M` - the number of nodes.
-# * `n` - the oversampling ``(n_1, n_2, \ldots, n_D)`` per dimension.
-# * `m` - the window size. A larger m results in more accuracy but also a higher computational cost. 
-# * `f1` - the NFFT flags.
-# * `f2` - the FFTW flags.
-# * `init_done` - indicates if the plan is initialized.
-# * `finalized` - indicates if the plan is finalized.
-# * `x` - the nodes ``pmb{x}_j \in [-0.5,0.5)^D, j = 1, \ldots, M``.
-# * `f` - the values ``f(pmb{x}_j)`` for the NFFT or the coefficients ``f_j \in mathbb{C}, j = 1, \ldots, M,`` for the adjoint NFFT.
-# * `fhat` - the Fourier coefficients ``\hat{f}_{pmb{k}} \in mathbb{C}`` for the NFFT or the values ``\hat{h}_{pmb{k}}, pmb{k} \in I_{\pmb{N}}^D,`` for the adjoint NFFT.
-# * `plan` - plan (C pointer).
-
-# # Constructor
-#     NFFT{D}( N::NTuple{D,Int32}, M::Int32, n::NTuple{D,Int32}, m::Int32, f1::UInt32, f2::UInt32 ) where D
-
-# # Additional Constructor
-#     NFFT( N::NTuple{D,Int32}, M::Int32, n::NTuple{D,Int32}, m::Int32, f1::UInt32, f2::UInt32 ) where {D}
-#     NFFT( N::NTuple{D,Int32}, M::Int32 ) where {D}
-# """
-
 # Set arugment and return types for functions
 nfftlib.jnfft_init.argtypes = [ctypes.POINTER(nfft_plan), 
                                ctypes.c_int32, 
@@ -76,7 +28,9 @@ nfftlib.jnfft_adjoint_direct.argtypes = [ctypes.POINTER(nfft_plan)]
 
 class NFFT:
     """
-    A class to perform Non-uniform Fast Fourier Transform (NFFT).
+    A class to perform non-equispaced fast Fourier transforms (NFFT)
+    considering a D-dimensional trigonometric polynomial.
+    Just N and M are required for initializing a plan.
     """
     def __init__(self, N, M, n=None, m=default_window_cut_off, f1=None, f2=f2_default):
         self.plan = nfftlib.jnfft_alloc()
@@ -128,20 +82,11 @@ class NFFT:
     def __del__(self):
         self.finalize_plan()
     
-    # # finalizer
-    # """
-    #     nfft_finalize_plan(P)
-
-    # destroys a NFFT plan structure.
-
-    # # Input
-    # * `P` - a NFFT plan structure.
-
-    # # See also
-    # [`NFFT{D}`](@ref), [`nfft_init`](@ref)
-    # """
-
     def nfft_finalize_plan(self):
+        """
+        Finalizes an NFFT plan. 
+        This function does not have to be called by the user.
+        """
         nfftlib.jnfft_finalize.argtypes = (
             ctypes.POINTER(nfft_plan),   # P
         )
@@ -154,21 +99,16 @@ class NFFT:
             nfftlib.jnfft_finalize(self.plan)
 
     def finalize_plan(self):
+        """
+        Alternate call for nfft_finalize_plan()
+        """
         return self.nfft_finalize_plan()
 
-    # # allocate plan memory and init with D,N,M,n,m,f1,f2
-    # """
-    #     nfft_init(P)
-
-    # intialises the NFFT plan in C. This function does not have to be called by the user.
-
-    # # Input
-    # * `P` - a NFFT plan structure.
-
-    # # See also
-    # [`NFFT{D}`](@ref), [`nfft_finalize_plan`](@ref)
-
     def nfft_init(self):
+        """
+        Initializes the NFFT plan in C. 
+        This function does not have to be called by the user.
+        """
         # Convert N and n to numpy arrays for passing them to C
         Nv = np.array(self.N, dtype=np.int32)
         n = np.array(self.n, dtype=np.int32)
@@ -193,6 +133,9 @@ class NFFT:
         self.init_done = True
 
     def init(self):
+        """
+        Alternate call for nfft_init()
+        """
         return self.nfft_init()
     
     @property
@@ -239,80 +182,10 @@ class NFFT:
     def num_threads(self):
         return nfftlib.nfft_get_num_threads()
 
-    # # nfft trafo direct [call with NFFT.trafo_direct outside module]
-    # """
-    #     nfft_trafo_direct(P)
-
-    # computes the NDFT via naive matrix-vector multiplication for provided nodes ``\pmb{x}_j, j =1,2,\dots,M,`` in `P.x` and coefficients ``\hat{f}_{\pmb{k}} \in \mathbb{C}, \pmb{k} \in I_{\pmb{N}}^D,`` in `P.fhat`.
-
-    # # Input
-    # * `P` - a NFFT plan structure.
-
-    # # See also
-    # [`NFFT{D}`](@ref), [`nfft_trafo`](@ref)
-    # """
-
-    def nfft_trafo_direct(self):
-        # Prevent bad stuff from happening
-        if self.finalized:
-            raise RuntimeError("NFFT already finalized")
-
-        if self.fhat is None:
-            raise ValueError("fhat has not been set.")
-
-        if self.x is None:
-            raise ValueError("x has not been set.")
-
-        ptr = nfftlib.jnfft_trafo_direct(self.plan)
-        self.f = ptr
-
-    def trafo_direct(self):
-        return self.nfft_trafo_direct()
-
-    # # adjoint trafo direct [call with NFFT.adjoint_direct outside module]
-    # """
-    #     nfft_adjoint_direct(P)
-
-    # computes the adjoint NDFT via naive matrix-vector multiplication for provided nodes ``\pmb{x}_j, j =1,2,\dots,M,`` in `P.x` and coefficients ``f_j \in \mathbb{C}, j =1,2,\dots,M,`` in `P.f`.
-
-    # # Input
-    # * `P` - a NFFT plan structure.
-
-    # # See also
-    # [`NFFT{D}`](@ref), [`nfft_adjoint`](@ref)
-    # """
-
-    def nfft_adjoint_direct(self):
-        # Prevent bad stuff from happening
-        if self.finalized:
-            raise RuntimeError("NFFT already finalized")
-
-        if not hasattr(self, 'f'):
-            raise ValueError("f has not been set.")
-
-        if not hasattr(self, 'x'):
-            raise ValueError("x has not been set.")
-
-        ptr = nfftlib.jnfft_adjoint_direct(self.plan)
-        self.fhat = ptr
-
-    def adjoint_direct(self):
-        return self.nfft_adjoint_direct()
-
-    # # nfft trafo [call with NFFT.trafo outside module]
-    # """
-    #     nfft_trafo(P)
-
-    # computes the NDFT via the fast NFFT algorithm for provided nodes ``\pmb{x}_j, j =1,2,\dots,M,`` in `P.x` and coefficients ``\hat{f}_{\pmb{k}} \in \mathbb{C}, \pmb{k} \in I_{\pmb{N}}^D,`` in `P.fhat`.
-
-    # # Input
-    # * `P` - a NFFT plan structure.
-
-    # # See also
-    # [`NFFT{D}`](@ref), [`nfft_trafo_direct`](@ref)
-    # """
-
     def nfft_trafo(self):
+        """
+        Computes the NDFT using the fast NFFT algorithm.
+        """
         nfftlib.jnfft_trafo.restype = np.ctypeslib.ndpointer(np.complex128, shape=self.M, flags='C')
         # Prevent bad stuff from happening
         if self.finalized:
@@ -328,22 +201,38 @@ class NFFT:
         self.f = ptr
 
     def trafo(self):
+        """
+        Alternative call for nfft_trafo()
+        """
         return self.nfft_trafo()
 
-    # # adjoint trafo [call with NFFT.adjoint outside module]
-    # """
-    #     nfft_adjoint(P)
+    def nfft_trafo_direct(self):
+        """
+        Computes the NDFT via naive matrix-vector multiplication.
+        """
+        # Prevent bad stuff from happening
+        if self.finalized:
+            raise RuntimeError("NFFT already finalized")
 
-    # computes the adjoint NDFT via the fast adjoint NFFT algorithm for provided nodes ``\pmb{x}_j, j =1,2,\dots,M,`` in `P.x` and coefficients ``f_j \in \mathbb{C}, j =1,2,\dots,M,`` in `P.f`.
+        if self.fhat is None:
+            raise ValueError("fhat has not been set.")
 
-    # # Input
-    # * `P` - a NFFT plan structure.
+        if self.x is None:
+            raise ValueError("x has not been set.")
 
-    # # See also
-    # [`NFFT{D}`](@ref), [`nfft_adjoint_direct`](@ref)
-    # """
+        ptr = nfftlib.jnfft_trafo_direct(self.plan)
+        self.f = ptr
 
+    def trafo_direct(self):
+        """
+        Alternative call for nfft_trafo_direct()
+        """
+        return self.nfft_trafo_direct()
+    
     def nfft_adjoint(self):
+        """
+        Computes the adjoint NDFT using the fast adjoint NFFT algorithm.
+        """
         Ns = np.prod(self.N)
         nfftlib.jnfft_set_fhat.restype = np.ctypeslib.ndpointer(np.complex128, ndim=1, shape=Ns, flags='C') 
         nfftlib.jnfft_adjoint.restype = np.ctypeslib.ndpointer(np.complex128, shape=Ns, flags='C')
@@ -361,4 +250,28 @@ class NFFT:
         self.fhat = ptr
 
     def adjoint(self):
+        """
+        Alternative call for nfft_adjoint()
+        """
         return self.nfft_adjoint()
+
+    def nfft_adjoint_direct(self):
+        """
+        Computes the adjoint NDFT using naive matrix-vector multiplication.
+        """
+        # Prevent bad stuff from happening
+        if self.finalized:
+            raise RuntimeError("NFFT already finalized")
+
+        if not hasattr(self, 'f'):
+            raise ValueError("f has not been set.")
+
+        if not hasattr(self, 'x'):
+            raise ValueError("x has not been set.")
+
+        ptr = nfftlib.jnfft_adjoint_direct(self.plan)
+        self.fhat = ptr
+
+    def adjoint_direct(self):
+        """Alternative call for nfft_adjoint_direct()"""
+        return self.nfft_adjoint_direct()

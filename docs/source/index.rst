@@ -6,9 +6,9 @@
 pyNFFT3 Documentation
 =====================
 
-**pyNFFT3** is a Python interface for the `NFFT library 
-<http://www-user.tu-chemnitz.de/~potts/nfft/>`_ using `ctypes 
-<https://docs.python.org/3/library/ctypes.html>`. 
+**pyNFFT3** is a Python interface for the `NFFT library
+<http://www-user.tu-chemnitz.de/~potts/nfft/>`_ using `ctypes
+<https://docs.python.org/3/library/ctypes.html>`_. 
 
 **pyNFFT3** currently provides the following fast algorithms:
 

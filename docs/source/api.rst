@@ -3,6 +3,6 @@ API Contents
 
 .. toctree::
 
-   /api/nfft.rst
-   /api/nfct.rst
-   /api/nfst.rst
+   /api/nfft
+   /api/nfct
+   /api/nfst

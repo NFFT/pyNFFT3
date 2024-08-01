@@ -7,4 +7,5 @@ NFFT Class
 ----------
 
 .. autoclass:: pyNFFT3.NFFT
-   :members: finalize_plan, init, trafo_direct, adjoint_direct, trafo, adjoint 
+   :members:
+   :undoc-members:

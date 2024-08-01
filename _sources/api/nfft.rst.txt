@@ -10,6 +10,10 @@ NFFT Class
    :member-order: bysource
    :exclude-members: f, fhat, x, num_threads
 
+   .. attribute:: plan <nfft_plan>
+
+      NFFT plan (C pointer)
+
    .. attribute:: N <numpy.ndarray>
 
       The multiband limit of the trigonometric polynomial *f*. Must contain positive and even integers.

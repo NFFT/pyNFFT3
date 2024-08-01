@@ -1,60 +1,59 @@
 ``pyNFFT3.NFFT`` - core NFFT functionalities
 =============================================
 
-.. automodule:: pyNFFT3
-
 NFFT Class
 ----------
 
 .. autoclass:: pyNFFT3.NFFT
    :members: 
-   :undoc-members: 
+   :undoc-members:
+   :member-order: bysource
    :exclude-members: f, fhat, x, num_threads
 
-   .. attribute:: N
+   .. attribute:: N <numpy.ndarray>
 
-      The multiband limit of the trigonometric polynomial *f*.
+      The multiband limit of the trigonometric polynomial *f*. Must contain positive and even integers.
 
-   .. attribute:: M
+   .. attribute:: M <int>
 
-      The number of nodes.
+      The number of nodes. Must be a positive integer.
 
-   .. attribute:: n
+   .. attribute:: n <numpy.ndarray>
 
-      The oversampling per dimension.
+      The oversampling per dimension. 
 
-   .. attribute:: m
+   .. attribute:: m <int>
 
       The window size. A larger m results in more accuracy but at a higher computational cost.
 
-   .. attribute:: f1
+   .. attribute:: f1 <c_uint32>
 
       The NFFT flags.
 
-   .. attribute:: f2
+   .. attribute:: f2 <c_unit32>
 
       The FFTW flags.
 
-   .. attribute:: x
+   .. attribute:: x <numpy.ndarray>
 
-      Array for sampling nodes.
+      Float array for sampling nodes.
 
-   .. attribute:: f
+   .. attribute:: f <numpy.ndarray>
 
-      Array for NFFT values or coefficients for the adjoint NFFT.
+      Complex array for NFFT values or coefficients for the adjoint NFFT.
 
-   .. attribute:: fhat
+   .. attribute:: fhat <numpy.ndarray>
 
-      The Fourier coefficients for the NFFT or values for the adjoint NFFT.
+      Complex array of Fourier coefficients for the NFFT or values for the adjoint NFFT.
 
-   .. attribute:: D
+   .. attribute:: D <int>
 
       The number of dimensions, which is equal to the length of **N**.
 
-   .. attribute:: init_done
+   .. attribute:: init_done <boolean>
 
       Boolean to indicate if the NFFT plan is initialized.
 
-   .. attribute:: finalized
+   .. attribute:: finalized <boolean>
 
       Boolean to indicate if the NFFT plan is finalized.

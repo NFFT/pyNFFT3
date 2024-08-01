@@ -218,7 +218,9 @@
 <dt class="sig sig-object py" id="pyNFFT3.NFFT">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyNFFT3.</span></span><span class="sig-name descname"><span class="pre">NFFT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">c_uint(65)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFFT" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A class to perform Non-uniform Fast Fourier Transform (NFFT).</p>
+<p>A class to perform non-equispaced fast Fourier transforms (NFFT)
+considering a D-dimensional trigonometric polynomial.
+Just N and M are required for initializing a plan.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFFT.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">c_uint(65)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFFT.__init__" title="Permalink to this definition">¶</a></dt>
@@ -227,12 +229,14 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFFT.adjoint">
 <span class="sig-name descname"><span class="pre">adjoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFFT.adjoint" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Alternative call for nfft_adjoint()</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFFT.adjoint_direct">
 <span class="sig-name descname"><span class="pre">adjoint_direct</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFFT.adjoint_direct" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Alternative call for nfft_adjoint_direct()</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyNFFT3.NFFT.f">
@@ -247,42 +251,52 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFFT.finalize_plan">
 <span class="sig-name descname"><span class="pre">finalize_plan</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFFT.finalize_plan" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Alternate call for nfft_finalize_plan()</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFFT.init">
 <span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFFT.init" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Alternate call for nfft_init()</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFFT.nfft_adjoint">
 <span class="sig-name descname"><span class="pre">nfft_adjoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFFT.nfft_adjoint" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Computes the adjoint NDFT using the fast adjoint NFFT algorithm.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFFT.nfft_adjoint_direct">
 <span class="sig-name descname"><span class="pre">nfft_adjoint_direct</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFFT.nfft_adjoint_direct" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Computes the adjoint NDFT using naive matrix-vector multiplication.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFFT.nfft_finalize_plan">
 <span class="sig-name descname"><span class="pre">nfft_finalize_plan</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFFT.nfft_finalize_plan" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Finalizes an NFFT plan. 
+This function does not have to be called by the user.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFFT.nfft_init">
 <span class="sig-name descname"><span class="pre">nfft_init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFFT.nfft_init" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Initializes the NFFT plan in C. 
+This function does not have to be called by the user.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFFT.nfft_trafo">
 <span class="sig-name descname"><span class="pre">nfft_trafo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFFT.nfft_trafo" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Computes the NDFT using the fast NFFT algorithm.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFFT.nfft_trafo_direct">
 <span class="sig-name descname"><span class="pre">nfft_trafo_direct</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFFT.nfft_trafo_direct" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Computes the NDFT via naive matrix-vector multiplication.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyNFFT3.NFFT.num_threads">
@@ -292,12 +306,14 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFFT.trafo">
 <span class="sig-name descname"><span class="pre">trafo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFFT.trafo" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Alternative call for nfft_trafo()</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFFT.trafo_direct">
 <span class="sig-name descname"><span class="pre">trafo_direct</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFFT.trafo_direct" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Alternative call for nfft_trafo_direct()</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyNFFT3.NFFT.x">

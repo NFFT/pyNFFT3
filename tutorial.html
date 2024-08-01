@@ -46,41 +46,12 @@
             
   <div class="section" id="tutorials">
 <h1>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h1>
-<p>Here you will find example usage for:</p>
-<p>(table of contents here)</p>
 <div class="section" id="using-nfft">
 <h2>Using NFFT<a class="headerlink" href="#using-nfft" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="fields">
-<h3>Fields:<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p><strong>N</strong>: the multiband limit of the trigonometric polynomial <em>f</em>.</p></li>
-<li><p><strong>M</strong>: the number of nodes.</p></li>
-<li><p><strong>n</strong>: the oversampling per dimension.</p></li>
-<li><p><strong>m</strong>: the window size. A larger m results in more accuracy but at a higher computational cost.</p></li>
-<li><p><strong>f1</strong>: the NFFT flags.</p></li>
-<li><p><strong>f2</strong>: the FFTW flags.</p></li>
-<li><p><strong>x</strong>: array for sampling nodes.</p></li>
-<li><p><strong>f</strong>: array for NFFT values or coefficients for the adjoint NFFT.</p></li>
-<li><p><strong>fhat</strong>: the Fourier coefficients for the NFFT or values for the adjoint NFFT.</p></li>
-<li><p><strong>D</strong>: the number of dimensions, is equal to the length of <strong>N</strong>.</p></li>
-<li><p><strong>init_done</strong>: boolean to indicate if the NFFT plan is initialized.</p></li>
-<li><p><strong>finalized</strong>: boolean to indicate if the NFFT plan is finalized.</p></li>
-</ul>
-</div>
-<div class="section" id="methods">
-<h3>Methods:<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p><strong>__init__</strong>: constructor for the NFFT plan.</p></li>
-<li><p><strong>__del__</strong>: destructor for the NFFT plan.</p></li>
-<li><p><strong>finalize_plan</strong>: finalizes an NFFT plan. This function does not have to be called by the user.</p></li>
-<li><p><strong>init</strong>: initializes the NFFT plan in C. This function does not have to be called by the user.</p></li>
-<li><p><strong>trafo</strong>: computes the NDFT using the fast NFFT algorithm.</p></li>
-<li><p><strong>trafo_direct</strong>: computes the NDFT via naive matrix-vector multiplication.</p></li>
-<li><p><strong>adjoint</strong>: computes the adjoint NDFT using the fast adjoint NFFT algorithm.</p></li>
-<li><p><strong>adjoint_direct</strong>: computes the adjoint NDFT using naive matrix-vector multiplication.</p></li>
-</ul>
 <p>View the <a class="reference external" href="https://github.com/NFFT/pyNFFT3/blob/main/tests/NFFT_test.py">test file</a>
 for a detailed example of all function uses.</p>
+<p>Or view the <a class="reference external" href="https://github.com/NFFT/pyNFFT3/blob/main/docs/source/api/nfft.rst">API reference</a>
+for the class methods and attributes.</p>
 <p>To start using NFFT, first import the class:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pynfft3</span> <span class="kn">import</span> <span class="n">NFFT</span>
 </pre></div>
@@ -99,7 +70,6 @@ for a detailed example of all function uses.</p>
 </div>
 </div>
 </div>
-</div>
 
 
             <div class="clearer"></div>
@@ -112,11 +82,7 @@ for a detailed example of all function uses.</p>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">Tutorials</a><ul>
-<li><a class="reference internal" href="#using-nfft">Using NFFT</a><ul>
-<li><a class="reference internal" href="#fields">Fields:</a></li>
-<li><a class="reference internal" href="#methods">Methods:</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#using-nfft">Using NFFT</a></li>
 </ul>
 </li>
 </ul>

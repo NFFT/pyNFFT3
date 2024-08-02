@@ -4,15 +4,15 @@ from src.pyNFFT3.NFCT import *
 
 # N = np.array([16], dtype='int32') # 1d
 # N = np.array([16, 8], dtype='int32') # 2d
-N = np.array([4,2], dtype='int32') # 3d
+N = np.array([16, 8, 4], dtype='int32') # 3d
 
-M = 5
+M = 100
 d = len(N)
 Ns = np.prod(N)
 
-X = np.array([[0.1, 0.2], [0.3, 0.4], [0.5, 0.6], [0.7, 0.8], [0.9, 1.0]])
-fhat = np.array([1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8])
-f = np.array([1.0, 1.1, 1.2, 1.3, 1.4])
+X = np.array([[abs(np.sin(i + j)) for j in range(d)] for i in range(M)])
+fhat = np.array([np.cos(k) * np.sin(k) for k in range(Ns)], dtype=np.float64)
+f = np.array([np.sin(m) * np.cos(m) for m in range(M)])
 
 # test init and setting
 plan_traf = NFCT(N,M)

@@ -71,8 +71,8 @@ To compute the NDCT using **trafo()** or **trafo_direct()**, both **x** and **fh
 
 .. code-block:: python
 
-    plan.x = np.array([[0.1, 0.2], [0.3, 0.4], [0.5, 0.6], [0.7, 0.8], [0.9, 1.0]])
-    plan.fhat = np.array([1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8])
+    plan.x = np.array([[0.1, 0.2], [0.3, 0.4], [0.5, 0.6], [0.7, 0.8], [0.9, 1.0]]) # sampling nodes (M entries)
+    plan.fhat = np.array([1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8]) # Fourier coefficients (numpy.prod(N) entries)
     plan.trafo()
     # or
     plan.trafo_direct()
@@ -81,9 +81,52 @@ To compute the transposed NDCT using **nfct_transposed()** or **nfct_transposed_
 
 .. code-block:: python
 
-    plan.x = np.array([[0.1, 0.2], [0.3, 0.4], [0.5, 0.6], [0.7, 0.8], [0.9, 1.0]])
-    plan.f = np.array([1.0, 1.1, 1.2, 1.3, 1.4])
+    plan.x = np.array([[0.1, 0.2], [0.3, 0.4], [0.5, 0.6], [0.7, 0.8], [0.9, 1.0]]) # sampling nodes (M entries)
+    plan.f = np.array([1.0, 1.1, 1.2, 1.3, 1.4]) # values for adjoint NFFT (M entries)
     plan.nfct_transposed()
     # or
     plan.nfct_transposed_direct()
+
+Using NFST
+----------
+
+View the `test file <https://github.com/NFST/pyNFFT3/blob/main/tests/NFST_test.py>`_
+for a detailed example of all function uses and error tests.
+
+Or view the `API reference <https://github.com/NFST/pyNFFT3/blob/main/docs/source/api/NFST.rst>`_
+for the class methods and attributes.
+
+To start using NFST, first import the class:
+
+.. code-block:: python
+
+    from pynfft3 import NFST
+
+You can then generate a plan with your desired multiband limit values and number of nodes (which will be checked for proper type/size):
+
+.. code-block:: python
+
+    N = np.array([4, 2], dtype='int32')  # 2 dimensions, ensure proper type
+    M = 5 # 5 nodes
+    plan = NFST(N, M) # generate plan
+
+To compute the NDST using **trafo()** or **trafo_direct()**, both **x** and **fhat** must be set:
+
+.. code-block:: python
+
+    plan.x = np.array([[0.1, 0.2], [0.3, 0.4], [0.5, 0.6], [0.7, 0.8], [0.9, 1.0]]) # sampling nodes (M entries)
+    plan.fhat = np.array([1.1, 2.2, 3.3]) # Fourier coefficients (numpy.prod(N - 1) entries)
+    plan.trafo()
+    # or
+    plan.trafo_direct()
+
+To compute the transposed NDST using **nfst_transposed()** or **nfst_transposed_direct()**, both **x** and **f** must be set:
+
+.. code-block:: python
+
+    plan.x = np.array([[0.1, 0.2], [0.3, 0.4], [0.5, 0.6], [0.7, 0.8], [0.9, 1.0]]) # sampling nodes (M entries)
+    plan.f = np.array([1.0, 1.1, 1.2, 1.3, 1.4]) # values for adjoint NFFT (M entries)
+    plan.nfst_transposed()
+    # or
+    plan.nfst_transposed_direct()
 

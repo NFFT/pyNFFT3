@@ -28,8 +28,8 @@ To compute the NDFT using **trafo()** or **trafo_direct()**, both **x** and **fh
 
 .. code-block:: python
 
-    plan.x = np.array([[0.1, 0.2], [0.3, 0.4], [0.5, 0.6], [0.7, 0.8], [0.9, 1.0]]) # sampling nodes
-    plan.fhat = np.array([0.1+0.1j, 0.2-0.2j, 0.3+0.3j, 0.4-0.4j, 0.5+0.5j, 0.6-0.6j, 0.7+0.7j, 0.8-0.8j]) # Fourier coefficients
+    plan.x = np.array([[0.1, 0.2], [0.3, 0.4], [0.5, 0.6], [0.7, 0.8], [0.9, 1.0]]) # sampling nodes (M entries)
+    plan.fhat = np.array([0.1+0.1j, 0.2-0.2j, 0.3+0.3j, 0.4-0.4j, 0.5+0.5j, 0.6-0.6j, 0.7+0.7j, 0.8-0.8j]) # Fourier coefficients (numpy.prod(N) entries)
     plan.trafo()
     # or
     plan.trafo_direct()
@@ -38,8 +38,8 @@ To compute the adjoint NDFT using **adjoint()** or **adjoint_direct()**, both **
 
 .. code-block:: python
 
-    plan.x = np.array([[0.1, 0.2], [0.3, 0.4], [0.5, 0.6], [0.7, 0.8], [0.9, 1.0]]) # sampling nodes of size M
-    f = np.array([1.0+1.0j, 1.1-1.1j, 1.2+1.2j, 1.3-1.3j, 1.4+1.4j]) # values for adjoint NFFT
+    plan.x = np.array([[0.1, 0.2], [0.3, 0.4], [0.5, 0.6], [0.7, 0.8], [0.9, 1.0]]) # sampling nodes (M entries)
+    plan.f = np.array([1.0+1.0j, 1.1-1.1j, 1.2+1.2j, 1.3-1.3j, 1.4+1.4j]) # values for adjoint NFFT (M entries)
     plan.adjoint()
     # or
     plan.adjoint_direct()
@@ -67,23 +67,23 @@ You can then generate a plan with your desired multiband limit values and number
     M = 5 # 5 nodes
     plan = NFCT(N, M) # generate plan
 
-To compute the NDFT using **trafo()** or **trafo_direct()**, both **x** and **fhat** must be set:
+To compute the NDCT using **trafo()** or **trafo_direct()**, both **x** and **fhat** must be set:
 
 .. code-block:: python
 
     plan.x = np.array([[0.1, 0.2], [0.3, 0.4], [0.5, 0.6], [0.7, 0.8], [0.9, 1.0]])
-    plan.fhat = np.array([0.1+0.1j, 0.2-0.2j, 0.3+0.3j, 0.4-0.4j, 0.5+0.5j, 0.6-0.6j, 0.7+0.7j, 0.8-0.8j])
+    plan.fhat = np.array([1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8])
     plan.trafo()
     # or
     plan.trafo_direct()
 
-To compute the adjoint NDFT using **adjoint()** or **adjoint_direct()**, both **x** and **f** must be set:
+To compute the transposed NDCT using **nfct_transposed()** or **nfct_transposed_direct()**, both **x** and **f** must be set:
 
 .. code-block:: python
 
     plan.x = np.array([[0.1, 0.2], [0.3, 0.4], [0.5, 0.6], [0.7, 0.8], [0.9, 1.0]])
-    f = np.array([1.0+1.0j, 1.1-1.1j, 1.2+1.2j, 1.3-1.3j, 1.4+1.4j])
-    plan.adjoint()
+    plan.f = np.array([1.0, 1.1, 1.2, 1.3, 1.4])
+    plan.nfct_transposed()
     # or
-    plan.adjoint_direct()
+    plan.nfct_transposed_direct()
 

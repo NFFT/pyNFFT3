@@ -1,14 +1,17 @@
-``pyNFFT3.NFST`` - core NFST functionalities
+``pyNFFT3.NFST`` - NFST Class
 =============================================
 
-NFST Class
-----------
+NFST Methods
+-------------
 
 .. autoclass:: pyNFFT3.NFST
    :members: 
    :undoc-members:
    :member-order: bysource
    :exclude-members: f, fhat, x, num_threads, __init__
+
+NFST Attributes
+----------------
 
    .. attribute:: plan <nfst_plan>
 

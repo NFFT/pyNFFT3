@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pyNFFT3.NFCT - core NFCT functionalities &#8212; pyNFFT3 1.0.0 documentation</title>
+    <title>pyNFFT3.NFCT - NFCT Class &#8212; pyNFFT3 1.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
     
@@ -17,8 +17,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pyNFFT3.NFST - core NFST functionalities" href="nfst.html" />
-    <link rel="prev" title="pyNFFT3.NFFT - core NFFT functionalities" href="nfft.html" /> 
+    <link rel="next" title="pyNFFT3.NFST - NFST Class" href="nfst.html" />
+    <link rel="prev" title="pyNFFT3.NFFT - NFFT Class" href="nfft.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -27,14 +27,14 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="nfst.html" title="pyNFFT3.NFST - core NFST functionalities"
+          <a href="nfst.html" title="pyNFFT3.NFST - NFST Class"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="nfft.html" title="pyNFFT3.NFFT - core NFFT functionalities"
+          <a href="nfft.html" title="pyNFFT3.NFFT - NFFT Class"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">pyNFFT3 1.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../api.html" accesskey="U">API Contents</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFCT</span></code> - core NFCT functionalities</a></li> 
+        <li class="nav-item nav-item-this"><a href=""><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFCT</span></code> - NFCT Class</a></li> 
       </ul>
     </div>  
 
@@ -43,92 +43,14 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="pynfft3-nfct-core-nfct-functionalities">
-<h1><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFCT</span></code> - core NFCT functionalities<a class="headerlink" href="#pynfft3-nfct-core-nfct-functionalities" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="nfct-class">
-<h2>NFCT Class<a class="headerlink" href="#nfct-class" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="pynfft3-nfct-nfct-class">
+<h1><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFCT</span></code> - NFCT Class<a class="headerlink" href="#pynfft3-nfct-nfct-class" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="nfct-methods">
+<h2>NFCT Methods<a class="headerlink" href="#nfct-methods" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pyNFFT3.NFCT">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyNFFT3.</span></span><span class="sig-name descname"><span class="pre">NFCT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">c_uint(65)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFCT" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">plan</span> <span class="pre">&lt;nfct_plan&gt;</span></span></dt>
-<dd><p>NFCT plan (C pointer)</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">N</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
-<dd><p>The multiband limit <span class="math notranslate nohighlight">\((N_1,N_2,...,N_D)\)</span> of the trigonometric polynomial <span class="math notranslate nohighlight">\(f^s\)</span>. Must contain positive and even integers.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">M</span> <span class="pre">&lt;int&gt;</span></span></dt>
-<dd><p>The number of nodes. Must be a positive integer.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">n</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
-<dd><p>The oversampling <span class="math notranslate nohighlight">\((n_1,n_2,...,n_D)\)</span> per dimension.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">m</span> <span class="pre">&lt;int&gt;</span></span></dt>
-<dd><p>The window size. A larger m results in more accuracy but at a higher computational cost.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">f1</span> <span class="pre">&lt;c_uint32&gt;</span></span></dt>
-<dd><p>The NFCT flags.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">f2</span> <span class="pre">&lt;c_unit32&gt;</span></span></dt>
-<dd><p>The FFTW flags.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">x</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
-<dd><p>Float array for sampling nodes.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">f</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
-<dd><p>Float array for NFCT values or coefficients for the adjoint NFCT.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">fhat</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
-<dd><p>Float array of Fourier coefficients for the NFCT or values for the adjoint NFCT.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">D</span> <span class="pre">&lt;int&gt;</span></span></dt>
-<dd><p>The number of dimensions, which is equal to the length of <strong>N</strong>.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">init_done</span> <span class="pre">&lt;boolean&gt;</span></span></dt>
-<dd><p>Boolean to indicate if the NFCT plan is initialized.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">finalized</span> <span class="pre">&lt;boolean&gt;</span></span></dt>
-<dd><p>Boolean to indicate if the NFCT plan is finalized.</p>
-</dd></dl>
-
-<dl class="py method">
+<dd><dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFCT.nfct_finalize_plan">
 <span class="sig-name descname"><span class="pre">nfct_finalize_plan</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFCT.nfct_finalize_plan" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finalizes an NFCT plan. 
@@ -217,6 +139,89 @@ This function does not have to be called by the user.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="nfct-attributes">
+<h2>NFCT Attributes<a class="headerlink" href="#nfct-attributes" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">plan</span> <span class="pre">&lt;nfct_plan&gt;</span></span></dt>
+<dd><p>NFCT plan (C pointer)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">N</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
+<dd><p>The multiband limit <span class="math notranslate nohighlight">\((N_1,N_2,...,N_D)\)</span> of the trigonometric polynomial <span class="math notranslate nohighlight">\(f^s\)</span>. Must contain positive and even integers.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">M</span> <span class="pre">&lt;int&gt;</span></span></dt>
+<dd><p>The number of nodes. Must be a positive integer.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">n</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
+<dd><p>The oversampling <span class="math notranslate nohighlight">\((n_1,n_2,...,n_D)\)</span> per dimension.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">m</span> <span class="pre">&lt;int&gt;</span></span></dt>
+<dd><p>The window size. A larger m results in more accuracy but at a higher computational cost.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">f1</span> <span class="pre">&lt;c_uint32&gt;</span></span></dt>
+<dd><p>The NFCT flags.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">f2</span> <span class="pre">&lt;c_unit32&gt;</span></span></dt>
+<dd><p>The FFTW flags.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">x</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
+<dd><p>Float array for sampling nodes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">f</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
+<dd><p>Float array for NFCT values or coefficients for the adjoint NFCT.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">fhat</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
+<dd><p>Float array of Fourier coefficients for the NFCT or values for the adjoint NFCT.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">D</span> <span class="pre">&lt;int&gt;</span></span></dt>
+<dd><p>The number of dimensions, which is equal to the length of <strong>N</strong>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">init_done</span> <span class="pre">&lt;boolean&gt;</span></span></dt>
+<dd><p>Boolean to indicate if the NFCT plan is initialized.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">finalized</span> <span class="pre">&lt;boolean&gt;</span></span></dt>
+<dd><p>Boolean to indicate if the NFCT plan is finalized.</p>
+</dd></dl>
+
+</div></blockquote>
+</div>
 </div>
 
 
@@ -229,8 +234,9 @@ This function does not have to be called by the user.</p>
   <div>
     <h3><a href="../index.html">Table of Contents</a></h3>
     <ul>
-<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFCT</span></code> - core NFCT functionalities</a><ul>
-<li><a class="reference internal" href="#nfct-class">NFCT Class</a></li>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFCT</span></code> - NFCT Class</a><ul>
+<li><a class="reference internal" href="#nfct-methods">NFCT Methods</a></li>
+<li><a class="reference internal" href="#nfct-attributes">NFCT Attributes</a></li>
 </ul>
 </li>
 </ul>
@@ -239,12 +245,12 @@ This function does not have to be called by the user.</p>
   <div>
     <h4>Previous topic</h4>
     <p class="topless"><a href="nfft.html"
-                          title="previous chapter"><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFFT</span></code> - core NFFT functionalities</a></p>
+                          title="previous chapter"><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFFT</span></code> - NFFT Class</a></p>
   </div>
   <div>
     <h4>Next topic</h4>
     <p class="topless"><a href="nfst.html"
-                          title="next chapter"><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFST</span></code> - core NFST functionalities</a></p>
+                          title="next chapter"><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFST</span></code> - NFST Class</a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -274,14 +280,14 @@ This function does not have to be called by the user.</p>
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="nfst.html" title="pyNFFT3.NFST - core NFST functionalities"
+          <a href="nfst.html" title="pyNFFT3.NFST - NFST Class"
              >next</a> |</li>
         <li class="right" >
-          <a href="nfft.html" title="pyNFFT3.NFFT - core NFFT functionalities"
+          <a href="nfft.html" title="pyNFFT3.NFFT - NFFT Class"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">pyNFFT3 1.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../api.html" >API Contents</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFCT</span></code> - core NFCT functionalities</a></li> 
+        <li class="nav-item nav-item-this"><a href=""><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFCT</span></code> - NFCT Class</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pyNFFT3.fastsum - core fastsum functionalities &#8212; pyNFFT3 1.0.0 documentation</title>
+    <title>pyNFFT3.fastsum - fastsum Class &#8212; pyNFFT3 1.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
     
@@ -13,10 +13,11 @@
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="pyNFFT3.NFST - core NFST functionalities" href="nfst.html" /> 
+    <link rel="prev" title="pyNFFT3.NFST - NFST Class" href="nfst.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -25,11 +26,11 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="nfst.html" title="pyNFFT3.NFST - core NFST functionalities"
+          <a href="nfst.html" title="pyNFFT3.NFST - NFST Class"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">pyNFFT3 1.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../api.html" accesskey="U">API Contents</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><code class="docutils literal notranslate"><span class="pre">pyNFFT3.fastsum</span></code> - core fastsum functionalities</a></li> 
+        <li class="nav-item nav-item-this"><a href=""><code class="docutils literal notranslate"><span class="pre">pyNFFT3.fastsum</span></code> - fastsum Class</a></li> 
       </ul>
     </div>  
 
@@ -38,16 +39,204 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="pynfft3-fastsum-core-fastsum-functionalities">
-<h1><code class="docutils literal notranslate"><span class="pre">pyNFFT3.fastsum</span></code> - core fastsum functionalities<a class="headerlink" href="#pynfft3-fastsum-core-fastsum-functionalities" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="fastsum-class">
-<h2>fastsum Class<a class="headerlink" href="#fastsum-class" title="Permalink to this headline">¶</a></h2>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="pyNFFT3.fastsum">
-<span class="sig-prename descclassname"><span class="pre">pyNFFT3.</span></span><span class="sig-name descname"><span class="pre">fastsum</span></span><a class="headerlink" href="#pyNFFT3.fastsum" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of &lt;module ‘pyNFFT3.fastsum’ from ‘/github/workspace/src/pyNFFT3/fastsum.py’&gt;</p>
+  <div class="section" id="pynfft3-fastsum-fastsum-class">
+<h1><code class="docutils literal notranslate"><span class="pre">pyNFFT3.fastsum</span></code> - fastsum Class<a class="headerlink" href="#pynfft3-fastsum-fastsum-class" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="fastsum-methods">
+<h2>fastsum Methods<a class="headerlink" href="#fastsum-methods" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyNFFT3.FASTSUM">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyNFFT3.</span></span><span class="sig-name descname"><span class="pre">FASTSUM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_I</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.03125</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_B</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0625</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.FASTSUM" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Class to perform the fast summation algorithm:</p>
+<div class="math notranslate nohighlight">
+\[f(\pmb{y}) \coloneqq \sum_{k = 1}^{N} lpha_k \, \mathscr{K}(\pmb{y} - \pmb{x}_k) = \sum_{k = 1}^{N} lpha_k \, K (\lVert \pmb{y} - \pmb{x}_k \]</div>
+</div></blockquote>
+<p>Vert_2)</p>
+<blockquote>
+<div><p>for given arbitrary source knots <span class="math notranslate nohighlight">\(\pmb{x}_k \in \mathbb{R}^d\)</span>, where <span class="math notranslate nohighlight">\(k = 1, 2, \ldots, N\)</span>, and a given kernel function :math:<a href="#id1"><span class="problematic" id="id2">`</span></a>mathscr{K}(cdot) = K (lVert cdot</p>
+</div></blockquote>
+<p>Vert_2)`, where <span class="math notranslate nohighlight">\(\pmb{x} \in \mathbb{R}^d\)</span>, which is an even, real univariate function that is infinitely differentiable at least in <span class="math notranslate nohighlight">\(\mathbb{R} \setminus \{ 0 \}\)</span>.</p>
+<blockquote>
+<div><p>If <span class="math notranslate nohighlight">\(K\)</span> is infinitely differentiable at zero as well, then <span class="math notranslate nohighlight">\(\mathscr{K}\)</span> is defined on <span class="math notranslate nohighlight">\(\mathbb{R}^d\)</span> and is called a nonsingular kernel function. The evaluation is performed at <span class="math notranslate nohighlight">\(M\)</span> different points <span class="math notranslate nohighlight">\(\pmb{y}_j \in \mathbb{R}^d\)</span>, where <span class="math notranslate nohighlight">\(j = 1, \ldots, M\)</span>.</p>
+<p>Just <strong>d</strong>, <strong>N</strong>, <strong>M</strong>, <strong>kernel</strong>, and <strong>c</strong> are required for initializing a plan.</p>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyNFFT3.FASTSUM.fastsum_finalize_plan">
+<span class="sig-name descname"><span class="pre">fastsum_finalize_plan</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.FASTSUM.fastsum_finalize_plan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finalizes a fastsum plan.
+This function does not have to be called by the user.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="pyNFFT3.FASTSUM.finalize_plan">
+<span class="sig-name descname"><span class="pre">finalize_plan</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.FASTSUM.finalize_plan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative call for fastsum_finalize_plan()</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyNFFT3.FASTSUM.fastsum_init">
+<span class="sig-name descname"><span class="pre">fastsum_init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.FASTSUM.fastsum_init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes a fastsum  plan.
+This function does not have to be called by the user.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyNFFT3.FASTSUM.init">
+<span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.FASTSUM.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative call for fastsum_init()</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyNFFT3.FASTSUM.fastsum_trafo">
+<span class="sig-name descname"><span class="pre">fastsum_trafo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.FASTSUM.fastsum_trafo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs fast NFFT-based summation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyNFFT3.FASTSUM.trafo">
+<span class="sig-name descname"><span class="pre">trafo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.FASTSUM.trafo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative call for fastsum_trafo()</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyNFFT3.FASTSUM.fastsum_trafo_exact">
+<span class="sig-name descname"><span class="pre">fastsum_trafo_exact</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.FASTSUM.fastsum_trafo_exact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs direct computation of sums.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyNFFT3.FASTSUM.trafoexact">
+<span class="sig-name descname"><span class="pre">trafoexact</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.FASTSUM.trafoexact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative call for fastsum_trafo_exact()</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="fastsum-attributes">
+<h2>fastsum Attributes<a class="headerlink" href="#fastsum-attributes" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">plan</span> <span class="pre">&lt;fastsum_plan&gt;</span></span></dt>
+<dd><p>fastsum plan (C pointer)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">N</span> <span class="pre">&lt;int&gt;</span></span></dt>
+<dd><p>The number of source nodes. Must be a positive integer.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">M</span> <span class="pre">&lt;int&gt;</span></span></dt>
+<dd><p>The number of target nodes. Must be a positive integer.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">n</span> <span class="pre">&lt;int&gt;</span></span></dt>
+<dd><p>The expansion degree. Must be a positive integer.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">p</span> <span class="pre">&lt;int&gt;</span></span></dt>
+<dd><p>The degree of smoothness. Must be a positive integer.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">kernel</span> <span class="pre">&lt;string&gt;</span></span></dt>
+<dd><p>Name of kernel function <em>K</em>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">c</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
+<dd><p>Kernel parameters; length depends on value of <strong>kernel</strong>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">eps_I</span> <span class="pre">&lt;float&gt;</span></span></dt>
+<dd><p>The inner boundary.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">eps_B</span> <span class="pre">&lt;float&gt;</span></span></dt>
+<dd><p>The outer boundary.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">nn_x</span> <span class="pre">&lt;int&gt;</span></span></dt>
+<dd><p>The oversampled <strong>nn</strong> in <strong>x</strong>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">nn_y</span> <span class="pre">&lt;int&gt;</span></span></dt>
+<dd><p>The oversampled <strong>nn</strong> in <strong>y</strong>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">m_x</span> <span class="pre">&lt;int&gt;</span></span></dt>
+<dd><p>The NFFT-cutoff in <strong>x</strong>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">m_y</span> <span class="pre">&lt;int&gt;</span></span></dt>
+<dd><p>The NFFT-cutoff in <strong>y</strong>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">x</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
+<dd><p>Float array for source nodes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">y</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
+<dd><p>Float array for target nodes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">alpha</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
+<dd><p>Complex array for source coefficients.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">f</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
+<dd><p>Complex array for targer evalutations.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">d</span> <span class="pre">&lt;int&gt;</span></span></dt>
+<dd><p>The number of dimensions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">init_done</span> <span class="pre">&lt;boolean&gt;</span></span></dt>
+<dd><p>Boolean to indicate if the fastsum plan is initialized.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">finalized</span> <span class="pre">&lt;boolean&gt;</span></span></dt>
+<dd><p>Boolean to indicate if the fastsum plan is finalized.</p>
+</dd></dl>
+
+</div></blockquote>
 </div>
 </div>
 
@@ -61,8 +250,9 @@
   <div>
     <h3><a href="../index.html">Table of Contents</a></h3>
     <ul>
-<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">pyNFFT3.fastsum</span></code> - core fastsum functionalities</a><ul>
-<li><a class="reference internal" href="#fastsum-class">fastsum Class</a></li>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">pyNFFT3.fastsum</span></code> - fastsum Class</a><ul>
+<li><a class="reference internal" href="#fastsum-methods">fastsum Methods</a></li>
+<li><a class="reference internal" href="#fastsum-attributes">fastsum Attributes</a></li>
 </ul>
 </li>
 </ul>
@@ -71,7 +261,7 @@
   <div>
     <h4>Previous topic</h4>
     <p class="topless"><a href="nfst.html"
-                          title="previous chapter"><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFST</span></code> - core NFST functionalities</a></p>
+                          title="previous chapter"><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFST</span></code> - NFST Class</a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -101,11 +291,11 @@
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="nfst.html" title="pyNFFT3.NFST - core NFST functionalities"
+          <a href="nfst.html" title="pyNFFT3.NFST - NFST Class"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">pyNFFT3 1.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../api.html" >API Contents</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><code class="docutils literal notranslate"><span class="pre">pyNFFT3.fastsum</span></code> - core fastsum functionalities</a></li> 
+        <li class="nav-item nav-item-this"><a href=""><code class="docutils literal notranslate"><span class="pre">pyNFFT3.fastsum</span></code> - fastsum Class</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

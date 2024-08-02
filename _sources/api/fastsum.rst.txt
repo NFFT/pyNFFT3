@@ -1,14 +1,17 @@
-``pyNFFT3.fastsum`` - core fastsum functionalities
+``pyNFFT3.fastsum`` - fastsum Class
 ===================================================
 
-fastsum Class
---------------
+fastsum Methods
+-----------------
 
-.. autoclass:: pyNFFT3.fastsum
+.. autoclass:: pyNFFT3.FASTSUM
    :members: 
    :undoc-members:
    :member-order: bysource
    :exclude-members: x, y, alpha, __init__
+
+fastsum Attributes
+--------------------
 
    .. attribute:: plan <fastsum_plan>
 

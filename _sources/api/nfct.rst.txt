@@ -1,14 +1,17 @@
-``pyNFFT3.NFCT`` - core NFCT functionalities
+``pyNFFT3.NFCT`` - NFCT Class
 =============================================
 
-NFCT Class
-----------
+NFCT Methods
+--------------
 
 .. autoclass:: pyNFFT3.NFCT
    :members: 
    :undoc-members:
    :member-order: bysource
    :exclude-members: f, fhat, x, num_threads, __init__
+
+NFCT Attributes
+----------------
 
    .. attribute:: plan <nfct_plan>
 

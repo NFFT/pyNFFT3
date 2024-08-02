@@ -189,7 +189,7 @@ class NFCT:
 
     def nfct_trafo(self):
         """
-        Computes the NDCT via the fast NFCT algorithm for the provided nodes in **X** and coefficients in **fhat**.
+        Computes the NDCT via the fast NFCT algorithm for the provided nodes in **x** and coefficients in **fhat**.
         """
         Ns = np.prod(self.N)
         nfctlib.jnfct_trafo.restype = np.ctypeslib.ndpointer(np.float64, shape=Ns, flags='C')
@@ -214,8 +214,9 @@ class NFCT:
     
     def nfct_trafo_direct(self):
         """
-        Computes the NDCT via naive matrix-vector multiplication for the provided nodes in **X** and coefficients in **fhat**.
+        Computes the NDCT via naive matrix-vector multiplication for the provided nodes in **x** and coefficients in **fhat**.
         """
+        nfctlib.jnfct_trafo_direct.restype = np.ctypeslib.ndpointer(np.float64, shape=self.M, flags='C')
         # Prevent bad stuff from happening
         if self.finalized:
             raise RuntimeError("NFCT already finalized")
@@ -237,7 +238,7 @@ class NFCT:
 
     def nfct_transposed(self):
         """
-        Computes the transposed NDCT via the fast transposed NFCT algorithm for the provided nodes in **X** and coefficients in **f**.
+        Computes the transposed NDCT via the fast transposed NFCT algorithm for the provided nodes in **x** and coefficients in **f**.
         """
         Ns = np.prod(self.N)
         nfctlib.jnfct_adjoint.restype = np.ctypeslib.ndpointer(np.float64, shape=Ns, flags='C')
@@ -256,8 +257,10 @@ class NFCT:
 
     def nfct_transposed_direct(self):
         """
-        Computes the transposed NDCT via naive matrix-vector multiplication for provided nodes for the provided nodes in **X** and coefficients in **f**.
+        Computes the transposed NDCT via naive matrix-vector multiplication for provided nodes for the provided nodes in **x** and coefficients in **f**.
         """
+        Ns = np.prod(self.N)
+        nfctlib.jnfct_adjoint_direct.restype = np.ctypeslib.ndpointer(np.float64, shape=Ns, flags='C')
         # Prevent bad stuff from happening
         if self.finalized:
             raise RuntimeError("NFCT already finalized")

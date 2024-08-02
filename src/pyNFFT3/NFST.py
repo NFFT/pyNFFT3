@@ -186,7 +186,7 @@ class NFST:
     
     def nfst_trafo(self):
         """
-        Computes the NDFT via the fast NFST algorithm for the provided nodes in **X** and coefficients in **fhat**.
+        Computes the NDFT via the fast NFST algorithm for the provided nodes in **x** and coefficients in **fhat**.
         """
         Ns = np.prod(self.N - 1)
         nfstlib.jnfst_trafo.restype = np.ctypeslib.ndpointer(np.float64, shape=Ns, flags='C')
@@ -211,7 +211,7 @@ class NFST:
 
     def nfst_trafo_direct(self):
         """
-        Computes the NDST via naive matrix-vector multiplication for provided nodes in **X** and coefficients in **fhat**.
+        Computes the NDST via naive matrix-vector multiplication for provided nodes in **x** and coefficients in **fhat**.
         """
         # Prevent bad stuff from happening
         if self.finalized:
@@ -234,7 +234,7 @@ class NFST:
 
     def nfst_transposed(self):
         """
-        Computes the transposed NDST via the fast transposed NFST algorithm for the provided nodes in **X** and coefficients in **f**.
+        Computes the transposed NDST via the fast transposed NFST algorithm for the provided nodes in **x** and coefficients in **f**.
         """
         Ns = np.prod(self.N - 1)
         nfstlib.jnfst_adjoint.restype = np.ctypeslib.ndpointer(np.float64, shape=Ns, flags='C')
@@ -253,7 +253,7 @@ class NFST:
 
     def nfst_transposed_direct(self):
         """
-        Computes the transposed NDST via naive matrix-vector multiplication for provided nodes in **X** and coefficients in **f**.
+        Computes the transposed NDST via naive matrix-vector multiplication for provided nodes in **x** and coefficients in **f**.
         """
         # Prevent bad stuff from happening
         if self.finalized:

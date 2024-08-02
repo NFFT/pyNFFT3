@@ -3,8 +3,8 @@ from src.pyNFFT3.flags import *
 from src.pyNFFT3.fastsum import *
 
 d = 2
-N = 5
-M = 10
+N = 3
+M = 5
 kernel = "multiquadric"
 c = 1 / np.sqrt(N)
 eps_B = 1 / 16

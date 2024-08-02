@@ -114,17 +114,22 @@
 <dd><dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFCT.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">c_uint(65)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFCT.__init__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Class to perform non-equispaced fast cosine transforms (NFCT)
+with a dimension of D.
+Just N and M are required for initializing a plan.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFCT.adjoint">
 <span class="sig-name descname"><span class="pre">adjoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFCT.adjoint" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Alternative call for <strong>nfct_adjoint()</strong></p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFCT.adjoint_direct">
 <span class="sig-name descname"><span class="pre">adjoint_direct</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFCT.adjoint_direct" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Alternative call for <strong>nfct_adjoint_direct()</strong></p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyNFFT3.NFCT.f">
@@ -139,52 +144,64 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFCT.finalize_plan">
 <span class="sig-name descname"><span class="pre">finalize_plan</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFCT.finalize_plan" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Alternative call for <strong>nfct_finalize_plan()</strong></p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFCT.init">
 <span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFCT.init" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Alternative call for <strong>nfft_init()</strong></p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFCT.nfct_adjoint">
 <span class="sig-name descname"><span class="pre">nfct_adjoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFCT.nfct_adjoint" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Alternative call for <strong>nfct_transposed()</strong></p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFCT.nfct_adjoint_direct">
 <span class="sig-name descname"><span class="pre">nfct_adjoint_direct</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFCT.nfct_adjoint_direct" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Alternative call for <strong>nfct_transposed_direct()</strong></p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFCT.nfct_finalize_plan">
 <span class="sig-name descname"><span class="pre">nfct_finalize_plan</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFCT.nfct_finalize_plan" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Finalizes an NFCT plan. 
+This function does not have to be called by the user.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFCT.nfct_init">
 <span class="sig-name descname"><span class="pre">nfct_init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFCT.nfct_init" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Initializes the NFCT plan in C. 
+This function does not have to be called by the user.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFCT.nfct_trafo">
 <span class="sig-name descname"><span class="pre">nfct_trafo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFCT.nfct_trafo" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Computes the NDCT via the fast NFCT algorithm.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFCT.nfct_trafo_direct">
 <span class="sig-name descname"><span class="pre">nfct_trafo_direct</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFCT.nfct_trafo_direct" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Computes the NDCT via naive matrix-vector multiplication.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFCT.nfct_transposed">
 <span class="sig-name descname"><span class="pre">nfct_transposed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFCT.nfct_transposed" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Computes the transposed NDCT via the fast transposed NFCT algorithm.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFCT.nfct_transposed_direct">
 <span class="sig-name descname"><span class="pre">nfct_transposed_direct</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFCT.nfct_transposed_direct" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Computes the transposed NDCT via naive matrix-vector multiplication for provided nodes.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyNFFT3.NFCT.num_threads">
@@ -194,12 +211,14 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFCT.trafo">
 <span class="sig-name descname"><span class="pre">trafo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFCT.trafo" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Alternative call for <strong>nfct_trafo()</strong></p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFCT.trafo_direct">
 <span class="sig-name descname"><span class="pre">trafo_direct</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFCT.trafo_direct" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Alternative call for <strong>nfct_trafo_direct()</strong></p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyNFFT3.NFCT.x">
@@ -222,13 +241,13 @@ Just N and M are required for initializing a plan.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFFT.adjoint">
 <span class="sig-name descname"><span class="pre">adjoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFFT.adjoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alternative call for nfft_adjoint()</p>
+<dd><p>Alternative call for <strong>nfft_adjoint()</strong></p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFFT.adjoint_direct">
 <span class="sig-name descname"><span class="pre">adjoint_direct</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFFT.adjoint_direct" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alternative call for nfft_adjoint_direct()</p>
+<dd><p>Alternative call for <strong>nfft_adjoint_direct()</strong></p>
 </dd></dl>
 
 <dl class="py property">
@@ -244,13 +263,13 @@ Just N and M are required for initializing a plan.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFFT.finalize_plan">
 <span class="sig-name descname"><span class="pre">finalize_plan</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFFT.finalize_plan" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alternate call for nfft_finalize_plan()</p>
+<dd><p>Alternate call for <strong>nfft_finalize_plan()</strong></p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFFT.init">
 <span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFFT.init" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alternate call for nfft_init()</p>
+<dd><p>Alternate call for <strong>nfft_init()</strong></p>
 </dd></dl>
 
 <dl class="py method">
@@ -299,13 +318,13 @@ This function does not have to be called by the user.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFFT.trafo">
 <span class="sig-name descname"><span class="pre">trafo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFFT.trafo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alternative call for nfft_trafo()</p>
+<dd><p>Alternative call for <strong>nfft_trafo()</strong></p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyNFFT3.NFFT.trafo_direct">
 <span class="sig-name descname"><span class="pre">trafo_direct</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.NFFT.trafo_direct" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alternative call for nfft_trafo_direct()</p>
+<dd><p>Alternative call for <strong>nfft_trafo_direct()</strong></p>
 </dd></dl>
 
 <dl class="py property">

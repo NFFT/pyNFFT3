@@ -210,6 +210,7 @@ class NFFT:
         """
         Computes the NDFT via naive matrix-vector multiplication for the provided nodes in **X** and coefficients in **fhat**.
         """
+        nfftlib.jnfft_trafo_direct.restype = np.ctypeslib.ndpointer(np.complex128, shape=self.M, flags='C')
         # Prevent bad stuff from happening
         if self.finalized:
             raise RuntimeError("NFFT already finalized")
@@ -234,7 +235,6 @@ class NFFT:
         Computes the adjoint NDFT using the fast adjoint NFFT algorithm for the provided nodes in **X** and coefficients in **f**.
         """
         Ns = np.prod(self.N)
-        nfftlib.jnfft_set_fhat.restype = np.ctypeslib.ndpointer(np.complex128, ndim=1, shape=Ns, flags='C') 
         nfftlib.jnfft_adjoint.restype = np.ctypeslib.ndpointer(np.complex128, shape=Ns, flags='C')
         # Prevent bad stuff from happening
         if self.finalized:
@@ -259,6 +259,8 @@ class NFFT:
         """
         Computes the adjoint NDFT using naive matrix-vector multiplication for the provided nodes in **X** and coefficients in **f**.
         """
+        Ns = np.prod(self.N)
+        nfftlib.jnfft_adjoint_direct.restype = np.ctypeslib.ndpointer(np.complex128, shape=Ns, flags='C')
         # Prevent bad stuff from happening
         if self.finalized:
             raise RuntimeError("NFFT already finalized")

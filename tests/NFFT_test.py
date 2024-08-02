@@ -4,15 +4,19 @@ from src.pyNFFT3.NFFT import *
 
 # N = np.array([16], dtype='int32') # 1d
 # N = np.array([16, 8], dtype='int32') # 2d
-N = np.array([16, 8, 4], dtype='int32') # 3d
+N = np.array([4, 2], dtype='int32') # 3d
 
-M = 100
+M = 5
 d = len(N)
 Ns = np.prod(N)
 
-X = np.array([[abs(np.sin(i + j)) for j in range(d)] for i in range(M)])
-fhat = np.array([np.cos(k) + 1.0j * np.sin(k) for k in range(Ns)])
-f = np.array([np.sin(m) + 1.0j * np.cos(m) for m in range(M)])
+X = np.array([[0.1, 0.2], [0.3, 0.4], [0.5, 0.6], [0.7, 0.8], [0.9, 1.0]])
+fhat = np.array([0.1+0.1j, 0.2-0.2j, 0.3+0.3j, 0.4-0.4j, 0.5+0.5j, 0.6-0.6j, 0.7+0.7j, 0.8-0.8j])
+f = np.array([1.0+1.0j, 1.1-1.1j, 1.2+1.2j, 1.3-1.3j, 1.4+1.4j])
+
+print(X)
+print(fhat)
+print(f)
 
 # test init and setting
 plan_traf = NFFT(N,M)
@@ -28,7 +32,7 @@ plan_adj.fhat = fhat
 # test trafo
 plan_traf.trafo() # value is in plan.f
 
-# test transpose
+# test adjoint
 plan_adj.adjoint()
 
 # compare with directly computed
@@ -50,11 +54,11 @@ norm_infinity_traf = np.linalg.norm(f1 - plan_traf.f, np.inf)
 print("Euclidean norm for trafo test:", norm_euclidean_traf)
 print("Infinity norm: for trafo test", norm_infinity_traf)
 
-# for testing transpose
+# for testing adjoint
 f1 = F_mat.H @ f
 norm_euclidean_adj = np.linalg.norm(f1 - plan_adj.fhat)
 norm_infinity_adj = np.linalg.norm(f1 - plan_adj.fhat, np.inf)
-print("Euclidean norm for transpose test:", norm_euclidean_adj)
-print("Infinity norm for transpose test:", norm_infinity_adj)
+print("Euclidean norm for adjoint test:", norm_euclidean_adj)
+print("Infinity norm for adjoint test:", norm_infinity_adj)
 
 #TODO: Add tests to check for large error values

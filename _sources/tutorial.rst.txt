@@ -130,3 +130,65 @@ To compute the transposed NDST using **nfst_transposed()** or **nfst_transposed_
     # or
     plan.nfst_transposed_direct()
 
+Using fastsum
+--------------
+
+View the `test file <https://github.com/fastsum/pyNFFT3/blob/main/tests/fastsum_test.py>`_
+for a detailed example of all function uses and error tests.
+
+Or view the `API reference <https://github.com/fastsum/pyNFFT3/blob/main/docs/source/api/fastsum.rst>`_
+for the class methods and attributes.
+
+To start using fastsum, first import the class:
+
+.. code-block:: python
+
+    from pynfft3 import fastsum
+
+To generate a fastsum plan, you must define **d**, **N**, **M**, **kernel**, and **c**.
+
+The possible kernel types are:
+    - gaussian
+    - multiquadric
+    - inverse_multiquadric
+    - logarithm
+    - thinplate_spline
+    - one_over_square
+    - one_over_modulus
+    - one_over_x
+    - inverse_multiquadric3
+    - sinc_kernel
+    - cosc
+    - cot
+    - one_over_cube
+    - log_sin
+    - laplacian_rbf
+
+The given **c** will be converted to an array with length depending on the chosen kernel:
+
+.. code-block:: python
+
+    d = 2 # 2 dimensions
+    N = 3 # 3 source nodes
+    M = 5 # 5 target nodes
+    kernel = "multiquadric"
+    c = 1 / numpy.sqrt(N) # set kernel parameter
+    plan = FASTSUM(N, M) # generate plan
+
+To compute the fast NFFT-based summation using **fastsum_trafo()**, both **x**, **y**, and **alpha** must be set:
+
+.. code-block:: python
+
+    plan.x =
+    plan.y = 
+    plan.alpha = 
+    plan.fastsum_trafo()
+
+To compute the direct computation of sums using **fastsum_trafo_exact()** both **x**, **y**, and **alpha** must be set as well:
+
+.. code-block:: python
+
+    plan.x =
+    plan.y = 
+    plan.alpha = 
+    plan.fastsum_trafo_exact()

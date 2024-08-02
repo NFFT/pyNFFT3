@@ -1,14 +1,17 @@
-``pyNFFT3.NFFT`` - core NFFT functionalities
+``pyNFFT3.NFFT`` - NFFT Class
 =============================================
 
-NFFT Class
-----------
+NFFT Methods
+--------------
 
 .. autoclass:: pyNFFT3.NFFT
    :members: 
    :undoc-members:
    :member-order: bysource
    :exclude-members: f, fhat, x, num_threads, __init__
+
+NFFT Attributes
+----------------
 
    .. attribute:: plan <nfft_plan>
 

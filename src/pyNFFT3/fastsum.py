@@ -4,53 +4,6 @@ from .flags import *
 from . import fastsumlib
 from . import fastsum_plan
 
-# """
-#     FASTSUM
-
-# The fast summation algorithm evaluates the function
-
-# ```math
-# f(\pmb{y}) \coloneqq \sum^{N}_{k = 1} \alpha_k \, \mathscr{K}(\pmb{y} - \pmb{x}_k) = \sum^{N}_{k = 1} \alpha_k \, K(\lVert \pmb{y} - \pmb{x}_k \rVert_2)
-# ```
-
-# for given arbitrary source knots ``\pmb{x}_k \in \mathbb{R}^d, k = 1,2, \cdots, N`` and a given kernel function ``\mathscr{K}(\cdot) = K (\lVert \cdot \rVert_2), \; \pmb{x} \in \mathbb{R}^d``, 
-# which is an even, real univariate function which is infinitely differentiable at least in ``\mathbb{R} \setminus \{ 0 \}``. 
-# If ``K`` is infinitely differentiable at zero as well, then ``\mathscr{K}`` is defined on ``\mathbb{R}^d`` and is called 
-# nonsingular kernel function. The evaluation is done at ``M`` different points ``\pmb{y}_j \in \mathbb{R}^d, j = 1, \cdots, M``. 
-
-# # Fields
-# * `d` - dimension.
-# * `N` - number of source nodes.
-# * `M` - number of target nodes.
-# * `n` - expansion degree.
-# * `p` - degree of smoothness.
-# * `kernel` - name of kernel function ``K``.
-# * `c` - kernel parameters.
-# * `eps_I` - inner boundary.
-# * `eps_B` - outer boundary.
-# * `nn_x` - oversampled nn in x.
-# * `nn_y` - oversampled nn in y.
-# * `m_x` - NFFT-cutoff in x.
-# * `m_y` - NFFT-cutoff in y.
-# * `init_done` - bool for plan init.
-# * `finalized` - bool for finalizer.
-# * `flags` - flags.
-# * `x` - source nodes.
-# * `y` - target nodes.
-# * `alpha` - source coefficients.
-# * `f` - target evaluations.
-# * `plan` - plan (C pointer).
-
-# # Constructor
-#     FASTSUM( d::Integer, N::Integer, M::Integer, n::Integer, p::Integer, kernel::String, c::Vector{<:Real}, eps_I::Real, eps_B::Real, nn_x::Integer, nn_y::Integer, m_x::Integer, m_y::Integer, flags::UInt32 )
-
-# # Additional Constructor
-#     FASTSUM( d::Integer, N::Integer, M::Integer, n::Integer, p::Integer, kernel::String, c::Real, eps_I::Real, eps_B::Real, nn::Integer, m::Integer )
-
-# # See also
-# [`NFFT`](@ref)
-# """
-
 # Set arugment and return types for functions
 fastsumlib.jfastsum_init.argtypes = [ctypes.POINTER(fastsum_plan), 
                                ctypes.c_int,
@@ -79,6 +32,19 @@ fastsumlib.jfastsum_trafo.argtypes = [ctypes.POINTER(fastsum_plan)]
 fastsumlib.jfastsum_exact.argtypes = [ctypes.POINTER(fastsum_plan)]
 
 class FASTSUM:
+    """
+    Class to perform the fast summation algorithm:
+
+    .. math::
+
+       f(\pmb{y}) \coloneqq \sum_{k = 1}^{N} \alpha_k \, \mathscr{K}(\pmb{y} - \pmb{x}_k) = \sum_{k = 1}^{N} \alpha_k \, K (\lVert \pmb{y} - \pmb{x}_k \rVert_2)
+
+    for given arbitrary source knots :math:`\pmb{x}_k \in \mathbb{R}^d`, where :math:`k = 1, 2, \ldots, N`, and a given kernel function :math:`\mathscr{K}(\cdot) = K (\lVert \cdot \rVert_2)`, where :math:`\pmb{x} \in \mathbb{R}^d`, which is an even, real univariate function that is infinitely differentiable at least in :math:`\mathbb{R} \setminus \{ 0 \}`. 
+
+    If :math:`K` is infinitely differentiable at zero as well, then :math:`\mathscr{K}` is defined on :math:`\mathbb{R}^d` and is called a nonsingular kernel function. The evaluation is performed at :math:`M` different points :math:`\pmb{y}_j \in \mathbb{R}^d`, where :math:`j = 1, \ldots, M`.
+    
+    Just **d**, **N**, **M**, **kernel**, and **c** are required for initializing a plan.
+    """
     def __init__(self, d, N, M, kernel, c, n=256, p=8, eps_I=8/256, eps_B=1/16, nn=512, m=8):
         self.plan = fastsumlib.jfastsum_alloc()
         
@@ -117,6 +83,10 @@ class FASTSUM:
         self.finalize_plan()
     
     def fastsum_finalize_plan(self):
+        """
+        Finalizes a fastsum plan.
+        This function does not have to be called by the user.
+        """
         fastsumlib.jfastsum_finalize.argtypes = (
             ctypes.POINTER(fastsum_plan),   # P
         )
@@ -129,21 +99,16 @@ class FASTSUM:
             fastsumlib.jfastsum_finalize(self.plan)
 
     def finalize_plan(self):
+        """
+        Alternative call for fastsum_finalize_plan()
+        """
         return self.fastsum_finalize_plan()
     
-    # """
-    #     fastsum_init(P)
-
-    # intialises a transform plan.
-
-    # # Input
-    # * `P` - a FASTSUM plan structure.
-
-    # # See also
-    # [`FASTSUM{D}`](@ref), [`fastsum_finalize_plan`](@ref)
-    # """
-
     def fastsum_init(self):
+        """
+        Initializes a fastsum  plan.
+        This function does not have to be called by the user.
+        """
         # Convert c to numpy array for passing them to C
         Cv = np.array(self.c, dtype=np.float64)
 
@@ -177,6 +142,9 @@ class FASTSUM:
             raise RuntimeError("Unkown kernel")
 
     def init(self):
+        """
+        Alternative call for fastsum_init()
+        """
         return self.fastsum_init()
     
     @property
@@ -253,19 +221,10 @@ class FASTSUM:
             fastsumlib.jfastsum_set_alpha.restype = np.ctypeslib.ndpointer(np.complex128, shape=self.N)
             self._Alpha = fastsumlib.jfastsum_set_alpha(self.plan, alpha_fort)
 
-    # """
-    #     fastsum_trafo(P)
-
-    # fast NFFT-based summation.
-
-    # # Input
-    # * `P` - a FASTSUM plan structure.
-
-    # # See also
-    # [`FASTSUM{D}`](@ref), [`fastsum_trafo_exact`](@ref)
-    # """
-
     def fastsum_trafo(self):
+        """
+        Performs fast NFFT-based summation.
+        """
         fastsumlib.jfastsum_trafo.restype = np.ctypeslib.ndpointer(np.complex128, shape=self.M, flags='F')
         # Prevent bad stuff from happening
         if self.finalized:
@@ -284,21 +243,15 @@ class FASTSUM:
         self.f = ptr
 
     def trafo(self):
+        """
+        Alternative call for fastsum_trafo()
+        """
         return self.fastsum_trafo()
-    
-    # """
-    #     fastsum_trafo_exact(P)
-
-    # direct computation of sums.
-
-    # # Input
-    # * `P` - a FASTSUM plan structure.
-
-    # # See also
-    # [`FASTSUM{D}`](@ref), [`fastsum_trafo`](@ref)
-    # """
 
     def fastsum_trafo_exact(self):
+        """
+        Performs direct computation of sums.
+        """
         fastsumlib.jfastsum_exact.restype = np.ctypeslib.ndpointer(np.complex128, shape=self.M, flags='F')
         # Prevent bad stuff from happening
         if self.finalized:
@@ -317,4 +270,7 @@ class FASTSUM:
         self.f = ptr
 
     def trafoexact(self):
+        """
+        Alternative call for fastsum_trafo_exact()
+        """
         return self.fastsum_trafo_exact()

@@ -29,8 +29,8 @@ nfftlib.jnfft_adjoint_direct.argtypes = [ctypes.POINTER(nfft_plan)]
 class NFFT:
     """
     Class to perform non-equispaced fast Fourier transforms (NFFT)
-    considering a D-dimensional trigonometric polynomial.
-    Just N and M are required for initializing a plan.
+    considering a **D**-dimensional trigonometric polynomial.
+    Just **N** and **M** are required for initializing a plan.
     """
     def __init__(self, N, M, n=None, m=default_window_cut_off, f1=None, f2=f2_default):
         self.plan = nfftlib.jnfft_alloc()
@@ -184,7 +184,7 @@ class NFFT:
 
     def nfft_trafo(self):
         """
-        Computes the NDFT using the fast NFFT algorithm.
+        Computes the NDFT using the fast NFFT algorithm for the provided nodes in **X** and coefficients in **fhat**.
         """
         nfftlib.jnfft_trafo.restype = np.ctypeslib.ndpointer(np.complex128, shape=self.M, flags='C')
         # Prevent bad stuff from happening
@@ -208,7 +208,7 @@ class NFFT:
 
     def nfft_trafo_direct(self):
         """
-        Computes the NDFT via naive matrix-vector multiplication.
+        Computes the NDFT via naive matrix-vector multiplication for the provided nodes in **X** and coefficients in **fhat**.
         """
         # Prevent bad stuff from happening
         if self.finalized:
@@ -231,7 +231,7 @@ class NFFT:
     
     def nfft_adjoint(self):
         """
-        Computes the adjoint NDFT using the fast adjoint NFFT algorithm.
+        Computes the adjoint NDFT using the fast adjoint NFFT algorithm for the provided nodes in **X** and coefficients in **f**.
         """
         Ns = np.prod(self.N)
         nfftlib.jnfft_set_fhat.restype = np.ctypeslib.ndpointer(np.complex128, ndim=1, shape=Ns, flags='C') 
@@ -257,7 +257,7 @@ class NFFT:
 
     def nfft_adjoint_direct(self):
         """
-        Computes the adjoint NDFT using naive matrix-vector multiplication.
+        Computes the adjoint NDFT using naive matrix-vector multiplication for the provided nodes in **X** and coefficients in **f**.
         """
         # Prevent bad stuff from happening
         if self.finalized:

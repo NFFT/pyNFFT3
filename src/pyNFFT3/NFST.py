@@ -4,51 +4,6 @@ from .flags import *
 from . import nfstlib
 from . import nfst_plan
 
-# # NFST plan struct
-# """
-#     NFST{D}
-
-# A NFST (nonequispaced fast sine transform) plan, where D is the dimension. 
-
-# The NFST realizes a direct and fast computation of the discrete nonequispaced sine transform. The aim is to compute
-
-# ```math
-# f^s(\pmb{x}_j) = \sum_{\pmb{k} \in I_{\pmb{N},\mathrm{s}}^D} \hat{f}_{\pmb{k}}^s \, \sin(2\pi \, \pmb{k} \odot \pmb{x}_j)
-# ```
-
-# at given arbitrary knots ``\pmb{x}_j \in [0,0.5]^D, j = 1, \cdots, M``, for coefficients ``\hat{f}^{s}_{\pmb{k}} \in \mathbb{R}``, ``\pmb{k} \in I_{\pmb{N},\mathrm{s}}^D \coloneqq \left\{ \pmb{k} \in \mathbb{Z}^D: 1 \leq k_i \leq N_i - 1, \, i = 1,2,\ldots,D \right\}``, and a multibandlimit vector ``\pmb{N} \in \mathbb{N}^{D}``. Note that we define ``\sin(\pmb{k} \circ \pmb{x}) \coloneqq \prod_{i=1}^D \sin(k_i \cdot x_i)``. The transposed problem reads as
-
-# ```math
-# \hat{h}^s_{\pmb{k}} = \sum_{j=1}^M f^s_j \, \sin(2\pi \, \pmb{k} \odot \pmb{x}_j)
-# ```
-
-# for the frequencies ``\pmb{k} \in I_{\pmb{N},\mathrm{s}}^D`` with given coefficients ``f^s_j \in \mathbb{R}, j = 1,2,\ldots,M``.
-
-# # Fields
-# * `N` - the multibandlimit ``(N_1, N_2, \ldots, N_D)`` of the trigonometric polynomial ``f^s``.
-# * `M` - the number of nodes.
-# * `n` - the oversampling ``(n_1, n_2, \ldots, n_D)`` per dimension.
-# * `m` - the window size. A larger m results in more accuracy but also a higher computational cost. 
-# * `f1` - the NFST flags.
-# * `f2` - the FFTW flags.
-# * `init_done` - indicates if the plan is initialized.
-# * `finalized` - indicates if the plan is finalized.
-# * `x` - the nodes ``x_j \in [0,0.5]^D, \, j = 1, \ldots, M``.
-# * `f` - the values ``f^s(\pmb{x}_j)`` for the NFST or the coefficients ``f_j^s \in \mathbb{R}, j = 1, \ldots, M,`` for the transposed NFST.
-# * `fhat` - the Fourier coefficients ``\hat{f}_{\pmb{k}}^s \in \mathbb{R}`` for the NFST or the values ``\hat{h}_{\pmb{k}}^s, \pmb{k} \in I_{\pmb{N},\mathrm{s}}^D,`` for the adjoint NFFT.
-# * `plan` - plan (C pointer).
-
-# # Constructor
-#     NFST{D}( N::NTuple{D,Int32}, M::Int32, n::NTuple{D,Int32}, m::Int32, f1::UInt32, f2::UInt32 ) where {D}
-
-# # Additional Constructor
-#     NFST( N::NTuple{D,Int32}, M::Int32, n::NTuple{D,Int32}, m::Int32, f1::UInt32, f2::UInt32) where {D}
-#     NFST( N::NTuple{D,Int32}, M::Int32) where {D}
-
-# # See also
-# [`NFFT`](@ref)
-# """
-
 # Set arugment and return types for functions
 nfstlib.jnfst_init.argtypes = [ctypes.POINTER(nfst_plan), 
                                ctypes.c_int32, 
@@ -72,6 +27,11 @@ nfstlib.jnfst_trafo_direct.argtypes = [ctypes.POINTER(nfst_plan)]
 nfstlib.jnfst_adjoint_direct.argtypes = [ctypes.POINTER(nfst_plan)]
 
 class NFST:
+    """
+    Class to perform non-equispaced fast sine transforms (NFST)
+    With a dimension of **D**.
+    Just **N** and **M** are required for initializing a plan.
+    """
     def __init__(self, N, M, n=None, m=default_window_cut_off, f1=None, f2=f2_default):
         self.plan = nfstlib.jnfst_alloc()
         self.N = N  # bandwidth tuple
@@ -119,20 +79,11 @@ class NFST:
     def __del__(self):
         self.finalize_plan()
     
-    # # finalizer
-    # """
-    #     nfst_finalize_plan(P)
-
-    # destroys a NFST plan structure.
-
-    # # Input
-    # * `P` - a NFST plan structure.
-
-    # # See also
-    # [`NFST{D}`](@ref), [`nfst_init`](@ref)
-    # """
-
     def nfst_finalize_plan(self):
+        """
+        Finalizes an NFST plan. 
+        This function does not have to be called by the user.
+        """
         nfstlib.jnfst_finalize.argtypes = (
             ctypes.POINTER(nfst_plan),   # P
         )
@@ -145,22 +96,16 @@ class NFST:
             nfstlib.jnfst_finalize(self.plan)
 
     def finalize_plan(self):
+        """
+        Alternative call for **nfst_finalize_plan()**
+        """
         return self.nfst_finalize_plan()
 
-    # # allocate plan memory and init with D,N,M,n,m,f1,f2
-    # """
-    #     nfst_init(P)
-
-    # intialises the NFST plan in C. This function does not have to be called by the user.
-
-    # # Input
-    # * `p` - a NFST plan structure.
-
-    # # See also
-    # [`NFST{D}`](@ref), [`nfst_finalize_plan`](@ref)
-    # """
-
     def nfst_init(self):
+        """
+        Initializes the NFCT plan in C. 
+        This function does not have to be called by the user.
+        """
         # Convert N and n to numpy arrays for passing them to C
         Nv = np.array(self.N, dtype=np.int32)
         n = np.array(self.n, dtype=np.int32)
@@ -185,6 +130,9 @@ class NFST:
         self.init_done = True
 
     def init(self):
+        """
+        Alternative call for **nfst_init()**
+        """
         return self.nfst_init()
     
     @property
@@ -235,82 +183,11 @@ class NFST:
     @property
     def num_threads(self):
         return nfstlib.nfft_get_num_threads()
-
-    # """
-    #     nfst_trafo_direct(P)
-
-    # computes the NDST via naive matrix-vector multiplication for provided nodes ``\pmb{x}_j, j =1,2,\dots,M,`` in `P.x` and coefficients ``\hat{f}_{\pmb{k}}^s \in \mathbb{R}, \pmb{k} \in I_{\pmb{N},s}^D,`` in `P.fhat`.
-
-    # # Input
-    # * `P` - a NFST plan structure.
-
-    # # See also
-    # [`NFST{
-    # """
-
-    def nfst_trafo_direct(self):
-        # Prevent bad stuff from happening
-        if self.finalized:
-            raise RuntimeError("NFST already finalized")
-
-        if self.fhat is None:
-            raise ValueError("fhat has not been set.")
-
-        if self.x is None:
-            raise ValueError("x has not been set.")
-
-        ptr = nfstlib.jnfst_trafo_direct(self.plan)
-        self.f = ptr
-
-    def trafo_direct(self):
-        return self.nfst_trafo_direct()
-
-    # """
-    #     nfst_transposed_direct(P)
-
-    # computes the transposed NDST via naive matrix-vector multiplication for provided nodes ``\pmb{x}_j, j =1,2,\dots,M,`` in `P.x` and coefficients ``f_j^s \in \mathbb{R}, j =1,2,\dots,M,`` in `P.f`.
-
-    # # Input
-    # * `P` - a NFST plan structure.
-
-    # # See also
-    # [`NFST{D}`](@ref), [`nfst_transposed`](@ref)
-    # """
-
-    def nfst_transposed_direct(self):
-        # Prevent bad stuff from happening
-        if self.finalized:
-            raise RuntimeError("NFST already finalized")
-
-        if self.f is None:
-            raise ValueError("f has not been set.")
-
-        if self.x is None:
-            raise ValueError("x has not been set.")
-        
-        ptr = nfstlib.jnfst_adjoint_direct(self.plan)
-        self.fhat = ptr
-
-    def nfst_adjoint_direct(self):
-        return self.nfst_transposed_direct()
-
-    def adjoint_direct(self):
-        return self.nfst_adjoint_direct()
-
-    # # nfft trafo [call with NFFT.trafo outside module]
-    # """
-    #     nfft_trafo(P)
-
-    # computes the NDFT via the fast NFFT algorithm for provided nodes ``\pmb{x}_j, j =1,2,\dots,M,`` in `P.x` and coefficients ``\hat{f}_{\pmb{k}} \in \mathbb{C}, \pmb{k} \in I_{\pmb{N}}^D,`` in `P.fhat`.
-
-    # # Input
-    # * `P` - a NFFT plan structure.
-
-    # # See also
-    # [`NFFT{D}`](@ref), [`nfft_trafo_direct`](@ref)
-    # """
-
+    
     def nfst_trafo(self):
+        """
+        Computes the NDFT via the fast NFST algorithm for the provided nodes in **X** and coefficients in **fhat**.
+        """
         Ns = np.prod(self.N - 1)
         nfstlib.jnfst_trafo.restype = np.ctypeslib.ndpointer(np.float64, shape=Ns, flags='C')
         # Prevent bad stuff from happening
@@ -327,21 +204,38 @@ class NFST:
         self.f = ptr
 
     def trafo(self):
+        """
+        Alternative call for **nfst_trafo()**
+        """
         return self.nfst_trafo()
 
-    # """
-    #     nfst_transposed(P)
+    def nfst_trafo_direct(self):
+        """
+        Computes the NDST via naive matrix-vector multiplication for provided nodes in **X** and coefficients in **fhat**.
+        """
+        # Prevent bad stuff from happening
+        if self.finalized:
+            raise RuntimeError("NFST already finalized")
 
-    # computes the transposed NDST via the fast transposed NFST algorithm for provided nodes ``\pmb{x}_j, j =1,2,\dots,M,`` in `P.x` and coefficients ``f_j^s \in \mathbb{R}, j =1,2,\dots,M,`` in `P.f`.
+        if self.fhat is None:
+            raise ValueError("fhat has not been set.")
 
-    # # Input
-    # * `P` - a NFST plan structure.
+        if self.x is None:
+            raise ValueError("x has not been set.")
 
-    # # See also
-    # [`NFST{D}`](@ref), [`nfst_transposed_direct`](@ref)
-    # """
+        ptr = nfstlib.jnfst_trafo_direct(self.plan)
+        self.f = ptr
+
+    def trafo_direct(self):
+        """
+        Alternative call for nfst_trafo_direct()
+        """
+        return self.nfst_trafo_direct()
 
     def nfst_transposed(self):
+        """
+        Computes the transposed NDST via the fast transposed NFST algorithm for the provided nodes in **X** and coefficients in **f**.
+        """
         Ns = np.prod(self.N - 1)
         nfstlib.jnfst_adjoint.restype = np.ctypeslib.ndpointer(np.float64, shape=Ns, flags='C')
         # Prevent bad stuff from happening
@@ -357,8 +251,43 @@ class NFST:
         ptr = nfstlib.jnfst_adjoint(self.plan)
         self.fhat = ptr
 
+    def nfst_transposed_direct(self):
+        """
+        Computes the transposed NDST via naive matrix-vector multiplication for provided nodes in **X** and coefficients in **f**.
+        """
+        # Prevent bad stuff from happening
+        if self.finalized:
+            raise RuntimeError("NFST already finalized")
+
+        if self.f is None:
+            raise ValueError("f has not been set.")
+
+        if self.x is None:
+            raise ValueError("x has not been set.")
+        
+        ptr = nfstlib.jnfst_adjoint_direct(self.plan)
+        self.fhat = ptr
+
     def nfst_adjoint(self):
+        """
+        Alternative call for nfst_transposed()
+        """
         return self.nfst_transposed()
 
+    def nfst_adjoint_direct(self):
+        """
+        Alternative call for nfst_transposed_direct()
+        """
+        return self.nfst_transposed_direct()
+
     def adjoint(self):
+        """
+        Alternative call for nfst_adjoint()
+        """
         return self.nfst_adjoint()
+
+    def adjoint_direct(self):
+        """
+        Alternative call for nfst_adjoint_direct()
+        """
+        return self.nfst_adjoint_direct()

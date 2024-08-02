@@ -213,6 +213,8 @@ class NFST:
         """
         Computes the NDST via naive matrix-vector multiplication for provided nodes in **x** and coefficients in **fhat**.
         """
+        Ns = np.prod(self.N - 1)
+        nfstlib.jnfst_trafo_directed.restype = np.ctypeslib.ndpointer(np.float64, shape=Ns, flags='C')
         # Prevent bad stuff from happening
         if self.finalized:
             raise RuntimeError("NFST already finalized")

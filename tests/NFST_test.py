@@ -29,7 +29,7 @@ plan_adj.fhat = fhat
 plan_traf.trafo() # value is in plan.f
 
 # test transpose
-plan_adj.adjoint()
+plan_adj.nfst_transposed()
 
 # compare with directly computed, using N[k]-1 but range is not inclusive
 if d == 1:

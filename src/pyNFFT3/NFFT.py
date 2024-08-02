@@ -100,7 +100,7 @@ class NFFT:
 
     def finalize_plan(self):
         """
-        Alternate call for nfft_finalize_plan()
+        Alternate call for **nfft_finalize_plan()**
         """
         return self.nfft_finalize_plan()
 
@@ -134,7 +134,7 @@ class NFFT:
 
     def init(self):
         """
-        Alternate call for nfft_init()
+        Alternate call for **nfft_init()**
         """
         return self.nfft_init()
     
@@ -202,7 +202,7 @@ class NFFT:
 
     def trafo(self):
         """
-        Alternative call for nfft_trafo()
+        Alternative call for **nfft_trafo()**
         """
         return self.nfft_trafo()
 
@@ -225,7 +225,7 @@ class NFFT:
 
     def trafo_direct(self):
         """
-        Alternative call for nfft_trafo_direct()
+        Alternative call for **nfft_trafo_direct()**
         """
         return self.nfft_trafo_direct()
     
@@ -251,7 +251,7 @@ class NFFT:
 
     def adjoint(self):
         """
-        Alternative call for nfft_adjoint()
+        Alternative call for **nfft_adjoint()**
         """
         return self.nfft_adjoint()
 
@@ -273,5 +273,7 @@ class NFFT:
         self.fhat = ptr
 
     def adjoint_direct(self):
-        """Alternative call for nfft_adjoint_direct()"""
+        """
+        Alternative call for **nfft_adjoint_direct()**
+        """
         return self.nfft_adjoint_direct()

@@ -73,6 +73,11 @@ nfctlib.jnfct_adjoint_direct.argtypes = [ctypes.POINTER(nfct_plan)]
 
 class NFCT:
     def __init__(self, N, M, n=None, m=default_window_cut_off, f1=None, f2=f2_default):
+        """
+        Class to perform non-equispaced fast cosine transforms (NFCT)
+        with a dimension of D.
+        Just N and M are required for initializing a plan.
+        """
         self.plan = nfctlib.jnfct_alloc()
         self.N = N  # bandwidth tuple
         N_ct = N.ctypes.data_as(ctypes.POINTER(ctypes.c_int32))
@@ -122,20 +127,11 @@ class NFCT:
     def __del__(self):
         self.finalize_plan()
 
-    # # finalizer
-    # """
-    #     nfct_finalize_plan(P::NFCT{D})
-
-    # destroys a NFCT plan structure.
-
-    # # Input
-    # * `P` - a NFCT plan structure.
-
-    # # See also
-    # [`NFCT{D}`](@ref), [`nfct_init`](@ref)
-    # """
-
     def nfct_finalize_plan(self):
+        """
+        Finalizes an NFCT plan. 
+        This function does not have to be called by the user.
+        """
         nfctlib.jnfct_finalize.argtypes = (
             ctypes.POINTER(nfct_plan),   # P
         )
@@ -148,22 +144,16 @@ class NFCT:
             nfctlib.jnfct_finalize(self.plan)
 
     def finalize_plan(self):
+        """
+        Alternative call for **nfct_finalize_plan()**
+        """
         return self.nfct_finalize_plan()
     
-    # # allocate plan memory and init with D,N,M,n,m,f1,f2
-    # """
-    #     nfct_init(P)
-
-    # intialises the NFCT plan in C. This function does not have to be called by the user.
-
-    # # Input
-    # * `P` - a NFCT plan structure.
-
-    # # See also
-    # [`NFCT{D}`](@ref), [`nfct_finalize_plan`](@ref)
-    # """
-
     def nfct_init(self):
+        """
+        Initializes the NFCT plan in C. 
+        This function does not have to be called by the user.
+        """
         # Convert N and n to numpy arrays for passing them to C
         Nv = np.array(self.N, dtype=np.int32)
         n = np.array(self.n, dtype=np.int32)
@@ -188,6 +178,9 @@ class NFCT:
         self.init_done = True
 
     def init(self):
+        """
+        Alternative call for **nfft_init()**
+        """
         return self.nfct_init()
     
     @property
@@ -238,84 +231,11 @@ class NFCT:
     @property
     def num_threads(self):
         return nfctlib.nfft_get_num_threads()
-    
-    # # nfct trafo direct [call with NFCT.trafo_direct outside module]
-    # """
-    #     nfct_trafo_direct(P)
-
-    # computes the NDCT via naive matrix-vector multiplication for provided nodes ``\pmb{x}_j, j =1,2,\dots,M,`` in `P.X` and coefficients ``\hat{f}_{\pmb{k}}^c \in \mathbb{R}, \pmb{k} \in I_{\pmb{N},\mathrm{c}}^D,`` in `P.fhat`.
-
-    # # Input
-    # * `P` - a NFCT plan structure.
-
-    # # See also
-    # [`NFCT{D}`](@ref), [`nfct_trafo`](@ref)
-    # """
-
-    def nfct_trafo_direct(self):
-        # Prevent bad stuff from happening
-        if self.finalized:
-            raise RuntimeError("NFCT already finalized")
-
-        if self.fhat is None:
-            raise ValueError("fhat has not been set.")
-
-        if self.x is None:
-            raise ValueError("x has not been set.")
-
-        ptr = nfctlib.jnfct_trafo_direct(self.plan)
-        self.f = ptr
-
-    def trafo_direct(self):
-        return self.nfct_trafo_direct()
-    
-    # # adjoint trafo direct [call with NFCT.adjoint_direct outside module]
-    # """
-    #     nfct_transposed_direct(P)
-
-    # computes the transposed NDCT via naive matrix-vector multiplication for provided nodes ``\pmb{x}_j, j =1,2,\dots,M,`` in `P.X` and coefficients ``f_j^c \in \mathbb{R}, j =1,2,\dots,M,`` in `P.f`.
-
-    # # Input
-    # * `P` - a NFCT plan structure.
-
-    # # See also
-    # [`NFCT{D}`](@ref), [`nfct_transposed`](@ref)
-    # """
-
-    def nfct_transposed_direct(self):
-        # Prevent bad stuff from happening
-        if self.finalized:
-            raise RuntimeError("NFCT already finalized")
-
-        if self.f is None:
-            raise ValueError("f has not been set.")
-
-        if self.x is None:
-            raise ValueError("x has not been set.")
-        
-        ptr = nfctlib.jnfct_adjoint_direct(self.plan)
-        self.fhat = ptr
-
-    def nfct_adjoint_direct(self):
-        return self.nfct_transposed_direct()
-
-    def adjoint_direct(self):
-        return self.nfct_adjoint_direct()
-    
-    # # nfct trafo [call with NFCT.trafo outside module]
-    # """
-    #     nfct_trafo(P)
-
-    # computes the NDCT via the fast NFCT algorithm for provided nodes ``\pmb{x}_j, j =1,2,\dots,M,`` in `P.X` and coefficients ``\hat{f}_{\pmb{k}}^c \in \mathbb{R}, \pmb{k} \in I_{\pmb{N},\mathrm{c}}^D,`` in `P.fhat`.
-
-    # # Input
-    # * `P` - a NFCT plan structure.
-
-    # # See also
-    # [`NFCT{D}`](@ref), [`nfct_trafo_direct`](@ref)
-    # """
 
     def nfct_trafo(self):
+        """
+        Computes the NDCT via the fast NFCT algorithm.
+        """
         Ns = np.prod(self.N)
         nfctlib.jnfct_trafo.restype = np.ctypeslib.ndpointer(np.float64, shape=Ns, flags='C')
         # Prevent bad stuff from happening
@@ -332,22 +252,38 @@ class NFCT:
         self.f = ptr
 
     def trafo(self):
+        """
+        Alternative call for **nfct_trafo()**
+        """
         return self.nfct_trafo()
     
-    # # adjoint trafo [call with NFCT.adjoint outside module]
-    # """
-    #     nfct_transposed(P)
+    def nfct_trafo_direct(self):
+        """
+        Computes the NDCT via naive matrix-vector multiplication.
+        """
+        # Prevent bad stuff from happening
+        if self.finalized:
+            raise RuntimeError("NFCT already finalized")
 
-    # computes the transposed NDCT via the fast transposed NFCT algorithm for provided nodes ``\pmb{x}_j, j =1,2,\dots,M,`` in `P.X` and coefficients ``f_j^c \in \mathbb{R}, j =1,2,\dots,M,`` in `P.f`.
+        if self.fhat is None:
+            raise ValueError("fhat has not been set.")
 
-    # # Input
-    # * `P` - a NFCT plan structure.
+        if self.x is None:
+            raise ValueError("x has not been set.")
 
-    # # See also
-    # [`NFCT{D}`](@ref), [`nfct_transposed_direct`](@ref)
-    # """
+        ptr = nfctlib.jnfct_trafo_direct(self.plan)
+        self.f = ptr
+
+    def trafo_direct(self):
+        """
+        Alternative call for **nfct_trafo_direct()**
+        """
+        return self.nfct_trafo_direct()
 
     def nfct_transposed(self):
+        """
+        Computes the transposed NDCT via the fast transposed NFCT algorithm.
+        """
         Ns = np.prod(self.N)
         nfctlib.jnfct_adjoint.restype = np.ctypeslib.ndpointer(np.float64, shape=Ns, flags='C')
         # Prevent bad stuff from happening
@@ -363,8 +299,43 @@ class NFCT:
         ptr = nfctlib.jnfct_adjoint(self.plan)
         self.fhat = ptr
 
+    def nfct_transposed_direct(self):
+        """
+        Computes the transposed NDCT via naive matrix-vector multiplication for provided nodes.
+        """
+        # Prevent bad stuff from happening
+        if self.finalized:
+            raise RuntimeError("NFCT already finalized")
+
+        if self.f is None:
+            raise ValueError("f has not been set.")
+
+        if self.x is None:
+            raise ValueError("x has not been set.")
+        
+        ptr = nfctlib.jnfct_adjoint_direct(self.plan)
+        self.fhat = ptr
+
     def nfct_adjoint(self):
+        """
+        Alternative call for **nfct_transposed()**
+        """
         return self.nfct_transposed()
 
+    def nfct_adjoint_direct(self):
+        """
+        Alternative call for **nfct_transposed_direct()**
+        """
+        return self.nfct_transposed_direct()
+
     def adjoint(self):
+        """
+        Alternative call for **nfct_adjoint()**
+        """
         return self.nfct_adjoint()
+
+    def adjoint_direct(self):
+        """
+        Alternative call for **nfct_adjoint_direct()**
+        """
+        return self.nfct_adjoint_direct()

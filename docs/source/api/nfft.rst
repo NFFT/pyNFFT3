@@ -8,7 +8,7 @@ NFFT Class
    :members: 
    :undoc-members:
    :member-order: bysource
-   :exclude-members: f, fhat, x, num_threads
+   :exclude-members: f, fhat, x, num_threads, __init__
 
    .. attribute:: plan <nfft_plan>
 
@@ -16,7 +16,7 @@ NFFT Class
 
    .. attribute:: N <numpy.ndarray>
 
-      The multiband limit of the trigonometric polynomial *f*. Must contain positive and even integers.
+      The multiband limit :math:`(N_1,N_2,...,N_D)` of the trigonometric polynomial :math:`f`. Must contain positive and even integers.
 
    .. attribute:: M <int>
 
@@ -24,7 +24,7 @@ NFFT Class
 
    .. attribute:: n <numpy.ndarray>
 
-      The oversampling per dimension. 
+      The oversampling :math:`(n_1,n_2,...,n_D)` per dimension. 
 
    .. attribute:: m <int>
 

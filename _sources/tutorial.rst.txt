@@ -47,10 +47,10 @@ To compute the adjoint NDFT using **adjoint()** or **adjoint_direct()**, both **
 Using NFCT
 ----------
 
-View the `test file <https://github.com/NFCT/pyNFFT3/blob/main/tests/NFCT_test.py>`_
+View the `test file <https://github.com/NFFT/pyNFFT3/blob/main/tests/NFCT_test.py>`_
 for a detailed example of all function uses and error tests.
 
-Or view the `API reference <https://github.com/NFCT/pyNFFT3/blob/main/docs/source/api/NFCT.rst>`_
+Or view the `API reference <https://github.com/NFFT/pyNFFT3/blob/main/docs/source/api/NFCT.rst>`_
 for the class methods and attributes.
 
 To start using NFCT, first import the class:
@@ -90,10 +90,10 @@ To compute the transposed NDCT using **nfct_transposed()** or **nfct_transposed_
 Using NFST
 ----------
 
-View the `test file <https://github.com/NFST/pyNFFT3/blob/main/tests/NFST_test.py>`_
+View the `test file <https://github.com/NFFT/pyNFFT3/blob/main/tests/NFST_test.py>`_
 for a detailed example of all function uses and error tests.
 
-Or view the `API reference <https://github.com/NFST/pyNFFT3/blob/main/docs/source/api/NFST.rst>`_
+Or view the `API reference <https://github.com/NFFT/pyNFFT3/blob/main/docs/source/api/NFST.rst>`_
 for the class methods and attributes.
 
 To start using NFST, first import the class:
@@ -133,10 +133,10 @@ To compute the transposed NDST using **nfst_transposed()** or **nfst_transposed_
 Using fastsum
 --------------
 
-View the `test file <https://github.com/fastsum/pyNFFT3/blob/main/tests/fastsum_test.py>`_
+View the `test file <https://github.com/NFFT/pyNFFT3/blob/main/tests/fastsum_test.py>`_
 for a detailed example of all function uses and error tests.
 
-Or view the `API reference <https://github.com/fastsum/pyNFFT3/blob/main/docs/source/api/fastsum.rst>`_
+Or view the `API reference <https://github.com/NFFT/pyNFFT3/blob/main/docs/source/api/fastsum.rst>`_
 for the class methods and attributes.
 
 To start using fastsum, first import the class:

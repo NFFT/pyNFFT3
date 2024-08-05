@@ -57,4 +57,8 @@ norm_infinity_adj = np.linalg.norm(f1 - plan_adj.fhat, np.inf)
 print("Euclidean norm for transpose test:", norm_euclidean_adj)
 print("Infinity norm for transpose test:", norm_infinity_adj)
 
-#TODO: Add tests to check for large error values
+assert norm_euclidean_traf < 1e-10, f"TEST FAILED: Euclidiean norm ({norm_euclidean_traf}) for trafo test is not less than 1e-10"
+assert norm_infinity_traf < 1e-10, f"TEST FAILED: Infinity norm ({norm_infinity_traf}) for trafo test is not less than 1e-10"
+
+assert norm_euclidean_adj < 1e-10, f"TEST FAILED: Euclidiean norm ({norm_euclidean_adj}) for transpose test is not less than 1e-10"
+assert norm_infinity_adj < 1e-10, f"TEST FAILED: Infinity norm ({norm_infinity_adj}) for transpose test is not less than 1e-10"

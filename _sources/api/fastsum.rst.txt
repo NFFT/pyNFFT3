@@ -47,7 +47,7 @@ fastsum Attributes
 
    .. attribute:: eps_B <float>
 
-      The outer boundary.
+      The outer boundary. Value must be ∈ (0.0, 0.5)
 
    .. attribute:: nn_x <int>
 

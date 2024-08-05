@@ -175,20 +175,24 @@ The given **c** will be converted to an array with length depending on the chose
     c = 1 / numpy.sqrt(N) # set kernel parameter
     plan = FASTSUM(N, M) # generate plan
 
-To compute the fast NFFT-based summation using **fastsum_trafo()**, both **x**, **y**, and **alpha** must be set:
+First, the values for **x**, **y**, and **alpha** must be set.
+Note that the values in **x** and **y** must satisfy:
+
+    .. math::
+        \|\pmb{x}_k\| \leq 0.5 \left(0.5 - \epsilon_B\right)
+
+        \|\pmb{y}_k\| \leq 0.5 \left(0.5 - \epsilon_B\right)
 
 .. code-block:: python
 
-    plan.x =
-    plan.y = 
-    plan.alpha = 
+    plan.x = np.array([[0.1, 0.15], [-0.1, 0.15], [0.05, 0.09]]) # source nodes (N entries)
+    plan.y = np.array([[0.07, 0.08], [-0.013, 0.021], [0.11, 0.16], [0.12, -0.08], [0.10, -0.11]]) # target nodes (M entries)
+    plan.alpha = np.array([1.0+1.0j, 1.1-1.1j, 1.2+1.2j]) # source coefficients (N entries)
+
+You can then compute the fast NFFT-based summation using **fastsum_trafo()** or the direct computation of sums using **fastsum_trafo_exact()**:
+
+.. code-block:: python
+
     plan.fastsum_trafo()
-
-To compute the direct computation of sums using **fastsum_trafo_exact()** both **x**, **y**, and **alpha** must be set as well:
-
-.. code-block:: python
-
-    plan.x =
-    plan.y = 
-    plan.alpha = 
+    # or
     plan.fastsum_trafo_exact()

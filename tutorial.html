@@ -13,6 +13,7 @@
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -182,17 +183,20 @@ for the class methods and attributes.</p>
 <span class="n">plan</span> <span class="o">=</span> <span class="n">FASTSUM</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span> <span class="c1"># generate plan</span>
 </pre></div>
 </div>
-<p>To compute the fast NFFT-based summation using <strong>fastsum_trafo()</strong>, both <strong>x</strong>, <strong>y</strong>, and <strong>alpha</strong> must be set:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plan</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span>
-<span class="n">plan</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span>
-<span class="n">plan</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span>
-<span class="n">plan</span><span class="o">.</span><span class="n">fastsum_trafo</span><span class="p">()</span>
+<p>First, the values for <strong>x</strong>, <strong>y</strong>, and <strong>alpha</strong> must be set.
+Note that the values in <strong>x</strong> and <strong>y</strong> must satisfy:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\|\pmb{x}_k\| \leq 0.5 \left(0.5 - \epsilon_B\right)\\\|\pmb{y}_k\| \leq 0.5 \left(0.5 - \epsilon_B\right)\end{aligned}\end{align} \]</div>
+</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plan</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.09</span><span class="p">]])</span> <span class="c1"># source nodes (N entries)</span>
+<span class="n">plan</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.07</span><span class="p">,</span> <span class="mf">0.08</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.013</span><span class="p">,</span> <span class="mf">0.021</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.11</span><span class="p">,</span> <span class="mf">0.16</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.12</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.08</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.10</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.11</span><span class="p">]])</span> <span class="c1"># target nodes (M entries)</span>
+<span class="n">plan</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="o">+</span><span class="mf">1.0</span><span class="n">j</span><span class="p">,</span> <span class="mf">1.1</span><span class="o">-</span><span class="mf">1.1</span><span class="n">j</span><span class="p">,</span> <span class="mf">1.2</span><span class="o">+</span><span class="mf">1.2</span><span class="n">j</span><span class="p">])</span> <span class="c1"># source coefficients (N entries)</span>
 </pre></div>
 </div>
-<p>To compute the direct computation of sums using <strong>fastsum_trafo_exact()</strong> both <strong>x</strong>, <strong>y</strong>, and <strong>alpha</strong> must be set as well:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plan</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span>
-<span class="n">plan</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span>
-<span class="n">plan</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span>
+<p>You can then compute the fast NFFT-based summation using <strong>fastsum_trafo()</strong> or the direct computation of sums using <strong>fastsum_trafo_exact()</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plan</span><span class="o">.</span><span class="n">fastsum_trafo</span><span class="p">()</span>
+<span class="c1"># or</span>
 <span class="n">plan</span><span class="o">.</span><span class="n">fastsum_trafo_exact</span><span class="p">()</span>
 </pre></div>
 </div>

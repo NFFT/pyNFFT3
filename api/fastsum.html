@@ -42,64 +42,6 @@
 <h1><code class="docutils literal notranslate"><span class="pre">pyNFFT3.fastsum</span></code> - fastsum Class<a class="headerlink" href="#pynfft3-fastsum-fastsum-class" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="fastsum-methods">
 <h2>fastsum Methods<a class="headerlink" href="#fastsum-methods" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="pyNFFT3.FASTSUM">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyNFFT3.</span></span><span class="sig-name descname"><span class="pre">FASTSUM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_I</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.03125</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_B</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0625</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.FASTSUM" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class to perform the fast summation algorithm.
-Check the <a class="reference external" href="https://nfft.github.io/NFFT3.jl/stable/fastsum.html">NFFT3.jl documentation</a> for the mathematical equations.
-Just <strong>d</strong>, <strong>N</strong>, <strong>M</strong>, <strong>kernel</strong>, and <strong>c</strong> are required for initializing a plan.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="pyNFFT3.FASTSUM.fastsum_finalize_plan">
-<span class="sig-name descname"><span class="pre">fastsum_finalize_plan</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.FASTSUM.fastsum_finalize_plan" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finalizes a fastsum plan.
-This function does not have to be called by the user.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyNFFT3.FASTSUM.finalize_plan">
-<span class="sig-name descname"><span class="pre">finalize_plan</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.FASTSUM.finalize_plan" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alternative call for fastsum_finalize_plan()</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyNFFT3.FASTSUM.fastsum_init">
-<span class="sig-name descname"><span class="pre">fastsum_init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.FASTSUM.fastsum_init" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initializes a fastsum  plan.
-This function does not have to be called by the user.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyNFFT3.FASTSUM.init">
-<span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.FASTSUM.init" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alternative call for fastsum_init()</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyNFFT3.FASTSUM.fastsum_trafo">
-<span class="sig-name descname"><span class="pre">fastsum_trafo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.FASTSUM.fastsum_trafo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Performs fast NFFT-based summation.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyNFFT3.FASTSUM.trafo">
-<span class="sig-name descname"><span class="pre">trafo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.FASTSUM.trafo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alternative call for fastsum_trafo()</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyNFFT3.FASTSUM.fastsum_trafo_exact">
-<span class="sig-name descname"><span class="pre">fastsum_trafo_exact</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.FASTSUM.fastsum_trafo_exact" title="Permalink to this definition">¶</a></dt>
-<dd><p>Performs direct computation of sums.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyNFFT3.FASTSUM.trafoexact">
-<span class="sig-name descname"><span class="pre">trafoexact</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyNFFT3.FASTSUM.trafoexact" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alternative call for fastsum_trafo_exact()</p>
-</dd></dl>
-
-</dd></dl>
-
 </div>
 <div class="section" id="fastsum-attributes">
 <h2>fastsum Attributes<a class="headerlink" href="#fastsum-attributes" title="Permalink to this headline">¶</a></h2>

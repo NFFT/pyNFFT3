@@ -33,16 +33,8 @@ fastsumlib.jfastsum_exact.argtypes = [ctypes.POINTER(fastsum_plan)]
 
 class FASTSUM:
     """
-    Class to perform the fast summation algorithm:
-
-    .. math::
-
-       f(\pmb{y}) \coloneqq \sum_{k = 1}^{N} \alpha_k \, \mathscr{K}(\pmb{y} - \pmb{x}_k) = \sum_{k = 1}^{N} \alpha_k \, K (\lVert \pmb{y} - \pmb{x}_k \rVert_2)
-
-    for given arbitrary source knots :math:`\pmb{x}_k \in \mathbb{R}^d`, where :math:`k = 1, 2, \ldots, N`, and a given kernel function :math:`\mathscr{K}(\cdot) = K (\lVert \cdot \rVert_2)`, where :math:`\pmb{x} \in \mathbb{R}^d`, which is an even, real univariate function that is infinitely differentiable at least in :math:`\mathbb{R} \setminus \{ 0 \}`. 
-
-    If :math:`K` is infinitely differentiable at zero as well, then :math:`\mathscr{K}` is defined on :math:`\mathbb{R}^d` and is called a nonsingular kernel function. The evaluation is performed at :math:`M` different points :math:`\pmb{y}_j \in \mathbb{R}^d`, where :math:`j = 1, \ldots, M`.
-    
+    Class to perform the fast summation algorithm.
+    Check the `NFFT3.jl documentation <https://nfft.github.io/NFFT3.jl/stable/fastsum.html>`_ for the mathematical equations.
     Just **d**, **N**, **M**, **kernel**, and **c** are required for initializing a plan.
     """
     def __init__(self, d, N, M, kernel, c, n=256, p=8, eps_I=8/256, eps_B=1/16, nn=512, m=8):
@@ -56,7 +48,9 @@ class FASTSUM:
             raise ValueError(f"Invalid n: {n}. Argument must be a positive integer")
         if m <= 0:
             raise ValueError(f"Invalid m: {m}. Argument must be a positive integer")
-
+        if 0 > eps_B > 0.5:
+            raise ValueError(f"Invalid eps_B: {eps_B}. Argument must be between 0.0 and 0.5")
+        
         self.d = d  # dimension
         self.N = N  # number of source nodes
         self.M = M  # number of target nodes
@@ -157,6 +151,10 @@ class FASTSUM:
             if self.init_done is False:
                 self.init()
             X_fort = np.asfortranarray(value)
+            norm_x = np.linalg.norm(X_fort, axis=1)
+            max_allowed_norm = 0.5 * (0.5 - self.eps_B)
+            if np.any(norm_x > max_allowed_norm):
+                raise ValueError(f"All x values must satisfy the norm condition: ||x_k|| <= {max_allowed_norm:.4f}")
             if self.d == 1:
                 if not (isinstance(value, np.ndarray) and value.dtype == np.float64):
                     raise RuntimeError("x has to be a numpy float64 array")
@@ -183,6 +181,10 @@ class FASTSUM:
             if self.init_done is False:
                 self.init()
             Y_fort = np.asfortranarray(value)
+            norm_y = np.linalg.norm(Y_fort, axis=1)
+            max_allowed_norm = 0.5 * (0.5 - self.eps_B)
+            if np.any(norm_y > max_allowed_norm):
+                raise ValueError(f"All y values must satisfy the norm condition: ||y_k|| <= {max_allowed_norm:.4f}")
             if self.d == 1:
                 if not (isinstance(value, np.ndarray) and value.dtype == np.float64):
                     raise RuntimeError("y has to be a numpy float64 array")

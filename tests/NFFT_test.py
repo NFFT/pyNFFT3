@@ -10,7 +10,7 @@ M = 100
 d = len(N)
 Ns = np.prod(N)
 
-X = (np.random.rand(3, M) - 0.5).astype(np.float64).T
+X = (np.random.rand(3, M) - 0.5).T
 fhat = np.random.rand(Ns) + 1.0j*np.random.rand(Ns)
 
 # test init and setting

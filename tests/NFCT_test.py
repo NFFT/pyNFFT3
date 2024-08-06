@@ -10,7 +10,7 @@ M = 100
 d = len(N)
 Ns = np.prod(N)
 
-X = np.array([[abs(np.sin(i + j)) for j in range(d)] for i in range(M)])
+X = (np.random.rand(3, M) * 0.5).astype(np.float64).T
 fhat = np.array([np.cos(k) * np.sin(k) for k in range(Ns)], dtype=np.float64)
 f = np.array([np.sin(m) * np.cos(m) for m in range(M)])
 

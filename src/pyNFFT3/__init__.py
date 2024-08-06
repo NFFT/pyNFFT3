@@ -1,5 +1,6 @@
+import os, sys, io
 import ctypes
-import os
+import cpufeature
 
 # Create dummy classes for plans
 class nfft_plan(ctypes.Structure):
@@ -13,6 +14,22 @@ class nfct_plan(ctypes.Structure):
 class fastsum_plan(ctypes.Structure):
     pass
 
+# Redirect output from stdout to buffer
+buffer = io.StringIO()
+old_stdout = sys.stdout
+sys.stdout = buffer
+cpufeature.print_features()
+features_output = buffer.getvalue()
+sys.stdout = old_stdout
+cpu_features = {}
+# Create dict from buffer
+for line in features_output.strip().split('\n'):
+    if ':' in line:
+        key, value = line.split(':', 1)
+        key = key.strip()
+        value = value.strip()
+        cpu_features[key] = value == 'True' or value == 'False'
+
 # Determine the file extension for shared libraries based on the operating system
 if os.name == 'nt':  # Windows
     ending = ".dll"
@@ -21,20 +38,33 @@ elif os.uname().sysname == 'Darwin':  # macOS
 else:  # Linux
     ending = ".so"
 
-# Define the library paths
+# Check for CPU features and adjust library paths
 package_dir = os.path.dirname(__file__)
-lib_path_nfft = os.path.join(package_dir, "libnfftjulia" + ending)
-lib_path_nfct = os.path.join(package_dir, "libnfctjulia" + ending)
-lib_path_nfst = os.path.join(package_dir, "libnfstjulia" + ending)
-# lib_path_nfmt = os.path.join(package_dir, "libnfmtjulia" + ending)
-lib_path_fastsum = os.path.join(package_dir, "libfastsumjulia" + ending)
+if cpu_features.get('AVX2', False):
+    lib_path_nfft = os.path.join(package_dir, "lib", "AVX2", "libnfftjulia" + ending)
+    lib_path_nfct = os.path.join(package_dir, "lib", "AVX2", "libnfctjulia" + ending)
+    lib_path_nfst = os.path.join(package_dir, "lib", "AVX2", "libnfstjulia" + ending)
+    lib_path_fastsum = os.path.join(package_dir, "lib", "AVX2", "libfastsumjulia" + ending)
+elif cpu_features.get('AVX', False):
+    print("USing AVX2")
+    lib_path_nfft = os.path.join(package_dir, "lib", "AVX", "libnfftjulia" + ending)
+    lib_path_nfct = os.path.join(package_dir, "lib", "AVX", "libnfctjulia" + ending)
+    lib_path_nfst = os.path.join(package_dir, "lib", "AVX", "libnfstjulia" + ending)
+    lib_path_fastsum = os.path.join(package_dir, "lib", "AVX", "libfastsumjulia" + ending)
+elif cpu_features.get('SSE2', False):
+    lib_path_nfft = os.path.join(package_dir, "lib", "SSE2", "libnfftjulia" + ending)
+    lib_path_nfct = os.path.join(package_dir, "lib", "SSE2", "libnfctjulia" + ending)
+    lib_path_nfst = os.path.join(package_dir, "lib", "SSE2", "libnfstjulia" + ending)
+    lib_path_fastsum = os.path.join(package_dir, "lib", "SSE2", "libfastsumjulia" + ending)
+else:
+    raise RuntimeError("CPU type not supported")
 
 # Load the libraries
-nfftlib = ctypes.CDLL(lib_path_nfft)
-nfctlib = ctypes.CDLL(lib_path_nfct)
-nfstlib = ctypes.CDLL(lib_path_nfst)
-# nfstlib = ctypes.CDLL(lib_path_nfst)
-fastsumlib = ctypes.CDLL(lib_path_fastsum)
+_nfftlib = ctypes.CDLL(lib_path_nfft)
+_nfctlib = ctypes.CDLL(lib_path_nfct)
+_nfstlib = ctypes.CDLL(lib_path_nfst)
+# _nfstlib = ctypes.CDLL(lib_path_nfst)
+_fastsumlib = ctypes.CDLL(lib_path_fastsum)
 
 # Import modules
 from .NFFT import *

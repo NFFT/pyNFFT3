@@ -1,11 +1,11 @@
 import ctypes
 import numpy as np
 from .flags import *
-from . import nfstlib
+from . import _nfstlib
 from . import nfst_plan
 
 # Set arugment and return types for functions
-nfstlib.jnfst_init.argtypes = [ctypes.POINTER(nfst_plan), 
+_nfstlib.jnfst_init.argtypes = [ctypes.POINTER(nfst_plan), 
                                ctypes.c_int32, 
                                ctypes.POINTER(ctypes.c_int32), 
                                ctypes.c_int32, 
@@ -14,17 +14,17 @@ nfstlib.jnfst_init.argtypes = [ctypes.POINTER(nfst_plan),
                                ctypes.c_uint32, 
                                ctypes.c_uint32]
 
-nfstlib.jnfst_alloc.restype = ctypes.POINTER(nfst_plan)
-nfstlib.jnfst_finalize.argtypes = [ctypes.POINTER(nfst_plan)]
+_nfstlib.jnfst_alloc.restype = ctypes.POINTER(nfst_plan)
+_nfstlib.jnfst_finalize.argtypes = [ctypes.POINTER(nfst_plan)]
 
-nfstlib.jnfst_set_x.argtypes = [ctypes.POINTER(nfst_plan), np.ctypeslib.ndpointer(np.float64, flags='C')]
-nfstlib.jnfst_set_f.argtypes = [ctypes.POINTER(nfst_plan), np.ctypeslib.ndpointer(np.float64, ndim=1, flags='C')] 
-nfstlib.jnfst_set_fhat.argtypes = [ctypes.POINTER(nfst_plan), np.ctypeslib.ndpointer(np.float64, ndim=1, flags='C')] 
+_nfstlib.jnfst_set_x.argtypes = [ctypes.POINTER(nfst_plan), np.ctypeslib.ndpointer(np.float64, flags='C')]
+_nfstlib.jnfst_set_f.argtypes = [ctypes.POINTER(nfst_plan), np.ctypeslib.ndpointer(np.float64, ndim=1, flags='C')] 
+_nfstlib.jnfst_set_fhat.argtypes = [ctypes.POINTER(nfst_plan), np.ctypeslib.ndpointer(np.float64, ndim=1, flags='C')] 
 
-nfstlib.jnfst_trafo.argtypes = [ctypes.POINTER(nfst_plan)]
-nfstlib.jnfst_adjoint.argtypes = [ctypes.POINTER(nfst_plan)]
-nfstlib.jnfst_trafo_direct.argtypes = [ctypes.POINTER(nfst_plan)]
-nfstlib.jnfst_adjoint_direct.argtypes = [ctypes.POINTER(nfst_plan)]
+_nfstlib.jnfst_trafo.argtypes = [ctypes.POINTER(nfst_plan)]
+_nfstlib.jnfst_adjoint.argtypes = [ctypes.POINTER(nfst_plan)]
+_nfstlib.jnfst_trafo_direct.argtypes = [ctypes.POINTER(nfst_plan)]
+_nfstlib.jnfst_adjoint_direct.argtypes = [ctypes.POINTER(nfst_plan)]
 
 class NFST:
     """
@@ -33,7 +33,7 @@ class NFST:
     Just **N** and **M** are required for initializing a plan.
     """
     def __init__(self, N, M, n=None, m=default_window_cut_off, f1=None, f2=f2_default):
-        self.plan = nfstlib.jnfst_alloc()
+        self.plan = _nfstlib.jnfst_alloc()
         self.N = N  # bandwidth tuple
         N_ct = N.ctypes.data_as(ctypes.POINTER(ctypes.c_int32))
         self.M = M  # number of nodes
@@ -69,7 +69,7 @@ class NFST:
             self.f1 = f1
 
         self.f2 = f2  # FFTW flags
-        nfstlib.jnfst_init(self.plan, self.D, N_ct, self.M, n_ct, self.m, self.f1, self.f2)
+        _nfstlib.jnfst_init(self.plan, self.D, N_ct, self.M, n_ct, self.m, self.f1, self.f2)
         self.init_done = True  # bool for plan init
         self.finalized = False  # bool for finalizer
         self.x = None  # nodes, will be set later
@@ -84,7 +84,7 @@ class NFST:
         Finalizes an NFST plan. 
         This function does not have to be called by the user.
         """
-        nfstlib.jnfst_finalize.argtypes = (
+        _nfstlib.jnfst_finalize.argtypes = (
             ctypes.POINTER(nfst_plan),   # P
         )
 
@@ -93,7 +93,7 @@ class NFST:
 
         if not self.finalized:
             self.finalized = True
-            nfstlib.jnfst_finalize(self.plan)
+            _nfstlib.jnfst_finalize(self.plan)
 
     def finalize_plan(self):
         """
@@ -111,13 +111,13 @@ class NFST:
         n = np.array(self.n, dtype=np.int32)
 
         # Call init for memory allocation
-        ptr = nfstlib.jnfst_alloc()
+        ptr = _nfstlib.jnfst_alloc()
 
         # Set the pointer
         self.plan = ctypes.cast(ptr, ctypes.POINTER(nfst_plan))
 
         # Initialize values
-        nfstlib.jnfst_init(
+        _nfstlib.jnfst_init(
             self.plan,
             ctypes.c_int(self.D),
             ctypes.cast(Nv.ctypes.data, ctypes.POINTER(ctypes.c_int)),
@@ -145,10 +145,10 @@ class NFST:
             if not (isinstance(value,np.ndarray) and value.dtype == np.float64 and value.flags['C']):
                 raise RuntimeError("x has to be C-continuous, numpy float64 array")
             if self.D == 1:
-                nfstlib.jnfst_set_x.restype = np.ctypeslib.ndpointer(dtype=np.float64, ndim=2, shape=self.M, flags='C')
+                _nfstlib.jnfst_set_x.restype = np.ctypeslib.ndpointer(dtype=np.float64, ndim=2, shape=self.M, flags='C')
             else:
-                nfstlib.jnfst_set_x.restype = np.ctypeslib.ndpointer(dtype=np.float64, ndim=2, shape=(self.M,self.D), flags='C')
-            self._X = nfstlib.jnfst_set_x(self.plan, value)
+                _nfstlib.jnfst_set_x.restype = np.ctypeslib.ndpointer(dtype=np.float64, ndim=2, shape=(self.M,self.D), flags='C')
+            self._X = _nfstlib.jnfst_set_x(self.plan, value)
     
     @property
     def f(self):
@@ -159,8 +159,8 @@ class NFST:
         if value is not None:
             if not (isinstance(value,np.ndarray) and value.dtype == np.float64 and value.flags['C']):
                 raise RuntimeError("f has to be C-continuous, numpy float64 array")
-            nfstlib.jnfst_set_f.restype = np.ctypeslib.ndpointer(np.float64, ndim=1, shape=self.M, flags='C') 
-            self._f = nfstlib.jnfst_set_f(self.plan, value)
+            _nfstlib.jnfst_set_f.restype = np.ctypeslib.ndpointer(np.float64, ndim=1, shape=self.M, flags='C') 
+            self._f = _nfstlib.jnfst_set_f(self.plan, value)
 
     @property
     def fhat(self):
@@ -176,20 +176,20 @@ class NFST:
                 raise RuntimeError("fhat has to be C-continuous")
             if value.size != Ns:
                 raise ValueError(f"fhat has to be an array of size {Ns}")
-            nfstlib.jnfst_set_fhat.argtypes = [ctypes.POINTER(nfst_plan), np.ctypeslib.ndpointer(np.float64, ndim=1, flags='C')]
-            nfstlib.jnfst_set_fhat.restype = np.ctypeslib.ndpointer(np.float64, ndim=1, shape=(Ns,), flags='C_CONTIGUOUS') 
-            self._fhat = nfstlib.jnfst_set_fhat(self.plan, value)
+            _nfstlib.jnfst_set_fhat.argtypes = [ctypes.POINTER(nfst_plan), np.ctypeslib.ndpointer(np.float64, ndim=1, flags='C')]
+            _nfstlib.jnfst_set_fhat.restype = np.ctypeslib.ndpointer(np.float64, ndim=1, shape=(Ns,), flags='C_CONTIGUOUS') 
+            self._fhat = _nfstlib.jnfst_set_fhat(self.plan, value)
     
     @property
     def num_threads(self):
-        return nfstlib.nfft_get_num_threads()
+        return _nfstlib.nfft_get_num_threads()
     
     def nfst_trafo(self):
         """
         Computes the NDFT via the fast NFST algorithm for the provided nodes in **x** and coefficients in **fhat**.
         """
         Ns = np.prod(self.N - 1)
-        nfstlib.jnfst_trafo.restype = np.ctypeslib.ndpointer(np.float64, shape=Ns, flags='C')
+        _nfstlib.jnfst_trafo.restype = np.ctypeslib.ndpointer(np.float64, shape=Ns, flags='C')
         # Prevent bad stuff from happening
         if self.finalized:
             raise RuntimeError("NFST already finalized")
@@ -200,7 +200,7 @@ class NFST:
         if not hasattr(self, 'x'):
             raise ValueError("x has not been set.")
 
-        ptr = nfstlib.jnfst_trafo(self.plan)
+        ptr = _nfstlib.jnfst_trafo(self.plan)
         self.f = ptr
 
     def trafo(self):
@@ -214,7 +214,7 @@ class NFST:
         Computes the NDST via naive matrix-vector multiplication for provided nodes in **x** and coefficients in **fhat**.
         """
         Ns = np.prod(self.N - 1)
-        nfstlib.jnfst_trafo_directed.restype = np.ctypeslib.ndpointer(np.float64, shape=Ns, flags='C')
+        _nfstlib.jnfst_trafo_directed.restype = np.ctypeslib.ndpointer(np.float64, shape=Ns, flags='C')
         # Prevent bad stuff from happening
         if self.finalized:
             raise RuntimeError("NFST already finalized")
@@ -225,7 +225,7 @@ class NFST:
         if self.x is None:
             raise ValueError("x has not been set.")
 
-        ptr = nfstlib.jnfst_trafo_direct(self.plan)
+        ptr = _nfstlib.jnfst_trafo_direct(self.plan)
         self.f = ptr
 
     def trafo_direct(self):
@@ -239,7 +239,7 @@ class NFST:
         Computes the transposed NDST via the fast transposed NFST algorithm for the provided nodes in **x** and coefficients in **f**.
         """
         Ns = np.prod(self.N - 1)
-        nfstlib.jnfst_adjoint.restype = np.ctypeslib.ndpointer(np.float64, shape=Ns, flags='C')
+        _nfstlib.jnfst_adjoint.restype = np.ctypeslib.ndpointer(np.float64, shape=Ns, flags='C')
         # Prevent bad stuff from happening
         if self.finalized:
             raise RuntimeError("NFST already finalized")
@@ -250,7 +250,7 @@ class NFST:
         if self.x is None:
             raise ValueError("x has not been set.")
                
-        ptr = nfstlib.jnfst_adjoint(self.plan)
+        ptr = _nfstlib.jnfst_adjoint(self.plan)
         self.fhat = ptr
 
     def nfst_transposed_direct(self):
@@ -267,7 +267,7 @@ class NFST:
         if self.x is None:
             raise ValueError("x has not been set.")
         
-        ptr = nfstlib.jnfst_adjoint_direct(self.plan)
+        ptr = _nfstlib.jnfst_adjoint_direct(self.plan)
         self.fhat = ptr
 
     def nfst_adjoint(self):

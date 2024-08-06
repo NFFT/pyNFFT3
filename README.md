@@ -23,3 +23,4 @@ Requirements
 
 - Python 3.10 or greater
 - Numpy 2.0.0 or greater
+- cpufeature 0.2.1 or greater

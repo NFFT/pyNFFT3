@@ -10,7 +10,7 @@ M = 100
 d = len(N)
 Ns = np.prod(N)
 
-X = (np.random.rand(3, M) - 0.5).T
+X = np.ascontiguousarray((np.random.rand(3, M) - 0.5).T)
 fhat = np.random.rand(Ns) + 1.0j*np.random.rand(Ns)
 
 # test init and setting
@@ -20,7 +20,6 @@ plan.fhat = fhat
 
 # test trafo
 plan.trafo() # value is in plan.f
-f2 = plan.f
 
 # compare with directly computed
 if d == 1:
@@ -35,6 +34,7 @@ F_mat = np.asmatrix(F)
 
 # get errors from trafo test
 f1 = F @ fhat
+f2 = plan.f
 error_vector = f1 - f2
 norm_euclidean_traf = np.linalg.norm(error_vector) / np.linalg.norm(f1)
 norm_infinity_traf = np.linalg.norm(error_vector, np.inf) / np.linalg.norm(fhat, 1)
@@ -45,8 +45,8 @@ assert norm_infinity_traf < 1e-10, f"TEST FAILED: Infinity norm ({norm_infinity_
 
 # test transpose
 plan.adjoint()
-f2 = plan.fhat
 f1 = F_mat.H @ plan.f
+f2 = plan.fhat
 
 # get errors from transpose test
 error_vector = f1 - f2

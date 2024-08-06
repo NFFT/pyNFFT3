@@ -10,26 +10,16 @@ M = 100
 d = len(N)
 Ns = np.prod(N - 1)
 
-X = np.array([[abs(np.sin(i + j)) for j in range(d)] for i in range(M)])
-fhat = np.array([np.cos(k) * np.sin(k) for k in range(Ns)], dtype=np.float64)
-f = np.array([np.sin(m) * np.cos(m) for m in range(M)])
+X = np.ascontiguousarray((np.random.rand(3, M) * 0.5).T)
+fhat = np.random.rand(Ns)
 
 # test init and setting
-plan_traf = NFST(N,M)
-plan_traf.x = X
-plan_traf.f = f # this gets overwritten
-plan_traf.fhat = fhat
-
-plan_adj = NFST(N,M)
-plan_adj.x = X
-plan_adj.f = f # this gets overwritten
-plan_adj.fhat = fhat
+plan = NFST(N,M)
+plan.x = X
+plan.fhat = fhat
 
 # test trafo
-plan_traf.trafo() # value is in plan.f
-
-# test transpose
-plan_adj.nfst_transposed()
+plan.trafo() # value is in plan.f
 
 # compare with directly computed, using N[k]-1 but range is not inclusive
 if d == 1:
@@ -48,23 +38,25 @@ def sine_product(x, i, d):
 F = np.array([[sine_product(X[j], I[l], d) for l in range(Ns)] for j in range(M)])
 F_mat = np.asmatrix(F)
 
-## norm values should be ~e-12
-# for testing trafo
+# get errors from trafo test
 f1 = F @ fhat
-norm_euclidean_traf = np.linalg.norm(f1 - plan_traf.f)
-norm_infinity_traf = np.linalg.norm(f1 - plan_traf.f, np.inf)
+f2 = plan.f
+norm_euclidean_traf = np.linalg.norm(f1 - plan.f)
+norm_infinity_traf = np.linalg.norm(f1 - plan.f, np.inf)
 print("Euclidean norm for trafo test:", norm_euclidean_traf)
 print("Infinity norm: for trafo test", norm_infinity_traf)
-
-# for testing transpose
-f1 = F_mat.H @ f
-norm_euclidean_adj = np.linalg.norm(f1 - plan_adj.fhat)
-norm_infinity_adj = np.linalg.norm(f1 - plan_adj.fhat, np.inf)
-print("Euclidean norm for transpose test:", norm_euclidean_adj)
-print("Infinity norm for transpose test:", norm_infinity_adj)
-
 assert norm_euclidean_traf < 1e-10, f"TEST FAILED: Euclidiean norm ({norm_euclidean_traf}) for trafo test is not less than 1e-10"
 assert norm_infinity_traf < 1e-10, f"TEST FAILED: Infinity norm ({norm_infinity_traf}) for trafo test is not less than 1e-10"
 
+# test transpose
+plan.nfst_transposed()
+f1 = F_mat.H @ plan.f
+f2 = plan.fhat
+
+# get errors from transpose test
+norm_euclidean_adj = np.linalg.norm(f1 - plan.fhat)
+norm_infinity_adj = np.linalg.norm(f1 - plan.fhat, np.inf)
+print("Euclidean norm for transpose test:", norm_euclidean_adj)
+print("Infinity norm for transpose test:", norm_infinity_adj)
 assert norm_euclidean_adj < 1e-10, f"TEST FAILED: Euclidiean norm ({norm_euclidean_adj}) for transpose test is not less than 1e-10"
 assert norm_infinity_adj < 1e-10, f"TEST FAILED: Infinity norm ({norm_infinity_adj}) for transpose test is not less than 1e-10"

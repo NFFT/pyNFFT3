@@ -145,7 +145,6 @@ class NFFT:
     @x.setter 
     def x(self, value):
         if value is not None:
-            value = np.ascontiguousarray(value)
             if not (isinstance(value,np.ndarray) and value.dtype == np.float64 and value.flags['C']):
                 raise RuntimeError("x has to be C-continuous, numpy float64 array")
             if self.D == 1:

@@ -38,13 +38,10 @@ f2 = np.copy(plan.f)
 
 # Calculate the error vector
 error_vector = f1 - f2
-print("Error vector: ", error_vector)
 
-# Calculate the norms
+# Calculate and print norms
 E_2 = np.linalg.norm(error_vector) / np.linalg.norm(f1)
 E_infty = np.linalg.norm(error_vector, np.inf) / np.linalg.norm(plan.alpha, 1)
-
-# Print the errors
 print("E_2: ", E_2)
 print("E_infty: ", E_infty)
 

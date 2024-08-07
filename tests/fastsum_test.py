@@ -45,5 +45,9 @@ E_infty = np.linalg.norm(error_vector, np.inf) / np.linalg.norm(plan.alpha, 1)
 print("E_2: ", E_2)
 print("E_infty: ", E_infty)
 
-assert E_2 < 1e-5, f"TEST FAILED: Euclidiean norm ({E_2}) for trafo test is not less than 1e-5"
-assert E_infty < 1e-5, f"TEST FAILED: Infinity norm ({E_infty}) for trafo test is not less than 1e-5"
+assert (
+    E_2 < 1e-5
+), f"TEST FAILED: Euclidiean norm ({E_2}) for trafo test is not less than 1e-5"
+assert (
+    E_infty < 1e-5
+), f"TEST FAILED: Infinity norm ({E_infty}) for trafo test is not less than 1e-5"

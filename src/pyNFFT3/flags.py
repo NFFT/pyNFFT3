@@ -122,7 +122,7 @@ NFST_OMP_BLOCKWISE_ADJOINT = 1 << 12
 """
 PRE_ONE_PSI
 """
-PRE_ONE_PSI = (PRE_LIN_PSI | PRE_FG_PSI | PRE_PSI | PRE_FULL_PSI)
+PRE_ONE_PSI = PRE_LIN_PSI | PRE_FG_PSI | PRE_PSI | PRE_FULL_PSI
 
 # FFTW flags
 """
@@ -193,28 +193,28 @@ FFTW_WISDOM_ONLY = 1 << 21
 f1_default_1d
 """
 f1_default_1d = ctypes.c_uint32(
-    PRE_PHI_HUT |
-    PRE_PSI |
-    MALLOC_X |
-    MALLOC_F_HAT |
-    MALLOC_F |
-    FFTW_INIT |
-    FFT_OUT_OF_PLACE,
+    PRE_PHI_HUT
+    | PRE_PSI
+    | MALLOC_X
+    | MALLOC_F_HAT
+    | MALLOC_F
+    | FFTW_INIT
+    | FFT_OUT_OF_PLACE,
 )
 
 """
 f1_default
 """
 f1_default = ctypes.c_uint32(
-    PRE_PHI_HUT |
-    PRE_PSI |
-    MALLOC_X |
-    MALLOC_F_HAT |
-    MALLOC_F |
-    FFTW_INIT |
-    FFT_OUT_OF_PLACE |
-    NFCT_SORT_NODES |
-    NFCT_OMP_BLOCKWISE_ADJOINT,
+    PRE_PHI_HUT
+    | PRE_PSI
+    | MALLOC_X
+    | MALLOC_F_HAT
+    | MALLOC_F
+    | FFTW_INIT
+    | FFT_OUT_OF_PLACE
+    | NFCT_SORT_NODES
+    | NFCT_OMP_BLOCKWISE_ADJOINT,
 )
 
 """
@@ -228,8 +228,4 @@ default_window_cut_off
 """
 default_window_cut_off = 8  # TODO: Add proper nfft_get_default_window_cut_off ccall
 
-BASES = {
-    "exp": 0,
-    "cos": 1,
-    "alg": 2
-}
+BASES = {"exp": 0, "cos": 1, "alg": 2}

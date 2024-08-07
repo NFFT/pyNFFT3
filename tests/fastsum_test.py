@@ -1,6 +1,13 @@
 import numpy as np
-from src.pyNFFT3.flags import *
-from src.pyNFFT3.fastsum import *
+import sys, os
+
+# Ensure src directory is in the PYTHONPATH
+sys.path.insert(
+    0, os.path.abspath(os.path.join((os.path.dirname(__file__)), "..", "src"))
+)
+
+from pyNFFT3.flags import *
+from pyNFFT3.fastsum import *
 
 d = 2
 N = 3

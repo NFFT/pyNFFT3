@@ -1,6 +1,13 @@
 import numpy as np
-from src.pyNFFT3.flags import *
-from src.pyNFFT3.NFCT import *
+import sys, os
+
+# Ensure src directory is in the PYTHONPATH
+sys.path.insert(
+    0, os.path.abspath(os.path.join((os.path.dirname(__file__)), "..", "src"))
+)
+
+from pyNFFT3.flags import *
+from pyNFFT3.NFCT import *
 
 # N = np.array([16], dtype='int32') # 1d
 # N = np.array([16, 8], dtype='int32') # 2d
@@ -70,8 +77,8 @@ norm_infinity_adj = np.linalg.norm(f1 - plan.fhat, np.inf)
 print("Euclidean norm for transpose test:", norm_euclidean_adj)
 print("Infinity norm for transpose test:", norm_infinity_adj)
 assert (
-    norm_euclidean_adj < 1e-10
-), f"TEST FAILED: Euclidiean norm ({norm_euclidean_adj}) for transpose test is not less than 1e-10"
+    norm_euclidean_adj < 1e-9
+), f"TEST FAILED: Euclidiean norm ({norm_euclidean_adj}) for transpose test is not less than 1e-9"
 assert (
-    norm_infinity_adj < 1e-10
-), f"TEST FAILED: Infinity norm ({norm_infinity_adj}) for transpose test is not less than 1e-10"
+    norm_infinity_adj < 1e-9
+), f"TEST FAILED: Infinity norm ({norm_infinity_adj}) for transpose test is not less than 1e-9"

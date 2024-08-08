@@ -31,10 +31,3 @@ About this documentation
 
 This documentation is generated using the `Sphinx
 <http://sphinx.pocoo.org/>`_ documentation generator.
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

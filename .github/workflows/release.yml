@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - 'v*.*.*' # Only run for version tags
+    paths:
+      - 'pyproject.toml'  # Ensure the project details have been changed
 
 jobs:
   build:

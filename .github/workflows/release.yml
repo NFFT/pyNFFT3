@@ -1,9 +1,9 @@
-name: Publish Python distribution to TestPyPI
+name: Publish Python release
 
 on:
-    push:
-      paths:
-        - 'pyproject.toml'
+  push:
+    tags:
+      - 'v*.*.*' # Only run for version tags
 
 jobs:
   build:
@@ -31,19 +31,20 @@ jobs:
 
   github-release:
     name: >-
-      Sign the Python distribution with Sigstore
-      and upload them to GitHub Release
+      Sign distribution and upload to GitHub
+    needs:
+    - build
     runs-on: ubuntu-latest
     permissions:
       contents: write
       id-token: write
     steps:
-    - name: Download all the dists
+    - name: Download the dists
       uses: actions/download-artifact@v3
       with:
         name: python-package-distributions
         path: dist/
-    - name: Sign the dists with Sigstore
+    - name: Sign the dists
       uses: sigstore/gh-action-sigstore-python@v2.1.1
       with:
         inputs: >-
@@ -76,7 +77,7 @@ jobs:
     permissions:
       id-token: write
     steps:
-    - name: Download all the dists
+    - name: Download the dists
       uses: actions/download-artifact@v3
       with:
         name: python-package-distributions

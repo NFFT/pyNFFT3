@@ -14,7 +14,7 @@ To start using NFFT, first import the class:
 
 .. code-block:: python
 
-    from pynfft3 import NFFT
+    from pyNFFT3 import NFFT
 
 You can then generate a plan with your desired multiband limit values and number of nodes (which will be checked for proper type/size):
 
@@ -57,7 +57,7 @@ To start using NFCT, first import the class:
 
 .. code-block:: python
 
-    from pynfft3 import NFCT
+    from pyNFFT3 import NFCT
 
 You can then generate a plan with your desired multiband limit values and number of nodes (which will be checked for proper type/size):
 
@@ -100,7 +100,7 @@ To start using NFST, first import the class:
 
 .. code-block:: python
 
-    from pynfft3 import NFST
+    from pyNFFT3 import NFST
 
 You can then generate a plan with your desired multiband limit values and number of nodes (which will be checked for proper type/size):
 
@@ -143,7 +143,7 @@ To start using fastsum, first import the class:
 
 .. code-block:: python
 
-    from pynfft3 import fastsum
+    from pyNFFT3 import fastsum
 
 To generate a fastsum plan, you must define **d**, **N**, **M**, **kernel**, and **c**.
 

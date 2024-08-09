@@ -12,7 +12,7 @@ Python interface for the [NFFT C library](https://github.com/NFFT/nfft). Based o
 
 ## Getting started
 
-The pyNFFT3 package can be installed via pip:
+The [pyNFFT3 package](https://pypi.org/project/pyNFFT3/) can be installed via pip:
 
 ```
 pip install pyNFFT3

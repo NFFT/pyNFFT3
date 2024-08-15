@@ -6,3 +6,7 @@ dist/
 *.py[cod]
 __pycache__/
 venv/
+bin/
+/lib64/
+pyvenv.cfg
+/lib/

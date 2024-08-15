@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pyNFFT3"
-version = "0.2.1"
+version = "0.2.2"
 authors = [
   { name="Michael Nolander", email="nolander.michael@gmail.com" },
 ]
@@ -13,7 +13,8 @@ readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
   "numpy>=2.0.0",
-  "cpufeature>=0.2.1",
+  "py-cpuinfo>=9.0.0",
+  "packaging>=24.1",
 ]
 
 [project.urls]

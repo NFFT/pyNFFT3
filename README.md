@@ -25,4 +25,5 @@ Requirements
 
 - Python 3.8 or greater
 - Numpy 2.0.0 or greater
-- cpufeature 0.2.1 or greater
+- py-cpuinfo 9.0.0 or greater
+- packaging 24.1 or greater

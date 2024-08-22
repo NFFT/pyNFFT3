@@ -39,15 +39,17 @@ _nfctlib.jnfct_adjoint_direct.argtypes = [ctypes.POINTER(nfct_plan)]
 
 
 class NFCT:
-    def __init__(self, N, M, n=None, m=default_window_cut_off, f1=None, f2=f2_default):
-        """
-        Class to perform non-equispaced fast cosine transforms (NFCT)
-        with a dimension of **D**.
-        Just **N** and **M** are required for initializing a plan.
-        """
-        self.plan = _nfctlib.jnfct_alloc()
+    """
+    Class to perform non-equispaced fast cosine transforms (NFCT)
+    with a dimension of **D**.
+    Just **N** and **M** are required for initializing a plan.
+    """
+
+    def __init__(
+        self, N:np.ndarray, M:int, n:np.ndarray=None, m:int=default_window_cut_off, f1:ctypes.c_uint32=None, f2:ctypes.c_uint32=f2_default
+    ):
+        self.plan = None
         self.N = N  # bandwidth tuple
-        N_ct = N.ctypes.data_as(ctypes.POINTER(ctypes.c_int32))
         self.M = M  # number of nodes
         self.n = n  # oversampling per dimension
         self.m = m  # window size
@@ -64,7 +66,6 @@ class NFCT:
 
         if n is None:
             self.n = (2 ** (np.ceil(np.log(self.N) / np.log(2)) + 1)).astype("int32")
-            n_ct = self.n.ctypes.data_as(ctypes.POINTER(ctypes.c_int32))
 
         if any(x <= 0 for x in self.n):
             raise ValueError(
@@ -86,10 +87,7 @@ class NFCT:
             self.f1 = f1
 
         self.f2 = f2  # FFTW flags
-        _nfctlib.jnfct_init(
-            self.plan, self.D, N_ct, self.M, n_ct, self.m, self.f1, self.f2
-        )
-        self.init_done = True  # bool for plan init
+        self.init_done = False  # bool for plan init
         self.finalized = False  # bool for finalizer
         self.x = None  # nodes, will be set later
         self.f = None  # function values
@@ -109,8 +107,8 @@ class NFCT:
             raise ValueError("NFST not initialized.")
 
         if not self.finalized:
-            self.finalized = True
             _nfctlib.jnfct_finalize(self.plan)
+            self.finalized = True
 
     def finalize_plan(self):
         """
@@ -141,8 +139,8 @@ class NFCT:
             ctypes.c_int(self.M),
             ctypes.cast(n.ctypes.data, ctypes.POINTER(ctypes.c_int)),
             ctypes.c_int(self.m),
-            ctypes.c_uint(self.f1),
-            ctypes.c_uint(self.f2),
+            self.f1,
+            self.f2,
         )
         self.init_done = True
 
@@ -153,12 +151,16 @@ class NFCT:
         return self.nfct_init()
 
     @property
-    def x(self):
+    def x(self) -> np.ndarray:
         return self._X
 
     @x.setter
-    def x(self, value):
+    def x(self, value:np.ndarray):
         if value is not None:
+            if not self.init_done:
+                self.nfct_init()
+            if self.finalized:
+                raise RuntimeError("Plan already finalized")
             if not (
                 isinstance(value, np.ndarray)
                 and value.dtype == np.float64
@@ -176,12 +178,16 @@ class NFCT:
             self._X = _nfctlib.jnfct_set_x(self.plan, value)
 
     @property
-    def f(self):
+    def f(self) -> np.ndarray:
         return self._f
 
     @f.setter
-    def f(self, value):
+    def f(self, value:np.ndarray):
         if value is not None:
+            if not self.init_done:
+                self.nfct_init()
+            if self.finalized:
+                raise RuntimeError("Plan already finalized")
             if not (
                 isinstance(value, np.ndarray)
                 and value.dtype == np.float64
@@ -194,13 +200,17 @@ class NFCT:
             self._f = _nfctlib.jnfct_set_f(self.plan, value)
 
     @property
-    def fhat(self):
+    def fhat(self) -> np.ndarray:
         return self._fhat
 
     @fhat.setter
-    def fhat(self, value):
-        Ns = np.prod(self.N)
+    def fhat(self, value:np.ndarray):
         if value is not None:
+            Ns = np.prod(self.N)
+            if not self.init_done:
+                self.nfct_init()
+            if self.finalized:
+                raise RuntimeError("Plan already finalized")
             if not (isinstance(value, np.ndarray) and value.dtype == np.float64):
                 raise RuntimeError("fhat has to be a numpy float64 array")
             if not value.flags["C"]:
@@ -217,8 +227,8 @@ class NFCT:
             self._fhat = _nfctlib.jnfct_set_fhat(self.plan, value)
 
     @property
-    def num_threads(self):
-        return _nfctlib.nfft_get_num_threads()
+    def num_threads(self) -> int:
+        return _nfctlib.nfft_get_num_threads()      
 
     def nfct_trafo(self):
         """

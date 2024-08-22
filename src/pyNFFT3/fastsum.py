@@ -10,7 +10,7 @@ _fastsumlib.jfastsum_init.argtypes = [
     ctypes.c_int,
     ctypes.c_char_p,
     np.ctypeslib.ndpointer(np.float64, flags="C"),
-    ctypes.c_uint,
+    ctypes.c_uint32,
     ctypes.c_int,
     ctypes.c_int,
     ctypes.c_double,
@@ -51,9 +51,9 @@ class FASTSUM:
     """
 
     def __init__(
-        self, d, N, M, kernel, c, n=256, p=8, eps_I=8 / 256, eps_B=1 / 16, nn=512, m=8
+        self, d:int, N:int, M:int, kernel:str, c:np.ndarray, n:int=256, p:int=8, eps_I:float=8 / 256, eps_B:float=1 / 16, nn:int=512, m:int=8
     ):
-        self.plan = _fastsumlib.jfastsum_alloc()
+        self.plan = None
 
         if N <= 0:
             raise ValueError(f"Invalid N: {N}. Argument must be a positive integer")
@@ -139,7 +139,7 @@ class FASTSUM:
             ctypes.c_int(self.d),
             self.kernel,
             Cv,
-            ctypes.c_uint(self.flags),
+            ctypes.c_uint32(self.flags),
             ctypes.c_int(self.n),
             ctypes.c_int(self.p),
             ctypes.c_double(self.eps_I),
@@ -163,14 +163,16 @@ class FASTSUM:
         return self.fastsum_init()
 
     @property
-    def x(self):
+    def x(self) -> np.ndarray:
         return np.ascontiguousarray(self._X).T
 
     @x.setter
-    def x(self, value):
+    def x(self, value:np.ndarray):
         if value is not None:
-            if self.init_done is False:
-                self.init()
+            if not self.init_done:
+                self.fastsum_init()
+            if self.finalized:
+                raise RuntimeError("Plan already finalized")
             X_fort = np.asfortranarray(value)
             norm_x = np.linalg.norm(X_fort, axis=1)
             max_allowed_norm = 0.5 * (0.5 - self.eps_B)
@@ -203,12 +205,16 @@ class FASTSUM:
             self._X = _fastsumlib.jfastsum_set_x(self.plan, X_fort)
 
     @property
-    def y(self):
+    def y(self) -> np.ndarray:
         return np.ascontiguousarray(self._Y).T
 
     @y.setter
-    def y(self, value):
+    def y(self, value:np.ndarray):
         if value is not None:
+            if not self.init_done:
+                self.fastsum_init()
+            if self.finalized:
+                raise RuntimeError("Plan already finalized")
             if self.init_done is False:
                 self.init()
             Y_fort = np.asfortranarray(value)
@@ -243,12 +249,16 @@ class FASTSUM:
             self._Y = _fastsumlib.jfastsum_set_y(self.plan, Y_fort)
 
     @property
-    def alpha(self):
+    def alpha(self) -> np.ndarray:
         return np.ascontiguousarray(self._Alpha)
 
     @alpha.setter
-    def alpha(self, value):
+    def alpha(self, value:np.ndarray):
         if value is not None:
+            if not self.init_done:
+                self.fastsum_init()
+            if self.finalized:
+                raise RuntimeError("Plan already finalized")
             if self.init_done is False:
                 self.init()
             if not (isinstance(value, np.ndarray) and value.dtype == np.complex128):
@@ -258,7 +268,6 @@ class FASTSUM:
 
             # Create a copy of the array to modify
             alpha_array = np.copy(value)
-
             alpha_fort = np.asfortranarray(alpha_array)
 
             _fastsumlib.jfastsum_set_alpha.restype = np.ctypeslib.ndpointer(

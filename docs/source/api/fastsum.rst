@@ -33,7 +33,7 @@ fastsum Attributes
 
       The degree of smoothness. Must be a positive integer.
 
-   .. attribute:: kernel <string>
+   .. attribute:: kernel <str>
 
       Name of kernel function *K*.
 

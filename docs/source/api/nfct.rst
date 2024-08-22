@@ -33,11 +33,11 @@ NFCT Attributes
 
       The window size. A larger m results in more accuracy but at a higher computational cost.
 
-   .. attribute:: f1 <c_uint32>
+   .. attribute:: f1 <ctypes.c_uint32>
 
       The NFCT flags.
 
-   .. attribute:: f2 <c_unit32>
+   .. attribute:: f2 <ctypes.c_unit32>
 
       The FFTW flags.
 
@@ -64,3 +64,12 @@ NFCT Attributes
    .. attribute:: finalized <boolean>
 
       Boolean to indicate if the NFCT plan is finalized.
+
+NFCT Flags
+------------
+.. autodata:: pyNFFT3.flags.NFCT_SORT_NODES
+.. autodata:: pyNFFT3.flags.NFCT_OMP_BLOCKWISE_ADJOINT
+.. autodata:: pyNFFT3.flags.f1_default_1d
+.. autodata:: pyNFFT3.flags.f1_default
+.. autodata:: pyNFFT3.flags.f2_default
+.. autodata:: pyNFFT3.flags.default_window_cut_off

@@ -8,6 +8,7 @@ Python interface for the [NFFT C library](https://github.com/NFFT/nfft). Based o
 - nonequispaced fast Fourier transform (NFFT) 
 - nonequispaced fast cosine transform (NFCT) 
 - nonequispaced fast sine transform (NFST)
+- nonequispaced fast spherical Fourier transforms (NFSFT)
 - fast summation (fastsum) 
 
 ## Getting started

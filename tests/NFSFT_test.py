@@ -13,16 +13,16 @@ N = 100
 M = 100
 
 # pseudo-random nodes
-X = np.random.rand(2,M)
-X[0,:] -= 0.5
-X[1,:] *= 0.5
+X = np.random.rand(2, M)
+X[0, :] -= 0.5
+X[1, :] *= 0.5
 
 # test init and setting x
 plan = NFSFT(N, M)
 plan.x = X
 
 # generate pseudo-random Fourier coefficients
-fhat = np.zeros((2*plan.N+2)**2, dtype=np.complex128)
+fhat = np.zeros((2 * plan.N + 2) ** 2, dtype=np.complex128)
 for k in range(N + 1):
     for n in range(-k, k + 1):
         index = plan.nfsft_index(k, n)

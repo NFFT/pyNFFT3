@@ -51,7 +51,18 @@ class FASTSUM:
     """
 
     def __init__(
-        self, d:int, N:int, M:int, kernel:str, c:np.ndarray, n:int=256, p:int=8, eps_I:float=8 / 256, eps_B:float=1 / 16, nn:int=512, m:int=8
+        self,
+        d: int,
+        N: int,
+        M: int,
+        kernel: str,
+        c: np.ndarray,
+        n: int = 256,
+        p: int = 8,
+        eps_I: float = 8 / 256,
+        eps_B: float = 1 / 16,
+        nn: int = 512,
+        m: int = 8,
     ):
         self.plan = None
 
@@ -167,7 +178,7 @@ class FASTSUM:
         return np.ascontiguousarray(self._X).T
 
     @x.setter
-    def x(self, value:np.ndarray):
+    def x(self, value: np.ndarray):
         if value is not None:
             if not self.init_done:
                 self.fastsum_init()
@@ -209,7 +220,7 @@ class FASTSUM:
         return np.ascontiguousarray(self._Y).T
 
     @y.setter
-    def y(self, value:np.ndarray):
+    def y(self, value: np.ndarray):
         if value is not None:
             if not self.init_done:
                 self.fastsum_init()
@@ -253,7 +264,7 @@ class FASTSUM:
         return np.ascontiguousarray(self._Alpha)
 
     @alpha.setter
-    def alpha(self, value:np.ndarray):
+    def alpha(self, value: np.ndarray):
         if value is not None:
             if not self.init_done:
                 self.fastsum_init()

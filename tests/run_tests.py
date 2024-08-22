@@ -9,6 +9,7 @@ def run_tests():
         "tests/NFFT_test.py",
         "tests/NFCT_test.py",
         "tests/NFST_test.py",
+        "tests/NFSFT_test.py",
         "tests/fastsum_test.py",
     ]
 

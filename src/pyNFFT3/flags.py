@@ -113,7 +113,7 @@ NFCT_OMP_BLOCKWISE_ADJOINT
 
 Blockwise calculation for adjoint NFFT in the case of OpenMP.
 """
-#NFST flags
+# NFST flags
 NFST_SORT_NODES = 1 << 11
 """
 NFST_SORT_NODES
@@ -344,9 +344,7 @@ Default FFTW flags.
 """
 
 nfsft_default = ctypes.c_uint32(
-    NFSFT_MALLOC_X 
-    | NFSFT_MALLOC_F
-    | NFSFT_MALLOC_F_HAT,
+    NFSFT_MALLOC_X | NFSFT_MALLOC_F | NFSFT_MALLOC_F_HAT,
 )
 """
 nfsft_default
@@ -355,10 +353,7 @@ Default NFSFT flags.
 """
 
 nfsft_nfft_default = ctypes.c_uint32(
-    PRE_PHI_HUT 
-    | PRE_PSI
-    | FFTW_INIT
-    | NFFT_OMP_BLOCKWISE_ADJOINT,
+    PRE_PHI_HUT | PRE_PSI | FFTW_INIT | NFFT_OMP_BLOCKWISE_ADJOINT,
 )
 """
 nfsft_nfft_default

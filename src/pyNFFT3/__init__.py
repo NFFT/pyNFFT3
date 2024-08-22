@@ -8,14 +8,18 @@ from packaging.version import Version
 class nfft_plan(ctypes.Structure):
     pass
 
+
 class nfst_plan(ctypes.Structure):
     pass
+
 
 class nfct_plan(ctypes.Structure):
     pass
 
+
 class nfsft_plan(ctypes.Structure):
     pass
+
 
 class fastsum_plan(ctypes.Structure):
     pass

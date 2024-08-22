@@ -41,8 +41,14 @@ class NFSFT:
     Class to perform nonequispaced fast spherical Fourier transforms (NFSFT).
     Just **N** and **M** are required for initializing a plan.
     """
+
     def __init__(
-        self, N:int, M:int, flags:ctypes.c_uint32=nfsft_default, nfft_flags:ctypes.c_uint32=nfsft_nfft_default, nfft_cutoff:int=nfsft_default_nfft_cut_off
+        self,
+        N: int,
+        M: int,
+        flags: ctypes.c_uint32 = nfsft_default,
+        nfft_flags: ctypes.c_uint32 = nfsft_nfft_default,
+        nfft_cutoff: int = nfsft_default_nfft_cut_off,
     ):
         self.plan = None
         self.N = N  # bandwidth
@@ -85,7 +91,7 @@ class NFSFT:
         Alternate call for **nfsft_finalize_plan()**
         """
         return self.nfsft_finalize_plan()
-    
+
     def nfsft_init(self):
         """
         Initializes the NFSFT plan in C.
@@ -104,7 +110,7 @@ class NFSFT:
             ctypes.c_int(self.M),
             self.flags,
             self.nfft_flags,
-            ctypes.c_int(self.nfft_cutoff)
+            ctypes.c_int(self.nfft_cutoff),
         )
         self.init_done = True
 
@@ -119,7 +125,7 @@ class NFSFT:
         return self._X
 
     @x.setter
-    def x(self, value:np.ndarray):
+    def x(self, value: np.ndarray):
         if value is not None:
             if not self.init_done:
                 self.nfsft_init()
@@ -132,10 +138,7 @@ class NFSFT:
                 and value.ndim >= 2
             ):
                 raise RuntimeError("x must be a 2D C-contiguous numpy float64 array")
-            elif not (
-                value.shape[0] == 2
-                and value.shape[1] == self.M
-            ):
+            elif not (value.shape[0] == 2 and value.shape[1] == self.M):
                 raise RuntimeError(f"x must be of size 2x{self.M}")
             _nfsftlib.jnfsft_set_x.restype = np.ctypeslib.ndpointer(
                 dtype=np.float64, ndim=2, shape=(2, self.M), flags="C"
@@ -148,7 +151,7 @@ class NFSFT:
         return self._f
 
     @f.setter
-    def f(self, value:np.ndarray):
+    def f(self, value: np.ndarray):
         if value is not None:
             if not self.init_done:
                 self.nfsft_init()
@@ -160,20 +163,22 @@ class NFSFT:
                 and value.flags["C"]
                 and value.size == self.M
             ):
-                raise RuntimeError(f"f has to be C-continuous, numpy complex128 array of size M ({self.M})")
+                raise RuntimeError(
+                    f"f has to be C-continuous, numpy complex128 array of size M ({self.M})"
+                )
             _nfsftlib.jnfsft_set_f.restype = np.ctypeslib.ndpointer(
                 np.complex128, ndim=1, shape=self.M, flags="C"
             )
             self._f = _nfsftlib.jnfsft_set_f(self.plan, value)
 
     @property
-    def fhat(self) -> np.ndarray: 
+    def fhat(self) -> np.ndarray:
         return self._fhat
 
     @fhat.setter
-    def fhat(self, value:np.ndarray):
+    def fhat(self, value: np.ndarray):
         if value is not None:
-            N_total = (2*self.N+2)**2
+            N_total = (2 * self.N + 2) ** 2
             if not self.init_done:
                 self.nfsft_init()
             if self.finalized:
@@ -186,12 +191,8 @@ class NFSFT:
                 raise RuntimeError(
                     "fhat has to be C-continuous, numpy complex128 array"
                 )
-            if (
-                value.shape != (N_total,)
-            ):
-                raise RuntimeError(
-                    f"fhat must be of size N_total ({N_total})"
-                )
+            if value.shape != (N_total,):
+                raise RuntimeError(f"fhat must be of size N_total ({N_total})")
             _nfsftlib.jnfsft_set_fhat.restype = np.ctypeslib.ndpointer(
                 np.complex128, shape=N_total, flags="C"
             )
@@ -201,12 +202,12 @@ class NFSFT:
     def num_threads(self) -> int:
         return _nfsftlib.nfft_get_num_threads()
 
-    def nfsft_index(self, k:int, n:int) -> int:
+    def nfsft_index(self, k: int, n: int) -> int:
         """
         Calculates the index for f_hat calculations.
         This function does not have to be called by the user.
         """
-        return (2*self.N+2)*(self.N-n+1)+(self.N+k+1)
+        return (2 * self.N + 2) * (self.N - n + 1) + (self.N + k + 1)
 
     def nfsft_trafo(self):
         """
@@ -264,7 +265,7 @@ class NFSFT:
         """
         Computes the adjoint NFSFT using the fast approximate transform for the provided nodes in **x** and coefficients in **f**.
         """
-        N_total = (2*self.N+2)**2
+        N_total = (2 * self.N + 2) ** 2
         _nfsftlib.jnfsft_adjoint.restype = np.ctypeslib.ndpointer(
             np.complex128, shape=N_total, flags="C"
         )
@@ -291,7 +292,7 @@ class NFSFT:
         """
         Computes the adjoint NDFST using direct transformation for the provided nodes in **x** and coefficients in **f**.
         """
-        N_total = (2*self.N+2)**2
+        N_total = (2 * self.N + 2) ** 2
         _nfsftlib.jnfsft_adjoint_direct.restype = np.ctypeslib.ndpointer(
             np.complex128, shape=N_total, flags="C"
         )

@@ -46,7 +46,13 @@ class NFCT:
     """
 
     def __init__(
-        self, N:np.ndarray, M:int, n:np.ndarray=None, m:int=default_window_cut_off, f1:ctypes.c_uint32=None, f2:ctypes.c_uint32=f2_default
+        self,
+        N: np.ndarray,
+        M: int,
+        n: np.ndarray = None,
+        m: int = default_window_cut_off,
+        f1: ctypes.c_uint32 = None,
+        f2: ctypes.c_uint32 = f2_default,
     ):
         self.plan = None
         self.N = N  # bandwidth tuple
@@ -155,7 +161,7 @@ class NFCT:
         return self._X
 
     @x.setter
-    def x(self, value:np.ndarray):
+    def x(self, value: np.ndarray):
         if value is not None:
             if not self.init_done:
                 self.nfct_init()
@@ -182,7 +188,7 @@ class NFCT:
         return self._f
 
     @f.setter
-    def f(self, value:np.ndarray):
+    def f(self, value: np.ndarray):
         if value is not None:
             if not self.init_done:
                 self.nfct_init()
@@ -204,7 +210,7 @@ class NFCT:
         return self._fhat
 
     @fhat.setter
-    def fhat(self, value:np.ndarray):
+    def fhat(self, value: np.ndarray):
         if value is not None:
             Ns = np.prod(self.N)
             if not self.init_done:
@@ -228,7 +234,7 @@ class NFCT:
 
     @property
     def num_threads(self) -> int:
-        return _nfctlib.nfft_get_num_threads()      
+        return _nfctlib.nfft_get_num_threads()
 
     def nfct_trafo(self):
         """

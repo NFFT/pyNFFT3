@@ -15,6 +15,7 @@ pyNFFT3 Documentation
 - nonequispaced fast Fourier transform (NFFT) 
 - nonequispaced fast cosine transform (NFCT) 
 - nonequispaced fast sine transform (NFST)
+- nonequispaced fast spherical Fourier transforms (NFSFT)
 - fast summation (fastsum)
 
 Contents

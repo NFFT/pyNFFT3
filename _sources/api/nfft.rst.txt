@@ -33,11 +33,11 @@ NFFT Attributes
 
       The window size. A larger m results in more accuracy but at a higher computational cost.
 
-   .. attribute:: f1 <c_uint32>
+   .. attribute:: f1 <ctypes.c_uint32>
 
       The NFFT flags.
 
-   .. attribute:: f2 <c_unit32>
+   .. attribute:: f2 <ctypes.c_unit32>
 
       The FFTW flags.
 
@@ -64,3 +64,21 @@ NFFT Attributes
    .. attribute:: finalized <boolean>
 
       Boolean to indicate if the NFFT plan is finalized.
+
+NFFT Flags
+------------
+.. autodata:: pyNFFT3.flags.PRE_PHI_HUT
+.. autodata:: pyNFFT3.flags.FG_PSI
+.. autodata:: pyNFFT3.flags.PRE_LIN_PSI
+.. autodata:: pyNFFT3.flags.PRE_FG_PSI
+.. autodata:: pyNFFT3.flags.PRE_FULL_PSI
+.. autodata:: pyNFFT3.flags.MALLOC_X
+.. autodata:: pyNFFT3.flags.MALLOC_F_HAT
+.. autodata:: pyNFFT3.flags.MALLOC_F
+.. autodata:: pyNFFT3.flags.FFT_OUT_OF_PLACE
+.. autodata:: pyNFFT3.flags.FFTW_INIT
+.. autodata:: pyNFFT3.flags.PRE_ONE_PSI
+.. autodata:: pyNFFT3.flags.f1_default_1d
+.. autodata:: pyNFFT3.flags.f1_default
+.. autodata:: pyNFFT3.flags.f2_default
+.. autodata:: pyNFFT3.flags.default_window_cut_off

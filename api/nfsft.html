@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pyNFFT3.NFST - NFST Class &#8212; pyNFFT3 1.0.0 documentation</title>
+    <title>pyNFFT3.NFSFT - NFSFT Class &#8212; pyNFFT3 1.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
     
@@ -17,8 +17,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pyNFFT3.NFSFT - NFSFT Class" href="nfsft.html" />
-    <link rel="prev" title="pyNFFT3.NFCT - NFCT Class" href="nfct.html" /> 
+    <link rel="next" title="pyNFFT3.fastsum - fastsum Class" href="fastsum.html" />
+    <link rel="prev" title="pyNFFT3.NFST - NFST Class" href="nfst.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -27,14 +27,14 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="nfsft.html" title="pyNFFT3.NFSFT - NFSFT Class"
+          <a href="fastsum.html" title="pyNFFT3.fastsum - fastsum Class"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="nfct.html" title="pyNFFT3.NFCT - NFCT Class"
+          <a href="nfst.html" title="pyNFFT3.NFST - NFST Class"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">pyNFFT3 1.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../api.html" accesskey="U">API Contents</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFST</span></code> - NFST Class</a></li> 
+        <li class="nav-item nav-item-this"><a href=""><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFSFT</span></code> - NFSFT Class</a></li> 
       </ul>
     </div>  
 
@@ -43,24 +43,24 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="pynfft3-nfst-nfst-class">
-<h1><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFST</span></code> - NFST Class<a class="headerlink" href="#pynfft3-nfst-nfst-class" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="nfst-methods">
-<h2>NFST Methods<a class="headerlink" href="#nfst-methods" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="pynfft3-nfsft-nfsft-class">
+<h1><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFSFT</span></code> - NFSFT Class<a class="headerlink" href="#pynfft3-nfsft-nfsft-class" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="nfsft-methods">
+<h2>NFSFT Methods<a class="headerlink" href="#nfsft-methods" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="nfst-attributes">
-<h2>NFST Attributes<a class="headerlink" href="#nfst-attributes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="nfsft-attributes">
+<h2>NFSFT Attributes<a class="headerlink" href="#nfsft-attributes" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><dl class="py attribute">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">plan</span> <span class="pre">&lt;nfst_plan&gt;</span></span></dt>
-<dd><p>NFST plan (C pointer)</p>
+<span class="sig-name descname"><span class="pre">plan</span> <span class="pre">&lt;nfsft_plan&gt;</span></span></dt>
+<dd><p>NFSFT plan (C pointer)</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">N</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
-<dd><p>The multiband limit <span class="math notranslate nohighlight">\((N_1,N_2,...,N_D)\)</span> of the trigonometric polynomial <span class="math notranslate nohighlight">\(f^s\)</span>. Must contain positive integers.</p>
+<span class="sig-name descname"><span class="pre">N</span> <span class="pre">&lt;int&gt;</span></span></dt>
+<dd><p>The bandwidth <span class="math notranslate nohighlight">\(N \epsilon N_0\)</span>. Must be a positive integer.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -71,26 +71,20 @@
 
 <dl class="py attribute">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">n</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
-<dd><p>The oversampling <span class="math notranslate nohighlight">\((n_1,n_2,...,n_D)\)</span> per dimension.</p>
+<span class="sig-name descname"><span class="pre">flags</span> <span class="pre">&lt;ctypes.c_uint32&gt;</span></span></dt>
+<dd><p>The NFSFT flags.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">m</span> <span class="pre">&lt;int&gt;</span></span></dt>
-<dd><p>The window size. A larger m results in more accuracy but at a higher computational cost.</p>
+<span class="sig-name descname"><span class="pre">nfft_flags</span> <span class="pre">&lt;ctypes.c_unit32&gt;</span></span></dt>
+<dd><p>The NFFT flags.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">f1</span> <span class="pre">&lt;ctypes.c_uint32&gt;</span></span></dt>
-<dd><p>The NFST flags.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">f2</span> <span class="pre">&lt;ctypes.c_unit32&gt;</span></span></dt>
-<dd><p>The FFTW flags.</p>
+<span class="sig-name descname"><span class="pre">nfft_cutoff</span> <span class="pre">&lt;int&gt;</span></span></dt>
+<dd><p>The NFFT cutoff.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -102,37 +96,31 @@
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">f</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
-<dd><p>Float array for NFST values or coefficients for the adjoint NFST.</p>
+<dd><p>Complex array for NFSFT values or coefficients for the adjoint NFSFT.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">fhat</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
-<dd><p>Float array of Fourier coefficients for the NFST or values for the adjoint NFST.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">D</span> <span class="pre">&lt;int&gt;</span></span></dt>
-<dd><p>The number of dimensions, which is equal to the length of <strong>N</strong>.</p>
+<dd><p>Complex array of spherical Fourier coefficients for the NFSFT or values for the adjoint NFSFT.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">init_done</span> <span class="pre">&lt;boolean&gt;</span></span></dt>
-<dd><p>Boolean to indicate if the NFST plan is initialized.</p>
+<dd><p>Boolean to indicate if the NFSFT plan is initialized.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">finalized</span> <span class="pre">&lt;boolean&gt;</span></span></dt>
-<dd><p>Boolean to indicate if the NFST plan is finalized.</p>
+<dd><p>Boolean to indicate if the NFSFT plan is finalized.</p>
 </dd></dl>
 
 </div></blockquote>
 </div>
-<div class="section" id="nfst-flags">
-<h2>NFST Flags<a class="headerlink" href="#nfst-flags" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="nfsft-flags">
+<h2>NFSFT Flags<a class="headerlink" href="#nfsft-flags" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -146,10 +134,10 @@
   <div>
     <h3><a href="../index.html">Table of Contents</a></h3>
     <ul>
-<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFST</span></code> - NFST Class</a><ul>
-<li><a class="reference internal" href="#nfst-methods">NFST Methods</a></li>
-<li><a class="reference internal" href="#nfst-attributes">NFST Attributes</a></li>
-<li><a class="reference internal" href="#nfst-flags">NFST Flags</a></li>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFSFT</span></code> - NFSFT Class</a><ul>
+<li><a class="reference internal" href="#nfsft-methods">NFSFT Methods</a></li>
+<li><a class="reference internal" href="#nfsft-attributes">NFSFT Attributes</a></li>
+<li><a class="reference internal" href="#nfsft-flags">NFSFT Flags</a></li>
 </ul>
 </li>
 </ul>
@@ -157,18 +145,18 @@
   </div>
   <div>
     <h4>Previous topic</h4>
-    <p class="topless"><a href="nfct.html"
-                          title="previous chapter"><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFCT</span></code> - NFCT Class</a></p>
+    <p class="topless"><a href="nfst.html"
+                          title="previous chapter"><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFST</span></code> - NFST Class</a></p>
   </div>
   <div>
     <h4>Next topic</h4>
-    <p class="topless"><a href="nfsft.html"
-                          title="next chapter"><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFSFT</span></code> - NFSFT Class</a></p>
+    <p class="topless"><a href="fastsum.html"
+                          title="next chapter"><code class="docutils literal notranslate"><span class="pre">pyNFFT3.fastsum</span></code> - fastsum Class</a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/api/nfst.rst.txt"
+      <li><a href="../_sources/api/nfsft.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -193,14 +181,14 @@
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="nfsft.html" title="pyNFFT3.NFSFT - NFSFT Class"
+          <a href="fastsum.html" title="pyNFFT3.fastsum - fastsum Class"
              >next</a> |</li>
         <li class="right" >
-          <a href="nfct.html" title="pyNFFT3.NFCT - NFCT Class"
+          <a href="nfst.html" title="pyNFFT3.NFST - NFST Class"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">pyNFFT3 1.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../api.html" >API Contents</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFST</span></code> - NFST Class</a></li> 
+        <li class="nav-item nav-item-this"><a href=""><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFSFT</span></code> - NFSFT Class</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

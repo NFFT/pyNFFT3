@@ -143,6 +143,55 @@ for the class methods and attributes.</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="using-nfsft">
+<h2>Using NFSFT<a class="headerlink" href="#using-nfsft" title="Permalink to this headline">¶</a></h2>
+<p>View the <a class="reference external" href="https://github.com/NFFT/pyNFFT3/blob/main/tests/NFSFT_test.py">test file</a>
+for a detailed example of all function uses and error tests.</p>
+<p>Or view the <a class="reference external" href="https://github.com/NFFT/pyNFFT3/blob/main/docs/source/api/NFSFT.rst">API reference</a>
+for the class methods and attributes.</p>
+<p>To start using NFSFT, first import the class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyNFFT3</span> <span class="kn">import</span> <span class="n">NFSFT</span>
+</pre></div>
+</div>
+<p>You can then generate a plan with your desired bandwidth and number of nodes (which will be checked for proper type/size):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">N</span> <span class="o">=</span> <span class="mi">6</span>  <span class="c1"># bandwidth</span>
+<span class="n">M</span> <span class="o">=</span> <span class="mi">8</span> <span class="c1"># 8 nodes</span>
+<span class="n">plan</span> <span class="o">=</span> <span class="n">NFSFT</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span> <span class="c1"># generate plan</span>
+</pre></div>
+</div>
+<p>To compute the NFSFT using <strong>trafo()</strong> or the NDFST using <strong>trafo_direct()</strong>, both <strong>x</strong> and <strong>fhat</strong> must be set.
+<strong>fhat</strong> must be created in a format using <strong>nfsft_index()</strong> to properly space the entries of <strong>fhat</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plan</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="p">[</span><span class="mf">0.48</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.18</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.08</span><span class="p">,</span> <span class="mf">0.49</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.32</span><span class="p">,</span> <span class="mf">0.13</span><span class="p">],</span>
+    <span class="p">[</span><span class="o">-</span><span class="mf">0.37</span><span class="p">,</span> <span class="mf">0.12</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.13</span><span class="p">,</span> <span class="mf">0.21</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.09</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.43</span><span class="p">]])</span> <span class="c1"># sampling nodes (2xM entries )</span>
+
+<span class="n">fhat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="o">*</span><span class="n">plan</span><span class="o">.</span><span class="n">N</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span> <span class="c1"># set up structure for fhat ((2*N+2)*(2*N+2) entries)</span>
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">plan</span><span class="o">.</span><span class="n">nfsft_index</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+        <span class="n">fhat</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span> <span class="c1"># Fourier coefficients, spaced using nfsft_index()</span>
+
+<span class="n">plan</span><span class="o">.</span><span class="n">trafo</span><span class="p">()</span>
+<span class="c1"># or</span>
+<span class="n">plan</span><span class="o">.</span><span class="n">trafo_direct</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>To compute the adjoint NFSFT using <strong>nfst_adjoint()</strong> or <strong>nfst_adjoint_direct()</strong>, both <strong>x</strong> and <strong>f</strong> must be set.
+<strong>trafo()</strong> and <strong>trafo_direct()</strong> produce values for <strong>f</strong>, so it is possible to use these outputs:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plan</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="p">[</span><span class="mf">0.48</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.18</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.08</span><span class="p">,</span> <span class="mf">0.49</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.32</span><span class="p">,</span> <span class="mf">0.13</span><span class="p">],</span>
+    <span class="p">[</span><span class="o">-</span><span class="mf">0.37</span><span class="p">,</span> <span class="mf">0.12</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.13</span><span class="p">,</span> <span class="mf">0.21</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.09</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.43</span><span class="p">]])</span> <span class="c1"># sampling nodes (2xM entries )</span>
+
+<span class="n">plan</span><span class="o">.</span><span class="n">trafo</span><span class="p">()</span> <span class="c1"># assuming fhat is set, this will populate plan.f</span>
+<span class="c1"># or</span>
+<span class="n">plan</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="o">+</span><span class="mf">0.1</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.2</span><span class="o">-</span><span class="mf">0.2</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.3</span><span class="o">+</span><span class="mf">0.3</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.4</span><span class="o">-</span><span class="mf">0.4</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">+</span><span class="mf">0.5</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.6</span><span class="o">-</span><span class="mf">0.6</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.7</span><span class="o">+</span><span class="mf">0.7</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.8</span><span class="o">-</span><span class="mf">0.8</span><span class="n">j</span><span class="p">])</span> <span class="c1"># values for adjoint NFSFT (M entries)</span>
+
+<span class="n">plan</span><span class="o">.</span><span class="n">nfst_transposed</span><span class="p">()</span>
+<span class="c1"># or</span>
+<span class="n">plan</span><span class="o">.</span><span class="n">nfst_transposed_direct</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="using-fastsum">
 <h2>Using fastsum<a class="headerlink" href="#using-fastsum" title="Permalink to this headline">¶</a></h2>
 <p>View the <a class="reference external" href="https://github.com/NFFT/pyNFFT3/blob/main/tests/fastsum_test.py">test file</a>
@@ -154,26 +203,45 @@ for the class methods and attributes.</p>
 </pre></div>
 </div>
 <p>To generate a fastsum plan, you must define <strong>d</strong>, <strong>N</strong>, <strong>M</strong>, <strong>kernel</strong>, and <strong>c</strong>.</p>
-<dl class="simple">
-<dt>The possible kernel types are:</dt><dd><ul class="simple">
-<li><p>gaussian</p></li>
-<li><p>multiquadric</p></li>
-<li><p>inverse_multiquadric</p></li>
-<li><p>logarithm</p></li>
-<li><p>thinplate_spline</p></li>
-<li><p>one_over_square</p></li>
-<li><p>one_over_modulus</p></li>
-<li><p>one_over_x</p></li>
-<li><p>inverse_multiquadric3</p></li>
-<li><p>sinc_kernel</p></li>
-<li><p>cosc</p></li>
-<li><p>cot</p></li>
-<li><p>one_over_cube</p></li>
-<li><p>log_sin</p></li>
-<li><p>laplacian_rbf</p></li>
+<p>The possible kernel types are:</p>
+<ul class="simple">
+<li><p><cite>gaussian</cite>
+<span class="math notranslate nohighlight">\(K(x) = \exp\left(-\frac{x^2}{c^2}\right)\)</span></p></li>
+<li><p><cite>multiquadratic</cite>
+<span class="math notranslate nohighlight">\(K(x) = \sqrt{x^2 + c^2}\)</span></p></li>
+<li><p><cite>inverse_multiquadratic</cite>
+<span class="math notranslate nohighlight">\(K(x) = \sqrt{\frac{1}{x^2 + c^2}}\)</span></p></li>
+<li><p><cite>logarithm</cite>
+<span class="math notranslate nohighlight">\(K(x) = \log(\vert x \vert)\)</span></p></li>
+<li><p><cite>thinplate_spline</cite>
+<span class="math notranslate nohighlight">\(K(x) = x^2 \log(\vert x \vert)\)</span></p></li>
+<li><p><cite>one_over_square</cite>
+<span class="math notranslate nohighlight">\(K(x) = \frac{1}{x^2}\)</span></p></li>
+<li><p><cite>one_over_modulus</cite>
+<span class="math notranslate nohighlight">\(K(x) = \frac{1}{\vert x \vert}\)</span></p></li>
+<li><p><cite>one_over_x</cite>
+<span class="math notranslate nohighlight">\(K(x) = \frac{1}{x}\)</span></p></li>
+<li><p><cite>one_over_multiquadric3</cite>
+<span class="math notranslate nohighlight">\(K(x) = \left(\frac{1}{x^2 + c^2}\right)^\frac{3}{2}\)</span></p></li>
+<li><p><cite>sinc_kernel</cite>
+<span class="math notranslate nohighlight">\(K(x) = \frac{\sin(cx)}{x}\)</span></p></li>
+<li><p><cite>cosc</cite>
+<span class="math notranslate nohighlight">\(K(x) = \frac{\cos(cx)}{x}\)</span></p></li>
+<li><p><cite>kcot</cite>
+<span class="math notranslate nohighlight">\(K(x) = \cot(cx)\)</span></p></li>
+<li><p><cite>one_over_cube</cite>
+<span class="math notranslate nohighlight">\(K(x) = \frac{1}{x^3}\)</span></p></li>
+<li><p><cite>log_sin</cite>
+<span class="math notranslate nohighlight">\(K(x) = \log(\vert\sin(cx)\vert)\)</span></p></li>
+<li><p><cite>laplacian_rbf</cite>
+<span class="math notranslate nohighlight">\(K(x) = \exp\left(-\frac{\vert x \vert}{c}\right)\)</span></p></li>
+<li><p><cite>der_laplacian_rbf</cite>
+<span class="math notranslate nohighlight">\(K(x) = \frac{\vert x \vert}{c} \exp\left(-\frac{\vert x \vert}{c}\right)\)</span></p></li>
+<li><p><cite>xx_gaussian</cite>
+<span class="math notranslate nohighlight">\(K(x) = \frac{x^2}{c^2} \exp\left(-\frac{x^2}{c^2}\right)\)</span></p></li>
+<li><p><cite>absx</cite>
+<span class="math notranslate nohighlight">\(K(x) = \vert x \vert\)</span></p></li>
 </ul>
-</dd>
-</dl>
 <p>The given <strong>c</strong> will be converted to an array with length depending on the chosen kernel:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1"># 2 dimensions</span>
 <span class="n">N</span> <span class="o">=</span> <span class="mi">3</span> <span class="c1"># 3 source nodes</span>
@@ -217,6 +285,7 @@ Note that the values in <strong>x</strong> and <strong>y</strong> must satisfy:<
 <li><a class="reference internal" href="#using-nfft">Using NFFT</a></li>
 <li><a class="reference internal" href="#using-nfct">Using NFCT</a></li>
 <li><a class="reference internal" href="#using-nfst">Using NFST</a></li>
+<li><a class="reference internal" href="#using-nfsft">Using NFSFT</a></li>
 <li><a class="reference internal" href="#using-fastsum">Using fastsum</a></li>
 </ul>
 </li>

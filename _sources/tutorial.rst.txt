@@ -20,6 +20,7 @@ You can then generate a plan with your desired multiband limit values and number
 
 .. code-block:: python
 
+    import numpy as np
     N = np.array([4, 2], dtype='int32')  # 2 dimensions, ensure proper type
     M = 5 # 5 nodes
     plan = NFFT(N, M) # generate plan
@@ -63,6 +64,7 @@ You can then generate a plan with your desired multiband limit values and number
 
 .. code-block:: python
 
+    import numpy as np
     N = np.array([4, 2], dtype='int32')  # 2 dimensions, ensure proper type
     M = 5 # 5 nodes
     plan = NFCT(N, M) # generate plan
@@ -106,6 +108,7 @@ You can then generate a plan with your desired multiband limit values and number
 
 .. code-block:: python
 
+    import numpy as np
     N = np.array([4, 2], dtype='int32')  # 2 dimensions, ensure proper type
     M = 5 # 5 nodes
     plan = NFST(N, M) # generate plan
@@ -158,6 +161,7 @@ To compute the NFSFT using **trafo()** or the NDFST using **trafo_direct()**, bo
 
 .. code-block:: python
 
+    import numpy as np
     plan.x = np.array([
         [0.48, 0.45, -0.18, 0.03, -0.08, 0.49, -0.32, 0.13],
         [-0.37, 0.12, -0.13, 0.21, -0.15, 0.09, 0.4, 0.43]]) # sampling nodes (2xM entries )
@@ -266,6 +270,7 @@ Note that the values in **x** and **y** must satisfy:
 
 .. code-block:: python
 
+    import numpy as np
     plan.x = np.array([[0.1, 0.15], [-0.1, 0.15], [0.05, 0.09]]) # source nodes (N entries)
     plan.y = np.array([[0.07, 0.08], [-0.013, 0.021], [0.11, 0.16], [0.12, -0.08], [0.10, -0.11]]) # target nodes (M entries)
     plan.alpha = np.array([1.0+1.0j, 1.1-1.1j, 1.2+1.2j]) # source coefficients (N entries)

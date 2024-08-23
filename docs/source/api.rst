@@ -7,4 +7,5 @@ API Contents
    /api/nfct
    /api/nfst
    /api/nfsft
+   /api/fsft
    /api/fastsum

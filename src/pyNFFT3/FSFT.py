@@ -2,11 +2,11 @@ import ctypes
 import numpy as np
 from .flags import *
 from . import _nfsftlib
-from . import nfsft_plan
+from . import fsft_plan
 
 # Set arugment and return types for functions
 _nfsftlib.jnfsft_init.argtypes = [
-    ctypes.POINTER(nfsft_plan),
+    ctypes.POINTER(fsft_plan),
     ctypes.c_int32,
     ctypes.c_int32,
     ctypes.c_uint32,
@@ -14,31 +14,27 @@ _nfsftlib.jnfsft_init.argtypes = [
     ctypes.c_int32,
 ]
 
-_nfsftlib.jnfsft_alloc.restype = ctypes.POINTER(nfsft_plan)
-_nfsftlib.jnfsft_finalize.argtypes = [ctypes.POINTER(nfsft_plan)]
+_nfsftlib.jnfsft_alloc.restype = ctypes.POINTER(fsft_plan)
+_nfsftlib.jnfsft_finalize.argtypes = [ctypes.POINTER(fsft_plan)]
 
-_nfsftlib.jnfsft_set_x.argtypes = [
-    ctypes.POINTER(nfsft_plan),
-    np.ctypeslib.ndpointer(np.float64, flags="C"),
-]
 _nfsftlib.jnfsft_set_f.argtypes = [
-    ctypes.POINTER(nfsft_plan),
+    ctypes.POINTER(fsft_plan),
     np.ctypeslib.ndpointer(np.complex128, flags="C"),
 ]
 _nfsftlib.jnfsft_set_fhat.argtypes = [
-    ctypes.POINTER(nfsft_plan),
+    ctypes.POINTER(fsft_plan),
     np.ctypeslib.ndpointer(np.complex128, flags="C"),
 ]
 
-_nfsftlib.jnfsft_trafo.argtypes = [ctypes.POINTER(nfsft_plan)]
-_nfsftlib.jnfsft_adjoint.argtypes = [ctypes.POINTER(nfsft_plan)]
-_nfsftlib.jnfsft_trafo_direct.argtypes = [ctypes.POINTER(nfsft_plan)]
-_nfsftlib.jnfsft_adjoint_direct.argtypes = [ctypes.POINTER(nfsft_plan)]
+_nfsftlib.jnfsft_trafo.argtypes = [ctypes.POINTER(fsft_plan)]
+_nfsftlib.jnfsft_adjoint.argtypes = [ctypes.POINTER(fsft_plan)]
+_nfsftlib.jnfsft_trafo_direct.argtypes = [ctypes.POINTER(fsft_plan)]
+_nfsftlib.jnfsft_adjoint_direct.argtypes = [ctypes.POINTER(fsft_plan)]
 
 
-class NFSFT:
+class FSFT:
     """
-    Class to perform nonequispaced fast spherical Fourier transforms (NFSFT).
+    Class to perform fast spherical Fourier transforms (FSFT).
     Just **N** and **M** are required for initializing a plan.
     """
 
@@ -46,7 +42,7 @@ class NFSFT:
         self,
         N: int,
         M: int,
-        flags: ctypes.c_uint32 = nfsft_default,
+        flags: ctypes.c_uint32 = nfsft_default | NFSFT_EQUISPACED,
         nfft_flags: ctypes.c_uint32 = nfsft_nfft_default,
         nfft_cutoff: int = nfsft_default_nfft_cut_off,
     ):
@@ -58,7 +54,7 @@ class NFSFT:
         self.nfft_cutoff = nfft_cutoff
         self.init_done = False  # bool for plan init
         self.finalized = False  # bool for finalizer
-        self.x = None  # nodes, will be set later
+        # self.x = None  # nodes, will be set later
         self.f = None  # function coefficients
         self.fhat = None  # spherical Fourier coefficients
 
@@ -68,21 +64,21 @@ class NFSFT:
         if M <= 0:
             raise ValueError(f"Invalid M: {M}. Argument must be a positive integer")
 
-        if (self.flags & NFSFT_EQUISPACED) is not 0:
-            raise ValueError("Cannot use NFSFT_EQUISPACED flag. Use FSFT instead")
+        if (self.flags & NFSFT_EQUISPACED) == 0:
+            raise ValueError("Must use NFSFT_EQUISPACED flag. Use NFSFT instead")
 
     def __del__(self):
         self.finalize_plan()
 
-    def nfsft_finalize_plan(self):
+    def fsft_finalize_plan(self):
         """
-        Finalizes an NFSFT plan.
+        Finalizes an FSFT plan.
         This function does not have to be called by the user.
         """
-        _nfsftlib.jnfsft_finalize.argtypes = (ctypes.POINTER(nfsft_plan),)  # P
+        _nfsftlib.jnfsft_finalize.argtypes = (ctypes.POINTER(fsft_plan),)  # P
 
         if not self.init_done:
-            raise ValueError("NFSFT not initialized.")
+            raise ValueError("FSFT not initialized.")
 
         if not self.finalized:
             self.finalized = True
@@ -90,20 +86,20 @@ class NFSFT:
 
     def finalize_plan(self):
         """
-        Alternate call for **nfsft_finalize_plan()**
+        Alternate call for **fsft_finalize_plan()**
         """
-        return self.nfsft_finalize_plan()
+        return self.fsft_finalize_plan()
 
-    def nfsft_init(self):
+    def fsft_init(self):
         """
-        Initializes the NFSFT plan in C.
+        Initializes the FSFT plan in C.
         This function does not have to be called by the user.
         """
         # Call init for memory allocation
         ptr = _nfsftlib.jnfsft_alloc()
 
         # Set the pointer
-        self.plan = ctypes.cast(ptr, ctypes.POINTER(nfsft_plan))
+        self.plan = ctypes.cast(ptr, ctypes.POINTER(fsft_plan))
 
         # Initialize values
         _nfsftlib.jnfsft_init(
@@ -118,35 +114,13 @@ class NFSFT:
 
     def init(self):
         """
-        Alternate call for **nfsft_init()**
+        Alternate call for **fsft_init()**
         """
-        return self.nfsft_init()
+        return self.fsft_init()
 
-    @property
-    def x(self) -> np.ndarray:
-        return self._X
-
-    @x.setter
-    def x(self, value: np.ndarray):
-        if value is not None:
-            if not self.init_done:
-                self.nfsft_init()
-            if self.finalized:
-                raise RuntimeError("Plan already finalized")
-            if not (
-                isinstance(value, np.ndarray)
-                and value.dtype == np.float64
-                and value.flags["C"]
-                and value.ndim >= 2
-            ):
-                raise RuntimeError("x must be a 2D C-contiguous numpy float64 array")
-            elif not (value.shape[0] == 2 and value.shape[1] == self.M):
-                raise RuntimeError(f"x must be of size 2x{self.M}")
-            _nfsftlib.jnfsft_set_x.restype = np.ctypeslib.ndpointer(
-                dtype=np.float64, ndim=2, shape=(2, self.M), flags="C"
-            )
-            ptr = _nfsftlib.jnfsft_set_x(self.plan, np.ascontiguousarray(value.T))
-            self._X = ptr
+    # @property
+    # def x(self) -> np.ndarray:
+    #     return self._X
 
     @property
     def f(self) -> np.ndarray:
@@ -156,7 +130,7 @@ class NFSFT:
     def f(self, value: np.ndarray):
         if value is not None:
             if not self.init_done:
-                self.nfsft_init()
+                self.fsft_init()
             if self.finalized:
                 raise RuntimeError("Plan already finalized")
             if not (
@@ -182,7 +156,7 @@ class NFSFT:
         if value is not None:
             N_total = (2 * self.N + 2) ** 2
             if not self.init_done:
-                self.nfsft_init()
+                self.fsft_init()
             if self.finalized:
                 raise RuntimeError("Plan already finalized")
             if not (
@@ -204,40 +178,37 @@ class NFSFT:
     def num_threads(self) -> int:
         return _nfsftlib.nfft_get_num_threads()
 
-    def nfsft_index(self, k: int, n: int) -> int:
+    def fsft_index(self, k: int, n: int) -> int:
         """
         Calculates the index for f_hat calculations.
         This function does not have to be called by the user.
         """
         return (2 * self.N + 2) * (self.N - n + 1) + (self.N + k + 1)
 
-    def nfsft_trafo(self):
+    def fsft_trafo(self):
         """
-        Computes the NFSFT using the fast approximate transform for the provided nodes in **x** and coefficients in **fhat**.
+        Computes the FSFT using the fast approximate transform for the provided nodes in **x** and coefficients in **fhat**.
         """
         _nfsftlib.jnfsft_trafo.restype = np.ctypeslib.ndpointer(
             np.complex128, shape=self.M, flags="C"
         )
         # Prevent bad stuff from happening
         if self.finalized:
-            raise RuntimeError("NFSFT already finalized")
+            raise RuntimeError("FSFT already finalized")
 
         if not hasattr(self, "fhat"):
             raise ValueError("fhat has not been set.")
-
-        if not hasattr(self, "x"):
-            raise ValueError("x has not been set.")
 
         ptr = _nfsftlib.jnfsft_trafo(self.plan)
         self.f = ptr
 
     def trafo(self):
         """
-        Alternative call for **nfsft_trafo()**
+        Alternative call for **fsft_trafo()**
         """
-        return self.nfsft_trafo()
+        return self.fsft_trafo()
 
-    def nfsft_trafo_direct(self):
+    def fsft_trafo_direct(self):
         """
         Computes the NDSFT using direct transformation for the provided nodes in **x** and coefficients in **fhat**.
         """
@@ -246,26 +217,23 @@ class NFSFT:
         )
         # Prevent bad stuff from happening
         if self.finalized:
-            raise RuntimeError("NFSFT already finalized")
+            raise RuntimeError("FSFT already finalized")
 
         if self.fhat is None:
             raise ValueError("fhat has not been set.")
-
-        if self.x is None:
-            raise ValueError("x has not been set.")
 
         ptr = _nfsftlib.jnfsft_trafo_direct(self.plan)
         self.f = ptr
 
     def trafo_direct(self):
         """
-        Alternative call for **nfsft_trafo_direct()**
+        Alternative call for **fsft_trafo_direct()**
         """
-        return self.nfsft_trafo_direct()
+        return self.fsft_trafo_direct()
 
-    def nfsft_adjoint(self):
+    def fsft_adjoint(self):
         """
-        Computes the adjoint NFSFT using the fast approximate transform for the provided nodes in **x** and coefficients in **f**.
+        Computes the adjoint FSFT using the fast approximate transform for the provided nodes in **x** and coefficients in **f**.
         """
         N_total = (2 * self.N + 2) ** 2
         _nfsftlib.jnfsft_adjoint.restype = np.ctypeslib.ndpointer(
@@ -278,19 +246,16 @@ class NFSFT:
         if not hasattr(self, "f"):
             raise ValueError("f has not been set.")
 
-        if not hasattr(self, "x"):
-            raise ValueError("x has not been set.")
-
         ptr = _nfsftlib.jnfsft_adjoint(self.plan)
         self.fhat = ptr
 
     def adjoint(self):
         """
-        Alternative call for **nfsft_adjoint()**
+        Alternative call for **fsft_adjoint()**
         """
-        return self.nfsft_adjoint()
+        return self.fsft_adjoint()
 
-    def nfsft_adjoint_direct(self):
+    def fsft_adjoint_direct(self):
         """
         Computes the adjoint NDFST using direct transformation for the provided nodes in **x** and coefficients in **f**.
         """
@@ -306,14 +271,11 @@ class NFSFT:
         if not hasattr(self, "f"):
             raise ValueError("f has not been set.")
 
-        if not hasattr(self, "x"):
-            raise ValueError("x has not been set.")
-
         ptr = _nfsftlib.jnfsft_adjoint_direct(self.plan)
         self.fhat = ptr
 
     def adjoint_direct(self):
         """
-        Alternative call for **nfsft_adjoint_direct()**
+        Alternative call for **fsft_adjoint_direct()**
         """
-        return self.nfsft_adjoint_direct()
+        return self.fsft_adjoint_direct()

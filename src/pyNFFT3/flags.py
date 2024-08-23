@@ -304,14 +304,14 @@ Use the equispaced FFT instead of the NFFT.
 """
 
 # Default flag values
-f1_default_1d = ctypes.c_uint32(
+f1_default_1d = (
     PRE_PHI_HUT
     | PRE_PSI
     | MALLOC_X
     | MALLOC_F_HAT
     | MALLOC_F
     | FFTW_INIT
-    | FFT_OUT_OF_PLACE,
+    | FFT_OUT_OF_PLACE
 )
 """
 f1_default_1d
@@ -319,7 +319,7 @@ f1_default_1d
 Default NFFT flags for 1 dimension cases.
 """
 
-f1_default = ctypes.c_uint32(
+f1_default = (
     PRE_PHI_HUT
     | PRE_PSI
     | MALLOC_X
@@ -328,7 +328,7 @@ f1_default = ctypes.c_uint32(
     | FFTW_INIT
     | FFT_OUT_OF_PLACE
     | NFCT_SORT_NODES
-    | NFCT_OMP_BLOCKWISE_ADJOINT,
+    | NFCT_OMP_BLOCKWISE_ADJOINT
 )
 """
 f1_default
@@ -343,9 +343,8 @@ f2_default
 Default FFTW flags.
 """
 
-nfsft_default = ctypes.c_uint32(
-    NFSFT_MALLOC_X | NFSFT_MALLOC_F | NFSFT_MALLOC_F_HAT,
-)
+nfsft_default = NFSFT_MALLOC_X | NFSFT_MALLOC_F | NFSFT_MALLOC_F_HAT
+
 """
 nfsft_default
 

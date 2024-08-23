@@ -21,6 +21,10 @@ class nfsft_plan(ctypes.Structure):
     pass
 
 
+class fsft_plan(ctypes.Structure):
+    pass
+
+
 class fastsum_plan(ctypes.Structure):
     pass
 
@@ -91,10 +95,9 @@ from .NFFT import *
 from .NFCT import *
 from .NFST import *
 from .NFSFT import *
+from .FSFT import *
 from .fastsum import *
 from .flags import *
-
-# from .NFMT import *
 
 # Export functions and flags
 __all__ = [
@@ -102,6 +105,7 @@ __all__ = [
     "NFCT",
     "NFST",
     "NFSFT",
+    "FSFT",
     "FASTSUM",
     "nfft_finalize_plan",
     "nfft_init",
@@ -130,6 +134,13 @@ __all__ = [
     "nfsft_adjoint",
     "nfsft_trafo_direct",
     "nfsft_adjoint_direct",
+    "nfsft_finalize_plan",
+    "fsft_init",
+    "fsft_index",
+    "fsft_trafo",
+    "fsft_adjoint",
+    "fsft_trafo_direct",
+    "fsft_adjoint_direct",
     "fastsum_finalize_plan",
     "fastsum_init",
     "fastsum_trafo",

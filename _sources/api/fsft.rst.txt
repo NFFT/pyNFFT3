@@ -5,7 +5,7 @@ FSFT Methods
 -------------
 
 .. autoclass:: pyNFFT3.FSFT
-   :members: 
+   :members:
    :undoc-members:
    :member-order: bysource
    :exclude-members: f, fhat, __init__
@@ -36,10 +36,6 @@ FSFT Attributes
    .. attribute:: nfft_cutoff <int>
 
       The NFFT cutoff.
-
-   .. .. attribute:: x <numpy.ndarray>
-
-   ..    Float array for sampling nodes.
 
    .. attribute:: f <numpy.ndarray>
 

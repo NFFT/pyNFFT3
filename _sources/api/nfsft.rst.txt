@@ -5,7 +5,7 @@ NFSFT Methods
 -------------
 
 .. autoclass:: pyNFFT3.NFSFT
-   :members: 
+   :members:
    :undoc-members:
    :member-order: bysource
    :exclude-members: f, fhat, x, __init__

@@ -2,3 +2,7 @@ div.body {
     min-width: 360px;
     max-width: 1200px;
 }
+
+div.bodywrapper {
+    margin: 0 0 0 250px;
+}

@@ -30,7 +30,6 @@ class fastsum_plan(ctypes.Structure):
 
 
 glibcver = ""
-glibcver = ""
 # Determine the file extension for shared libraries based on the operating system
 if os.name == "nt":  # Windows
     ending = ".dll"

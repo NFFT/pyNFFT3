@@ -8,9 +8,9 @@ __pycache__/
 venv/
 
 bin/
-/lib64/
+lib64/
 pyvenv.cfg
-/lib/
+lib/
 src/pyNFFT3/lib/AVX2/libfftw3-3.dll
 src/pyNFFT3/lib/AVX2/libgomp-1.dll
 src/pyNFFT3/lib/AVX2/libgcc_s_seh-1.dll

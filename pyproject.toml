@@ -8,6 +8,9 @@ version = "0.2.2"
 authors = [
   { name="Michael Nolander", email="nolander.michael@gmail.com" },
 ]
+maintainers = [
+  { name="Pascal Schröter", email="pascal.schroeter@mathematik.tu-chemnitz.de"}
+]
 description = "Python interface for the NFFT C library"
 readme = "README.md"
 requires-python = ">=3.8"

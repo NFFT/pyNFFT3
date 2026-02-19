@@ -15,22 +15,27 @@ _nfsftlib.jnfsft_init.argtypes = [
 ]
 
 _nfsftlib.jnfsft_alloc.restype = ctypes.POINTER(fsft_plan)
-_nfsftlib.jnfsft_finalize.argtypes = [ctypes.POINTER(fsft_plan)]
+_nfsftlib.jnfsft_finalize.argtypes = (ctypes.POINTER(fsft_plan),) 
 
 _nfsftlib.jnfsft_set_f.argtypes = [
     ctypes.POINTER(fsft_plan),
     np.ctypeslib.ndpointer(np.complex128, flags="C"),
 ]
+_nfsftlib.jnfsft_set_f.restype = ctypes.POINTER(ctypes.c_double)
 _nfsftlib.jnfsft_set_fhat.argtypes = [
     ctypes.POINTER(fsft_plan),
     np.ctypeslib.ndpointer(np.complex128, flags="C"),
 ]
+_nfsftlib.jnfsft_set_fhat.restype = ctypes.POINTER(ctypes.c_double)
 
 _nfsftlib.jnfsft_trafo.argtypes = [ctypes.POINTER(fsft_plan)]
+_nfsftlib.jnfsft_trafo.restype = ctypes.POINTER(ctypes.c_double)
 _nfsftlib.jnfsft_adjoint.argtypes = [ctypes.POINTER(fsft_plan)]
+_nfsftlib.jnfsft_adjoint.restype = ctypes.POINTER(ctypes.c_double)
 _nfsftlib.jnfsft_trafo_direct.argtypes = [ctypes.POINTER(fsft_plan)]
+_nfsftlib.jnfsft_trafo_direct.restype = ctypes.POINTER(ctypes.c_double)
 _nfsftlib.jnfsft_adjoint_direct.argtypes = [ctypes.POINTER(fsft_plan)]
-
+_nfsftlib.jnfsft_adjoint_direct.restype = ctypes.POINTER(ctypes.c_double)
 
 class FSFT:
     """
@@ -75,7 +80,6 @@ class FSFT:
         Finalizes an FSFT plan.
         This function does not have to be called by the user.
         """
-        _nfsftlib.jnfsft_finalize.argtypes = (ctypes.POINTER(fsft_plan),)  # P
 
         if not self.init_done:
             raise ValueError("FSFT not initialized.")
@@ -142,10 +146,10 @@ class FSFT:
                 raise RuntimeError(
                     f"f has to be C-continuous, numpy complex128 array of size M ({self.M})"
                 )
-            _nfsftlib.jnfsft_set_f.restype = np.ctypeslib.ndpointer(
-                np.complex128, ndim=1, shape=self.M, flags="C"
-            )
-            self._f = _nfsftlib.jnfsft_set_f(self.plan, value)
+            self._f = np.ctypeslib.as_array(
+                _nfsftlib.jnfsft_set_f(self.plan, value),
+                shape=(self.M * 2,)
+            ).view(np.complex128)
 
     @property
     def fhat(self) -> np.ndarray:
@@ -169,10 +173,10 @@ class FSFT:
                 )
             if value.shape != (N_total,):
                 raise RuntimeError(f"fhat must be of size N_total ({N_total})")
-            _nfsftlib.jnfsft_set_fhat.restype = np.ctypeslib.ndpointer(
-                np.complex128, shape=N_total, flags="C"
-            )
-            self._fhat = _nfsftlib.jnfsft_set_fhat(self.plan, value)
+            self._fhat = np.ctypeslib.as_array(
+                _nfsftlib.jnfsft_set_fhat(self.plan, value),
+                shape=(N_total * 2,)
+            ).view(np.complex128)
 
     @property
     def num_threads(self) -> int:
@@ -189,18 +193,16 @@ class FSFT:
         """
         Computes the FSFT using the fast approximate transform for the provided nodes in **x** and coefficients in **fhat**.
         """
-        _nfsftlib.jnfsft_trafo.restype = np.ctypeslib.ndpointer(
-            np.complex128, shape=self.M, flags="C"
-        )
         # Prevent bad stuff from happening
         if self.finalized:
             raise RuntimeError("FSFT already finalized")
 
         if not hasattr(self, "fhat"):
             raise ValueError("fhat has not been set.")
-
-        ptr = _nfsftlib.jnfsft_trafo(self.plan)
-        self.f = ptr
+        self.f = np.ctypeslib.as_array(
+            _nfsftlib.jnfsft_trafo(self.plan),
+            shape=(self.M * 2,)
+        ).view(np.complex128)
 
     def trafo(self):
         """
@@ -212,18 +214,16 @@ class FSFT:
         """
         Computes the NDSFT using direct transformation for the provided nodes in **x** and coefficients in **fhat**.
         """
-        _nfsftlib.jnfsft_trafo_direct.restype = np.ctypeslib.ndpointer(
-            np.complex128, shape=self.M, flags="C"
-        )
         # Prevent bad stuff from happening
         if self.finalized:
             raise RuntimeError("FSFT already finalized")
 
         if self.fhat is None:
             raise ValueError("fhat has not been set.")
-
-        ptr = _nfsftlib.jnfsft_trafo_direct(self.plan)
-        self.f = ptr
+        self.f = np.ctypeslib.as_array(
+            _nfsftlib.jnfsft_trafo_direct(self.plan),
+            shape=(self.M * 2,)
+        ).view(np.complex128)
 
     def trafo_direct(self):
         """
@@ -236,18 +236,16 @@ class FSFT:
         Computes the adjoint FSFT using the fast approximate transform for the provided nodes in **x** and coefficients in **f**.
         """
         N_total = (2 * self.N + 2) ** 2
-        _nfsftlib.jnfsft_adjoint.restype = np.ctypeslib.ndpointer(
-            np.complex128, shape=N_total, flags="C"
-        )
         # Prevent bad stuff from happening
         if self.finalized:
-            raise RuntimeError("NFFT already finalized")
+            raise RuntimeError("FSFT already finalized")
 
         if not hasattr(self, "f"):
             raise ValueError("f has not been set.")
-
-        ptr = _nfsftlib.jnfsft_adjoint(self.plan)
-        self.fhat = ptr
+        self.fhat = np.ctypeslib.as_array(
+            _nfsftlib.jnfsft_adjoint(self.plan),
+            shape=(N_total * 2,)
+        ).view(np.complex128)
 
     def adjoint(self):
         """
@@ -260,19 +258,16 @@ class FSFT:
         Computes the adjoint NDFST using direct transformation for the provided nodes in **x** and coefficients in **f**.
         """
         N_total = (2 * self.N + 2) ** 2
-        _nfsftlib.jnfsft_adjoint_direct.restype = np.ctypeslib.ndpointer(
-            np.complex128, shape=N_total, flags="C"
-        )
-
         # Prevent bad stuff from happening
         if self.finalized:
-            raise RuntimeError("NFFT already finalized")
+            raise RuntimeError("FSFT already finalized")
 
         if not hasattr(self, "f"):
             raise ValueError("f has not been set.")
-
-        ptr = _nfsftlib.jnfsft_adjoint_direct(self.plan)
-        self.fhat = ptr
+        self.fhat = np.ctypeslib.as_array(
+            _nfsftlib.jnfsft_adjoint_direct(self.plan),
+            shape=(N_total * 2,)
+        ).view(np.complex128)
 
     def adjoint_direct(self):
         """

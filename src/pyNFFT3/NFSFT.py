@@ -15,26 +15,31 @@ _nfsftlib.jnfsft_init.argtypes = [
 ]
 
 _nfsftlib.jnfsft_alloc.restype = ctypes.POINTER(nfsft_plan)
-_nfsftlib.jnfsft_finalize.argtypes = [ctypes.POINTER(nfsft_plan)]
-
+_nfsftlib.jnfsft_finalize.argtypes = (ctypes.POINTER(nfsft_plan),) 
 _nfsftlib.jnfsft_set_x.argtypes = [
     ctypes.POINTER(nfsft_plan),
     np.ctypeslib.ndpointer(np.float64, flags="C"),
 ]
+_nfsftlib.jnfsft_set_x.restype = ctypes.POINTER(ctypes.c_double)
 _nfsftlib.jnfsft_set_f.argtypes = [
     ctypes.POINTER(nfsft_plan),
     np.ctypeslib.ndpointer(np.complex128, flags="C"),
 ]
+_nfsftlib.jnfsft_set_f.restype = ctypes.POINTER(ctypes.c_double)
 _nfsftlib.jnfsft_set_fhat.argtypes = [
     ctypes.POINTER(nfsft_plan),
     np.ctypeslib.ndpointer(np.complex128, flags="C"),
 ]
+_nfsftlib.jnfsft_set_fhat.restype = ctypes.POINTER(ctypes.c_double)
 
 _nfsftlib.jnfsft_trafo.argtypes = [ctypes.POINTER(nfsft_plan)]
+_nfsftlib.jnfsft_trafo.restype = ctypes.POINTER(ctypes.c_double)
 _nfsftlib.jnfsft_adjoint.argtypes = [ctypes.POINTER(nfsft_plan)]
+_nfsftlib.jnfsft_adjoint.restype = ctypes.POINTER(ctypes.c_double)
 _nfsftlib.jnfsft_trafo_direct.argtypes = [ctypes.POINTER(nfsft_plan)]
+_nfsftlib.jnfsft_trafo_direct.restype = ctypes.POINTER(ctypes.c_double)
 _nfsftlib.jnfsft_adjoint_direct.argtypes = [ctypes.POINTER(nfsft_plan)]
-
+_nfsftlib.jnfsft_adjoint_direct.restype = ctypes.POINTER(ctypes.c_double)
 
 class NFSFT:
     """
@@ -79,7 +84,6 @@ class NFSFT:
         Finalizes an NFSFT plan.
         This function does not have to be called by the user.
         """
-        _nfsftlib.jnfsft_finalize.argtypes = (ctypes.POINTER(nfsft_plan),)  # P
 
         if not self.init_done:
             raise ValueError("NFSFT not initialized.")
@@ -142,11 +146,7 @@ class NFSFT:
                 raise RuntimeError("x must be a 2D C-contiguous numpy float64 array")
             elif not (value.shape[0] == 2 and value.shape[1] == self.M):
                 raise RuntimeError(f"x must be of size 2x{self.M}")
-            _nfsftlib.jnfsft_set_x.restype = np.ctypeslib.ndpointer(
-                dtype=np.float64, ndim=2, shape=(2, self.M), flags="C"
-            )
-            ptr = _nfsftlib.jnfsft_set_x(self.plan, np.ascontiguousarray(value.T))
-            self._X = ptr
+            self._X = np.ctypeslib.as_array(_nfsftlib.jnfsft_set_x(self.plan, np.ascontiguousarray(value.T)), shape=(2 * self.M,)).reshape((2, self.M))
 
     @property
     def f(self) -> np.ndarray:
@@ -168,10 +168,10 @@ class NFSFT:
                 raise RuntimeError(
                     f"f has to be C-continuous, numpy complex128 array of size M ({self.M})"
                 )
-            _nfsftlib.jnfsft_set_f.restype = np.ctypeslib.ndpointer(
-                np.complex128, ndim=1, shape=self.M, flags="C"
-            )
-            self._f = _nfsftlib.jnfsft_set_f(self.plan, value)
+            self._f = np.ctypeslib.as_array(
+                _nfsftlib.jnfsft_set_f(self.plan, value),
+                shape=(self.M * 2,)
+            ).view(np.complex128)
 
     @property
     def fhat(self) -> np.ndarray:
@@ -195,10 +195,10 @@ class NFSFT:
                 )
             if value.shape != (N_total,):
                 raise RuntimeError(f"fhat must be of size N_total ({N_total})")
-            _nfsftlib.jnfsft_set_fhat.restype = np.ctypeslib.ndpointer(
-                np.complex128, shape=N_total, flags="C"
-            )
-            self._fhat = _nfsftlib.jnfsft_set_fhat(self.plan, value)
+            self._fhat = np.ctypeslib.as_array(
+                _nfsftlib.jnfsft_set_fhat(self.plan, value),
+                shape=(N_total * 2,)
+            ).view(np.complex128)
 
     @property
     def num_threads(self) -> int:
@@ -215,9 +215,6 @@ class NFSFT:
         """
         Computes the NFSFT using the fast approximate transform for the provided nodes in **x** and coefficients in **fhat**.
         """
-        _nfsftlib.jnfsft_trafo.restype = np.ctypeslib.ndpointer(
-            np.complex128, shape=self.M, flags="C"
-        )
         # Prevent bad stuff from happening
         if self.finalized:
             raise RuntimeError("NFSFT already finalized")
@@ -227,9 +224,10 @@ class NFSFT:
 
         if not hasattr(self, "x"):
             raise ValueError("x has not been set.")
-
-        ptr = _nfsftlib.jnfsft_trafo(self.plan)
-        self.f = ptr
+        self.f = np.ctypeslib.as_array(
+            _nfsftlib.jnfsft_trafo(self.plan),
+            shape=(self.M * 2,)
+        ).view(np.complex128)
 
     def trafo(self):
         """
@@ -241,9 +239,6 @@ class NFSFT:
         """
         Computes the NDSFT using direct transformation for the provided nodes in **x** and coefficients in **fhat**.
         """
-        _nfsftlib.jnfsft_trafo_direct.restype = np.ctypeslib.ndpointer(
-            np.complex128, shape=self.M, flags="C"
-        )
         # Prevent bad stuff from happening
         if self.finalized:
             raise RuntimeError("NFSFT already finalized")
@@ -253,9 +248,10 @@ class NFSFT:
 
         if self.x is None:
             raise ValueError("x has not been set.")
-
-        ptr = _nfsftlib.jnfsft_trafo_direct(self.plan)
-        self.f = ptr
+        self.f = np.ctypeslib.as_array(
+            _nfsftlib.jnfsft_trafo_direct(self.plan),
+            shape=(self.M * 2,)
+        ).view(np.complex128)
 
     def trafo_direct(self):
         """
@@ -268,21 +264,19 @@ class NFSFT:
         Computes the adjoint NFSFT using the fast approximate transform for the provided nodes in **x** and coefficients in **f**.
         """
         N_total = (2 * self.N + 2) ** 2
-        _nfsftlib.jnfsft_adjoint.restype = np.ctypeslib.ndpointer(
-            np.complex128, shape=N_total, flags="C"
-        )
         # Prevent bad stuff from happening
         if self.finalized:
-            raise RuntimeError("NFFT already finalized")
+            raise RuntimeError("NFSFT already finalized")
 
         if not hasattr(self, "f"):
             raise ValueError("f has not been set.")
 
         if not hasattr(self, "x"):
             raise ValueError("x has not been set.")
-
-        ptr = _nfsftlib.jnfsft_adjoint(self.plan)
-        self.fhat = ptr
+        self.fhat = np.ctypeslib.as_array(
+            _nfsftlib.jnfsft_adjoint(self.plan),
+            shape=(N_total * 2,)
+        ).view(np.complex128)
 
     def adjoint(self):
         """
@@ -295,22 +289,19 @@ class NFSFT:
         Computes the adjoint NDFST using direct transformation for the provided nodes in **x** and coefficients in **f**.
         """
         N_total = (2 * self.N + 2) ** 2
-        _nfsftlib.jnfsft_adjoint_direct.restype = np.ctypeslib.ndpointer(
-            np.complex128, shape=N_total, flags="C"
-        )
-
         # Prevent bad stuff from happening
         if self.finalized:
-            raise RuntimeError("NFFT already finalized")
+            raise RuntimeError("NFSFT already finalized")
 
         if not hasattr(self, "f"):
             raise ValueError("f has not been set.")
 
         if not hasattr(self, "x"):
             raise ValueError("x has not been set.")
-
-        ptr = _nfsftlib.jnfsft_adjoint_direct(self.plan)
-        self.fhat = ptr
+        self.fhat = np.ctypeslib.as_array(
+            _nfsftlib.jnfsft_adjoint_direct(self.plan),
+            shape=(N_total * 2,)
+        ).view(np.complex128)
 
     def adjoint_direct(self):
         """

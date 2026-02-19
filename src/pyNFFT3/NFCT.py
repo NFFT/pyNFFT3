@@ -17,26 +17,32 @@ _nfctlib.jnfct_init.argtypes = [
 ]
 
 _nfctlib.jnfct_alloc.restype = ctypes.POINTER(nfct_plan)
-_nfctlib.jnfct_finalize.argtypes = [ctypes.POINTER(nfct_plan)]
+_nfctlib.jnfct_finalize.argtypes = (ctypes.POINTER(nfct_plan),)
 
 _nfctlib.jnfct_set_x.argtypes = [
     ctypes.POINTER(nfct_plan),
     np.ctypeslib.ndpointer(np.float64, flags="C"),
 ]
+_nfctlib.jnfct_set_x.restype = ctypes.POINTER(ctypes.c_double)
 _nfctlib.jnfct_set_f.argtypes = [
     ctypes.POINTER(nfct_plan),
     np.ctypeslib.ndpointer(np.float64, ndim=1, flags="C"),
 ]
+_nfctlib.jnfct_set_f.restype = ctypes.POINTER(ctypes.c_double)
 _nfctlib.jnfct_set_fhat.argtypes = [
     ctypes.POINTER(nfct_plan),
     np.ctypeslib.ndpointer(np.float64, ndim=1, flags="C"),
 ]
+_nfctlib.jnfct_set_fhat.restype = ctypes.POINTER(ctypes.c_double)
 
 _nfctlib.jnfct_trafo.argtypes = [ctypes.POINTER(nfct_plan)]
+_nfctlib.jnfct_trafo.restype = ctypes.POINTER(ctypes.c_double)
 _nfctlib.jnfct_adjoint.argtypes = [ctypes.POINTER(nfct_plan)]
+_nfctlib.jnfct_adjoint.restype = ctypes.POINTER(ctypes.c_double)
 _nfctlib.jnfct_trafo_direct.argtypes = [ctypes.POINTER(nfct_plan)]
+_nfctlib.jnfct_trafo_direct.restype = ctypes.POINTER(ctypes.c_double)
 _nfctlib.jnfct_adjoint_direct.argtypes = [ctypes.POINTER(nfct_plan)]
-
+_nfctlib.jnfct_adjoint_direct.restype = ctypes.POINTER(ctypes.c_double)
 
 class NFCT:
     """
@@ -107,7 +113,6 @@ class NFCT:
         Finalizes an NFCT plan.
         This function does not have to be called by the user.
         """
-        _nfctlib.jnfct_finalize.argtypes = (ctypes.POINTER(nfct_plan),)  # P
 
         if not self.init_done:
             raise ValueError("NFST not initialized.")
@@ -152,7 +157,7 @@ class NFCT:
 
     def init(self):
         """
-        Alternative call for **nfft_init()**
+        Alternative call for **nfct_init()**
         """
         return self.nfct_init()
 
@@ -174,14 +179,13 @@ class NFCT:
             ):
                 raise RuntimeError("x has to be C-continuous, numpy float64 array")
             if self.D == 1:
-                _nfctlib.jnfct_set_x.restype = np.ctypeslib.ndpointer(
-                    dtype=np.float64, ndim=2, shape=self.M, flags="C"
-                )
+                shape = (self.M)
             else:
-                _nfctlib.jnfct_set_x.restype = np.ctypeslib.ndpointer(
-                    dtype=np.float64, ndim=2, shape=(self.M, self.D), flags="C"
-                )
-            self._X = _nfctlib.jnfct_set_x(self.plan, value)
+                shape = (self.M, self.D)
+            self._X = np.ctypeslib.as_array(
+                _nfctlib.jnfct_set_x(self.plan, value),
+                shape=(self.M * self.D,)
+            ).reshape(shape)
 
     @property
     def f(self) -> np.ndarray:
@@ -200,10 +204,10 @@ class NFCT:
                 and value.flags["C"]
             ):
                 raise RuntimeError("f has to be C-continuous, numpy float64 array")
-            _nfctlib.jnfct_set_f.restype = np.ctypeslib.ndpointer(
-                np.float64, ndim=1, shape=self.M, flags="C"
+            self._f = np.ctypeslib.as_array(
+                _nfctlib.jnfct_set_f(self.plan, value),
+                shape=(self.M,)
             )
-            self._f = _nfctlib.jnfct_set_f(self.plan, value)
 
     @property
     def fhat(self) -> np.ndarray:
@@ -223,14 +227,10 @@ class NFCT:
                 raise RuntimeError("fhat has to be C-continuous")
             if value.size != Ns:
                 raise ValueError(f"fhat has to be an array of size {Ns}")
-            _nfctlib.jnfct_set_fhat.argtypes = [
-                ctypes.POINTER(nfct_plan),
-                np.ctypeslib.ndpointer(np.float64, ndim=1, flags="C"),
-            ]
-            _nfctlib.jnfct_set_fhat.restype = np.ctypeslib.ndpointer(
-                np.float64, ndim=1, shape=Ns, flags="C_CONTIGUOUS"
+            self._fhat = np.ctypeslib.as_array(
+                _nfctlib.jnfct_set_fhat(self.plan, value),
+                shape=(Ns,)
             )
-            self._fhat = _nfctlib.jnfct_set_fhat(self.plan, value)
 
     @property
     def num_threads(self) -> int:
@@ -240,10 +240,6 @@ class NFCT:
         """
         Computes the NDCT via the fast NFCT algorithm for the provided nodes in **x** and coefficients in **fhat**.
         """
-        Ns = np.prod(self.N)
-        _nfctlib.jnfct_trafo.restype = np.ctypeslib.ndpointer(
-            np.float64, shape=Ns, flags="C"
-        )
         # Prevent bad stuff from happening
         if self.finalized:
             raise RuntimeError("NFCT already finalized")
@@ -253,9 +249,10 @@ class NFCT:
 
         if not hasattr(self, "x"):
             raise ValueError("x has not been set.")
-
-        ptr = _nfctlib.jnfct_trafo(self.plan)
-        self.f = ptr
+        self.f = np.ctypeslib.as_array(
+            _nfctlib.jnfct_trafo(self.plan),
+            shape=(self.M,)
+        )
 
     def trafo(self):
         """
@@ -267,9 +264,6 @@ class NFCT:
         """
         Computes the NDCT via naive matrix-vector multiplication for the provided nodes in **x** and coefficients in **fhat**.
         """
-        _nfctlib.jnfct_trafo_direct.restype = np.ctypeslib.ndpointer(
-            np.float64, shape=self.M, flags="C"
-        )
         # Prevent bad stuff from happening
         if self.finalized:
             raise RuntimeError("NFCT already finalized")
@@ -279,9 +273,10 @@ class NFCT:
 
         if self.x is None:
             raise ValueError("x has not been set.")
-
-        ptr = _nfctlib.jnfct_trafo_direct(self.plan)
-        self.f = ptr
+        self.f = np.ctypeslib.as_array(
+            _nfctlib.jnfct_trafo_direct(self.plan),
+            shape=(self.M,)
+        )
 
     def trafo_direct(self):
         """
@@ -294,9 +289,7 @@ class NFCT:
         Computes the transposed NDCT via the fast transposed NFCT algorithm for the provided nodes in **x** and coefficients in **f**.
         """
         Ns = np.prod(self.N)
-        _nfctlib.jnfct_adjoint.restype = np.ctypeslib.ndpointer(
-            np.float64, shape=Ns, flags="C"
-        )
+
         # Prevent bad stuff from happening
         if self.finalized:
             raise RuntimeError("NFCT already finalized")
@@ -306,18 +299,16 @@ class NFCT:
 
         if self.x is None:
             raise ValueError("x has not been set.")
-
-        ptr = _nfctlib.jnfct_adjoint(self.plan)
-        self.fhat = ptr
+        self.fhat = np.ctypeslib.as_array(
+            _nfctlib.jnfct_adjoint(self.plan),
+            shape=(Ns,)
+        )
 
     def nfct_transposed_direct(self):
         """
         Computes the transposed NDCT via naive matrix-vector multiplication for provided nodes for the provided nodes in **x** and coefficients in **f**.
         """
         Ns = np.prod(self.N)
-        _nfctlib.jnfct_adjoint_direct.restype = np.ctypeslib.ndpointer(
-            np.float64, shape=Ns, flags="C"
-        )
         # Prevent bad stuff from happening
         if self.finalized:
             raise RuntimeError("NFCT already finalized")
@@ -327,9 +318,10 @@ class NFCT:
 
         if self.x is None:
             raise ValueError("x has not been set.")
-
-        ptr = _nfctlib.jnfct_adjoint_direct(self.plan)
-        self.fhat = ptr
+        self.fhat = np.ctypeslib.as_array(
+            _nfctlib.jnfct_adjoint_direct(self.plan),
+            shape=(Ns,)
+        )
 
     def nfct_adjoint(self):
         """

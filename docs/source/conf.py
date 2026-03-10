@@ -37,7 +37,7 @@ autodoc_default_options = {
 # In order to minimize the risk of accidentally intercepting a wrong line,
 #   we'll apply this patch inside of the add_directive_header method.
 
-from sphinx.ext.autodoc import ClassDocumenter, _
+from sphinx.ext.autodoc import ClassDocumenter
 
 add_line = ClassDocumenter.add_line
 line_to_delete = _("Bases: %s") % ":py:class:`object`"

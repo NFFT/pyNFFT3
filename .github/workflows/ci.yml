@@ -10,7 +10,7 @@ jobs:
   test:
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10']  # Specify the Python versions you want to test against
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']  # Specify the Python versions you want to test against
         os: [ubuntu-latest, windows-latest]
     name: Python ${{ matrix.python-version }} - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}

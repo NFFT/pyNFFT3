@@ -1,32 +1,27 @@
-name: Format
-
-on:
-  push:
-    branches: [main]
-    tags: [v*]
-  pull_request:
-
+name: Format Python Code
+on: push
 jobs:
-  format:
-    name: "Format Check"
+  python-code-format:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
-      - name: Install black
+          python-version: "3.12"
+          architecture: "x64"
+      - name: Display Python version
+        run: python --version
+      - name: Install packages
+        run: pip install black isort
+      - name: Formatter
         run: |
-          python -m pip install --upgrade pip
-          pip install black
-      - name: Format code with black
-        run: |
-          black . --check
-      - name: Suggest formatting changes
-        uses: reviewdog/action-suggester@v1
-        if: github.event_name == 'pull_request'
+          black .
+          isort .
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
         with:
-          tool_name: black
-          fail_on_error: true
+          commit-message: Auto code format
+          title: Fixes by format action
+          body: This is an auto-generated PR with fixes.
+          labels: automated pr
+          branch: python-code-format-patches

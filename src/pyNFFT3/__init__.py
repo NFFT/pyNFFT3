@@ -1,5 +1,8 @@
-import os, sys, io
 import ctypes
+import io
+import os
+import sys
+
 from cpuinfo import get_cpu_info
 from packaging.version import Version
 
@@ -76,7 +79,7 @@ lib_path_nfst = os.path.join(
     package_dir, "lib", flag, glibcver, "libnfstjulia" + ending
 )
 lib_path_nfsft = os.path.join(
-   package_dir, "lib", flag, glibcver, "libnfsftjulia" + ending
+    package_dir, "lib", flag, glibcver, "libnfsftjulia" + ending
 )
 lib_path_fastsum = os.path.join(
     package_dir, "lib", flag, glibcver, "libfastsumjulia" + ending
@@ -89,15 +92,14 @@ _nfstlib = ctypes.CDLL(lib_path_nfst)
 _nfsftlib = ctypes.CDLL(lib_path_nfsft)
 _fastsumlib = ctypes.CDLL(lib_path_fastsum)
 
-# Import modules
-from .NFFT import *
-from .NFCT import *
-from .NFST import *
-
 # from .NFSFT import *
 # from .FSFT import *
 from .fastsum import *
 from .flags import *
+from .NFCT import *
+# Import modules
+from .NFFT import *
+from .NFST import *
 
 # Export functions and flags
 __all__ = [

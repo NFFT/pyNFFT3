@@ -1,8 +1,9 @@
 import ctypes
+
 import numpy as np
+
+from . import _nfctlib, nfct_plan
 from .flags import *
-from . import _nfctlib
-from . import nfct_plan
 
 # Set arugment and return types for functions
 _nfctlib.jnfct_init.argtypes = [
@@ -43,6 +44,7 @@ _nfctlib.jnfct_trafo_direct.argtypes = [ctypes.POINTER(nfct_plan)]
 _nfctlib.jnfct_trafo_direct.restype = ctypes.POINTER(ctypes.c_double)
 _nfctlib.jnfct_adjoint_direct.argtypes = [ctypes.POINTER(nfct_plan)]
 _nfctlib.jnfct_adjoint_direct.restype = ctypes.POINTER(ctypes.c_double)
+
 
 class NFCT:
     """
@@ -179,12 +181,11 @@ class NFCT:
             ):
                 raise RuntimeError("x has to be C-continuous, numpy float64 array")
             if self.D == 1:
-                shape = (self.M)
+                shape = self.M
             else:
                 shape = (self.M, self.D)
             self._X = np.ctypeslib.as_array(
-                _nfctlib.jnfct_set_x(self.plan, value),
-                shape=(self.M * self.D,)
+                _nfctlib.jnfct_set_x(self.plan, value), shape=(self.M * self.D,)
             ).reshape(shape)
 
     @property
@@ -205,8 +206,7 @@ class NFCT:
             ):
                 raise RuntimeError("f has to be C-continuous, numpy float64 array")
             self._f = np.ctypeslib.as_array(
-                _nfctlib.jnfct_set_f(self.plan, value),
-                shape=(self.M,)
+                _nfctlib.jnfct_set_f(self.plan, value), shape=(self.M,)
             )
 
     @property
@@ -228,8 +228,7 @@ class NFCT:
             if value.size != Ns:
                 raise ValueError(f"fhat has to be an array of size {Ns}")
             self._fhat = np.ctypeslib.as_array(
-                _nfctlib.jnfct_set_fhat(self.plan, value),
-                shape=(Ns,)
+                _nfctlib.jnfct_set_fhat(self.plan, value), shape=(Ns,)
             )
 
     @property
@@ -249,10 +248,7 @@ class NFCT:
 
         if not hasattr(self, "x"):
             raise ValueError("x has not been set.")
-        self.f = np.ctypeslib.as_array(
-            _nfctlib.jnfct_trafo(self.plan),
-            shape=(self.M,)
-        )
+        self.f = np.ctypeslib.as_array(_nfctlib.jnfct_trafo(self.plan), shape=(self.M,))
 
     def trafo(self):
         """
@@ -274,8 +270,7 @@ class NFCT:
         if self.x is None:
             raise ValueError("x has not been set.")
         self.f = np.ctypeslib.as_array(
-            _nfctlib.jnfct_trafo_direct(self.plan),
-            shape=(self.M,)
+            _nfctlib.jnfct_trafo_direct(self.plan), shape=(self.M,)
         )
 
     def trafo_direct(self):
@@ -300,8 +295,7 @@ class NFCT:
         if self.x is None:
             raise ValueError("x has not been set.")
         self.fhat = np.ctypeslib.as_array(
-            _nfctlib.jnfct_adjoint(self.plan),
-            shape=(Ns,)
+            _nfctlib.jnfct_adjoint(self.plan), shape=(Ns,)
         )
 
     def nfct_transposed_direct(self):
@@ -319,8 +313,7 @@ class NFCT:
         if self.x is None:
             raise ValueError("x has not been set.")
         self.fhat = np.ctypeslib.as_array(
-            _nfctlib.jnfct_adjoint_direct(self.plan),
-            shape=(Ns,)
+            _nfctlib.jnfct_adjoint_direct(self.plan), shape=(Ns,)
         )
 
     def nfct_adjoint(self):

@@ -75,9 +75,9 @@ lib_path_nfct = os.path.join(
 lib_path_nfst = os.path.join(
     package_dir, "lib", flag, glibcver, "libnfstjulia" + ending
 )
-# lib_path_nfsft = os.path.join(
-#    package_dir, "lib", flag, glibcver, "libnfsftjulia" + ending
-# )
+lib_path_nfsft = os.path.join(
+   package_dir, "lib", flag, glibcver, "libnfsftjulia" + ending
+)
 lib_path_fastsum = os.path.join(
     package_dir, "lib", flag, glibcver, "libfastsumjulia" + ending
 )
@@ -86,7 +86,7 @@ lib_path_fastsum = os.path.join(
 _nfftlib = ctypes.CDLL(lib_path_nfft)
 _nfctlib = ctypes.CDLL(lib_path_nfct)
 _nfstlib = ctypes.CDLL(lib_path_nfst)
-# _nfsftlib = ctypes.CDLL(lib_path_nfsft)
+_nfsftlib = ctypes.CDLL(lib_path_nfsft)
 _fastsumlib = ctypes.CDLL(lib_path_fastsum)
 
 # Import modules
@@ -104,8 +104,8 @@ __all__ = [
     "NFFT",
     "NFCT",
     "NFST",
-    #    "NFSFT",
-    #    "FSFT",
+    "NFSFT",
+    "FSFT",
     "FASTSUM",
     "nfft_finalize_plan",
     "nfft_init",
@@ -127,20 +127,20 @@ __all__ = [
     "nfst_adjoint",
     "nfst_trafo_direct",
     "nfst_adjoint_direct",
-    #    "nfsft_finalize_plan",
-    #    "nfsft_init",
-    #    "nfsft_index",
-    #    "nfsft_trafo",
-    #    "nfsft_adjoint",
-    #    "nfsft_trafo_direct",
-    #    "nfsft_adjoint_direct",
-    #    "nfsft_finalize_plan",
-    #    "fsft_init",
-    #    "fsft_index",
-    #    "fsft_trafo",
-    #    "fsft_adjoint",
-    #    "fsft_trafo_direct",
-    #    "fsft_adjoint_direct",
+    "nfsft_finalize_plan",
+    "nfsft_init",
+    "nfsft_index",
+    "nfsft_trafo",
+    "nfsft_adjoint",
+    "nfsft_trafo_direct",
+    "nfsft_adjoint_direct",
+    "nfsft_finalize_plan",
+    "fsft_init",
+    "fsft_index",
+    "fsft_trafo",
+    "fsft_adjoint",
+    "fsft_trafo_direct",
+    "fsft_adjoint_direct",
     "fastsum_finalize_plan",
     "fastsum_init",
     "fastsum_trafo",

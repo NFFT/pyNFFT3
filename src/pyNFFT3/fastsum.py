@@ -1,8 +1,9 @@
 import ctypes
+
 import numpy as np
+
+from . import _fastsumlib, fastsum_plan
 from .flags import *
-from . import _fastsumlib
-from . import fastsum_plan
 
 # Set arugment and return types for functions
 _fastsumlib.jfastsum_init.argtypes = [
@@ -46,6 +47,7 @@ _fastsumlib.jfastsum_trafo.argtypes = [ctypes.POINTER(fastsum_plan)]
 _fastsumlib.jfastsum_trafo.restype = ctypes.POINTER(ctypes.c_double)
 _fastsumlib.jfastsum_exact.argtypes = [ctypes.POINTER(fastsum_plan)]
 _fastsumlib.jfastsum_exact.restype = ctypes.POINTER(ctypes.c_double)
+
 
 class FASTSUM:
     """
@@ -203,7 +205,7 @@ class FASTSUM:
                     raise RuntimeError("x has to be C-continuous")
                 if value.size != self.N:
                     raise ValueError(f"x has to be an array of size {self.N}")
-                shape = (self.N)
+                shape = self.N
             else:
                 if (
                     not isinstance(value, np.ndarray)
@@ -215,8 +217,7 @@ class FASTSUM:
                     raise ValueError(f"x has to be a Float64 matrix of size {self.N}")
                 shape = (self.N, self.d)
             self._X = np.ctypeslib.as_array(
-                _fastsumlib.jfastsum_set_x(self.plan, X_fort),
-                shape=(self.N * self.d,)
+                _fastsumlib.jfastsum_set_x(self.plan, X_fort), shape=(self.N * self.d,)
             ).reshape(shape)
 
     @property
@@ -246,7 +247,7 @@ class FASTSUM:
                     raise RuntimeError("y has to be C-continuous")
                 if value.size != self.M:
                     raise ValueError(f"y has to be an array of size {self.M}")
-                shape = (self.M)
+                shape = self.M
             else:
                 if (
                     not isinstance(value, np.ndarray)
@@ -258,8 +259,7 @@ class FASTSUM:
                     raise ValueError(f"y has to be a Float64 matrix of size {self.M}")
                 shape = (self.M, self.d)
             self._Y = np.ctypeslib.as_array(
-                _fastsumlib.jfastsum_set_y(self.plan, Y_fort),
-                shape=(self.M * self.d,)
+                _fastsumlib.jfastsum_set_y(self.plan, Y_fort), shape=(self.M * self.d,)
             ).reshape(shape)
 
     @property
@@ -283,10 +283,10 @@ class FASTSUM:
             # Create a copy of the array to modify
             alpha_array = np.copy(value)
             alpha_fort = np.asfortranarray(alpha_array)
-            
+
             self._Alpha = np.ctypeslib.as_array(
                 _fastsumlib.jfastsum_set_alpha(self.plan, alpha_fort),
-                shape=(self.N*2,)
+                shape=(self.N * 2,),
             ).view(np.complex128)
 
     def fastsum_trafo(self):
@@ -305,11 +305,10 @@ class FASTSUM:
 
         if not hasattr(self, "alpha"):
             raise ValueError("alpha has not been set.")
-        
+
         self.f = np.ctypeslib.as_array(
-                _fastsumlib.jfastsum_trafo(self.plan),
-                shape=(self.M*2,)
-            ).view(np.complex128)
+            _fastsumlib.jfastsum_trafo(self.plan), shape=(self.M * 2,)
+        ).view(np.complex128)
 
     def trafo(self):
         """
@@ -333,11 +332,10 @@ class FASTSUM:
 
         if not hasattr(self, "alpha"):
             raise ValueError("alpha has not been set.")
-        
+
         self.f = np.ctypeslib.as_array(
-                _fastsumlib.jfastsum_exact(self.plan),
-                shape=(self.M*2,)
-            ).view(np.complex128)
+            _fastsumlib.jfastsum_exact(self.plan), shape=(self.M * 2,)
+        ).view(np.complex128)
 
     def trafoexact(self):
         """

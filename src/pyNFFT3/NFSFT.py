@@ -1,8 +1,9 @@
 import ctypes
+
 import numpy as np
+
+from . import _nfsftlib, nfsft_plan
 from .flags import *
-from . import _nfsftlib
-from . import nfsft_plan
 
 # Set arugment and return types for functions
 _nfsftlib.jnfsft_init.argtypes = [
@@ -15,7 +16,7 @@ _nfsftlib.jnfsft_init.argtypes = [
 ]
 
 _nfsftlib.jnfsft_alloc.restype = ctypes.POINTER(nfsft_plan)
-_nfsftlib.jnfsft_finalize.argtypes = (ctypes.POINTER(nfsft_plan),) 
+_nfsftlib.jnfsft_finalize.argtypes = (ctypes.POINTER(nfsft_plan),)
 _nfsftlib.jnfsft_set_x.argtypes = [
     ctypes.POINTER(nfsft_plan),
     np.ctypeslib.ndpointer(np.float64, flags="C"),
@@ -40,6 +41,7 @@ _nfsftlib.jnfsft_trafo_direct.argtypes = [ctypes.POINTER(nfsft_plan)]
 _nfsftlib.jnfsft_trafo_direct.restype = ctypes.POINTER(ctypes.c_double)
 _nfsftlib.jnfsft_adjoint_direct.argtypes = [ctypes.POINTER(nfsft_plan)]
 _nfsftlib.jnfsft_adjoint_direct.restype = ctypes.POINTER(ctypes.c_double)
+
 
 class NFSFT:
     """
@@ -146,7 +148,10 @@ class NFSFT:
                 raise RuntimeError("x must be a 2D C-contiguous numpy float64 array")
             elif not (value.shape[0] == 2 and value.shape[1] == self.M):
                 raise RuntimeError(f"x must be of size 2x{self.M}")
-            self._X = np.ctypeslib.as_array(_nfsftlib.jnfsft_set_x(self.plan, np.ascontiguousarray(value.T)), shape=(2 * self.M,)).reshape((2, self.M))
+            self._X = np.ctypeslib.as_array(
+                _nfsftlib.jnfsft_set_x(self.plan, np.ascontiguousarray(value.T)),
+                shape=(2 * self.M,),
+            ).reshape((2, self.M))
 
     @property
     def f(self) -> np.ndarray:
@@ -169,8 +174,7 @@ class NFSFT:
                     f"f has to be C-continuous, numpy complex128 array of size M ({self.M})"
                 )
             self._f = np.ctypeslib.as_array(
-                _nfsftlib.jnfsft_set_f(self.plan, value),
-                shape=(self.M * 2,)
+                _nfsftlib.jnfsft_set_f(self.plan, value), shape=(self.M * 2,)
             ).view(np.complex128)
 
     @property
@@ -196,8 +200,7 @@ class NFSFT:
             if value.shape != (N_total,):
                 raise RuntimeError(f"fhat must be of size N_total ({N_total})")
             self._fhat = np.ctypeslib.as_array(
-                _nfsftlib.jnfsft_set_fhat(self.plan, value),
-                shape=(N_total * 2,)
+                _nfsftlib.jnfsft_set_fhat(self.plan, value), shape=(N_total * 2,)
             ).view(np.complex128)
 
     @property
@@ -225,8 +228,7 @@ class NFSFT:
         if not hasattr(self, "x"):
             raise ValueError("x has not been set.")
         self.f = np.ctypeslib.as_array(
-            _nfsftlib.jnfsft_trafo(self.plan),
-            shape=(self.M * 2,)
+            _nfsftlib.jnfsft_trafo(self.plan), shape=(self.M * 2,)
         ).view(np.complex128)
 
     def trafo(self):
@@ -249,8 +251,7 @@ class NFSFT:
         if self.x is None:
             raise ValueError("x has not been set.")
         self.f = np.ctypeslib.as_array(
-            _nfsftlib.jnfsft_trafo_direct(self.plan),
-            shape=(self.M * 2,)
+            _nfsftlib.jnfsft_trafo_direct(self.plan), shape=(self.M * 2,)
         ).view(np.complex128)
 
     def trafo_direct(self):
@@ -274,8 +275,7 @@ class NFSFT:
         if not hasattr(self, "x"):
             raise ValueError("x has not been set.")
         self.fhat = np.ctypeslib.as_array(
-            _nfsftlib.jnfsft_adjoint(self.plan),
-            shape=(N_total * 2,)
+            _nfsftlib.jnfsft_adjoint(self.plan), shape=(N_total * 2,)
         ).view(np.complex128)
 
     def adjoint(self):
@@ -299,8 +299,7 @@ class NFSFT:
         if not hasattr(self, "x"):
             raise ValueError("x has not been set.")
         self.fhat = np.ctypeslib.as_array(
-            _nfsftlib.jnfsft_adjoint_direct(self.plan),
-            shape=(N_total * 2,)
+            _nfsftlib.jnfsft_adjoint_direct(self.plan), shape=(N_total * 2,)
         ).view(np.complex128)
 
     def adjoint_direct(self):

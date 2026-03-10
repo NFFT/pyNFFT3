@@ -1,8 +1,9 @@
 import ctypes
+
 import numpy as np
+
+from . import _nfstlib, nfst_plan
 from .flags import *
-from . import _nfstlib
-from . import nfst_plan
 
 # Set arugment and return types for functions
 _nfstlib.jnfst_init.argtypes = [
@@ -43,6 +44,7 @@ _nfstlib.jnfst_trafo_direct.argtypes = [ctypes.POINTER(nfst_plan)]
 _nfstlib.jnfst_trafo_direct.restype = ctypes.POINTER(ctypes.c_double)
 _nfstlib.jnfst_adjoint_direct.argtypes = [ctypes.POINTER(nfst_plan)]
 _nfstlib.jnfst_adjoint_direct.restype = ctypes.POINTER(ctypes.c_double)
+
 
 class NFST:
     """
@@ -178,12 +180,11 @@ class NFST:
             ):
                 raise RuntimeError("x has to be C-continuous, numpy float64 array")
             if self.D == 1:
-                shape = (self.M)
+                shape = self.M
             else:
                 shape = (self.M, self.D)
             self._X = np.ctypeslib.as_array(
-                _nfstlib.jnfst_set_x(self.plan, value),
-                shape=(self.M * self.D,)
+                _nfstlib.jnfst_set_x(self.plan, value), shape=(self.M * self.D,)
             ).reshape(shape)
 
     @property
@@ -204,8 +205,7 @@ class NFST:
             ):
                 raise RuntimeError("f has to be C-continuous, numpy float64 array")
             self._f = np.ctypeslib.as_array(
-                _nfstlib.jnfst_set_f(self.plan, value),
-                shape=(self.M,)
+                _nfstlib.jnfst_set_f(self.plan, value), shape=(self.M,)
             )
 
     @property
@@ -227,8 +227,7 @@ class NFST:
             if value.size != Ns:
                 raise ValueError(f"fhat has to be an array of size {Ns}")
             self._fhat = np.ctypeslib.as_array(
-                _nfstlib.jnfst_set_fhat(self.plan, value),
-                shape=(Ns,)
+                _nfstlib.jnfst_set_fhat(self.plan, value), shape=(Ns,)
             )
 
     @property
@@ -248,10 +247,7 @@ class NFST:
 
         if not hasattr(self, "x"):
             raise ValueError("x has not been set.")
-        self.f = np.ctypeslib.as_array(
-            _nfstlib.jnfst_trafo(self.plan),
-            shape=(self.M,)
-        )
+        self.f = np.ctypeslib.as_array(_nfstlib.jnfst_trafo(self.plan), shape=(self.M,))
 
     def trafo(self):
         """
@@ -273,8 +269,7 @@ class NFST:
         if self.x is None:
             raise ValueError("x has not been set.")
         self.f = np.ctypeslib.as_array(
-            _nfstlib.jnfst_trafo_direct(self.plan),
-            shape=(self.M,)
+            _nfstlib.jnfst_trafo_direct(self.plan), shape=(self.M,)
         )
 
     def trafo_direct(self):
@@ -298,8 +293,7 @@ class NFST:
         if self.x is None:
             raise ValueError("x has not been set.")
         self.fhat = np.ctypeslib.as_array(
-            _nfstlib.jnfst_adjoint(self.plan),
-            shape=(Ns,)
+            _nfstlib.jnfst_adjoint(self.plan), shape=(Ns,)
         )
 
     def nfst_transposed_direct(self):
@@ -317,8 +311,7 @@ class NFST:
         if self.x is None:
             raise ValueError("x has not been set.")
         self.fhat = np.ctypeslib.as_array(
-            _nfstlib.jnfst_adjoint_direct(self.plan),
-            shape=(Ns,)
+            _nfstlib.jnfst_adjoint_direct(self.plan), shape=(Ns,)
         )
 
     def nfst_adjoint(self):

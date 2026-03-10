@@ -1,8 +1,9 @@
 import ctypes
+
 import numpy as np
+
+from . import _nfsftlib, fsft_plan
 from .flags import *
-from . import _nfsftlib
-from . import fsft_plan
 
 # Set arugment and return types for functions
 _nfsftlib.jnfsft_init.argtypes = [
@@ -15,7 +16,7 @@ _nfsftlib.jnfsft_init.argtypes = [
 ]
 
 _nfsftlib.jnfsft_alloc.restype = ctypes.POINTER(fsft_plan)
-_nfsftlib.jnfsft_finalize.argtypes = (ctypes.POINTER(fsft_plan),) 
+_nfsftlib.jnfsft_finalize.argtypes = (ctypes.POINTER(fsft_plan),)
 
 _nfsftlib.jnfsft_set_f.argtypes = [
     ctypes.POINTER(fsft_plan),
@@ -36,6 +37,7 @@ _nfsftlib.jnfsft_trafo_direct.argtypes = [ctypes.POINTER(fsft_plan)]
 _nfsftlib.jnfsft_trafo_direct.restype = ctypes.POINTER(ctypes.c_double)
 _nfsftlib.jnfsft_adjoint_direct.argtypes = [ctypes.POINTER(fsft_plan)]
 _nfsftlib.jnfsft_adjoint_direct.restype = ctypes.POINTER(ctypes.c_double)
+
 
 class FSFT:
     """
@@ -147,8 +149,7 @@ class FSFT:
                     f"f has to be C-continuous, numpy complex128 array of size M ({self.M})"
                 )
             self._f = np.ctypeslib.as_array(
-                _nfsftlib.jnfsft_set_f(self.plan, value),
-                shape=(self.M * 2,)
+                _nfsftlib.jnfsft_set_f(self.plan, value), shape=(self.M * 2,)
             ).view(np.complex128)
 
     @property
@@ -174,8 +175,7 @@ class FSFT:
             if value.shape != (N_total,):
                 raise RuntimeError(f"fhat must be of size N_total ({N_total})")
             self._fhat = np.ctypeslib.as_array(
-                _nfsftlib.jnfsft_set_fhat(self.plan, value),
-                shape=(N_total * 2,)
+                _nfsftlib.jnfsft_set_fhat(self.plan, value), shape=(N_total * 2,)
             ).view(np.complex128)
 
     @property
@@ -200,8 +200,7 @@ class FSFT:
         if not hasattr(self, "fhat"):
             raise ValueError("fhat has not been set.")
         self.f = np.ctypeslib.as_array(
-            _nfsftlib.jnfsft_trafo(self.plan),
-            shape=(self.M * 2,)
+            _nfsftlib.jnfsft_trafo(self.plan), shape=(self.M * 2,)
         ).view(np.complex128)
 
     def trafo(self):
@@ -221,8 +220,7 @@ class FSFT:
         if self.fhat is None:
             raise ValueError("fhat has not been set.")
         self.f = np.ctypeslib.as_array(
-            _nfsftlib.jnfsft_trafo_direct(self.plan),
-            shape=(self.M * 2,)
+            _nfsftlib.jnfsft_trafo_direct(self.plan), shape=(self.M * 2,)
         ).view(np.complex128)
 
     def trafo_direct(self):
@@ -243,8 +241,7 @@ class FSFT:
         if not hasattr(self, "f"):
             raise ValueError("f has not been set.")
         self.fhat = np.ctypeslib.as_array(
-            _nfsftlib.jnfsft_adjoint(self.plan),
-            shape=(N_total * 2,)
+            _nfsftlib.jnfsft_adjoint(self.plan), shape=(N_total * 2,)
         ).view(np.complex128)
 
     def adjoint(self):
@@ -265,8 +262,7 @@ class FSFT:
         if not hasattr(self, "f"):
             raise ValueError("f has not been set.")
         self.fhat = np.ctypeslib.as_array(
-            _nfsftlib.jnfsft_adjoint_direct(self.plan),
-            shape=(N_total * 2,)
+            _nfsftlib.jnfsft_adjoint_direct(self.plan), shape=(N_total * 2,)
         ).view(np.complex128)
 
     def adjoint_direct(self):

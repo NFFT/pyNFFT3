@@ -1,8 +1,9 @@
 import ctypes
+
 import numpy as np
+
+from . import _nfftlib, nfft_plan
 from .flags import *
-from . import _nfftlib
-from . import nfft_plan
 
 # Set arugment and return types for functions
 _nfftlib.jnfft_init.argtypes = [
@@ -179,14 +180,13 @@ class NFFT:
                 and value.flags["C"]
             ):
                 raise RuntimeError("x has to be C-continuous, numpy float64 array")
-            
+
             if self.D == 1:
-                shape = (self.M)
+                shape = self.M
             else:
                 shape = (self.M, self.D)
             self._X = np.ctypeslib.as_array(
-                _nfftlib.jnfft_set_x(self.plan, value),
-                shape=(self.M * self.D,)
+                _nfftlib.jnfft_set_x(self.plan, value), shape=(self.M * self.D,)
             ).reshape(shape)
 
     @property
@@ -206,8 +206,10 @@ class NFFT:
                 and value.flags["C"]
             ):
                 raise RuntimeError("f has to be C-continuous, numpy complex128 array")
-            
-            self._f = np.ctypeslib.as_array(_nfftlib.jnfft_set_f(self.plan, value), shape=(self.M * 2,)).view(np.complex128)
+
+            self._f = np.ctypeslib.as_array(
+                _nfftlib.jnfft_set_f(self.plan, value), shape=(self.M * 2,)
+            ).view(np.complex128)
 
     @property
     def fhat(self) -> np.ndarray:
@@ -216,13 +218,13 @@ class NFFT:
     @fhat.setter
     def fhat(self, value: np.ndarray):
         if value is not None:
-            
+
             if not self.init_done:
                 self.nfft_init()
-            
+
             if self.finalized:
                 raise RuntimeError("Plan already finalized")
-             
+
             if not (
                 isinstance(value, np.ndarray)
                 and value.dtype == np.complex128
@@ -231,12 +233,11 @@ class NFFT:
                 raise RuntimeError(
                     "fhat has to be C-continuous, numpy complex128 array"
                 )
-            
+
             Ns = np.prod(self.N)
-            
+
             self._fhat = np.ctypeslib.as_array(
-                _nfftlib.jnfft_set_fhat(self.plan, value),
-                shape=(Ns*2,)
+                _nfftlib.jnfft_set_fhat(self.plan, value), shape=(Ns * 2,)
             ).view(np.complex128)
 
     @property
@@ -256,7 +257,9 @@ class NFFT:
 
         if not hasattr(self, "x"):
             raise ValueError("x has not been set.")
-        self.f = np.ctypeslib.as_array(_nfftlib.jnfft_trafo(self.plan), shape=(self.M * 2,)).view(np.complex128)
+        self.f = np.ctypeslib.as_array(
+            _nfftlib.jnfft_trafo(self.plan), shape=(self.M * 2,)
+        ).view(np.complex128)
 
     def trafo(self):
         """
@@ -278,7 +281,9 @@ class NFFT:
         if self.x is None:
             raise ValueError("x has not been set.")
 
-        self.f = np.ctypeslib.as_array(_nfftlib.jnfft_trafo_direct(self.plan), shape=(self.M * 2,)).view(np.complex128)
+        self.f = np.ctypeslib.as_array(
+            _nfftlib.jnfft_trafo_direct(self.plan), shape=(self.M * 2,)
+        ).view(np.complex128)
 
     def trafo_direct(self):
         """
@@ -301,7 +306,9 @@ class NFFT:
         if not hasattr(self, "x"):
             raise ValueError("x has not been set.")
 
-        self.fhat = np.ctypeslib.as_array(_nfftlib.jnfft_adjoint(self.plan), shape=(Ns * 2,)).view(np.complex128)
+        self.fhat = np.ctypeslib.as_array(
+            _nfftlib.jnfft_adjoint(self.plan), shape=(Ns * 2,)
+        ).view(np.complex128)
 
     def adjoint(self):
         """
@@ -324,7 +331,9 @@ class NFFT:
         if not hasattr(self, "x"):
             raise ValueError("x has not been set.")
 
-        self.fhat = np.ctypeslib.as_array(_nfftlib.jnfft_adjoint_direct(self.plan), shape=(Ns * 2,)).view(np.complex128)
+        self.fhat = np.ctypeslib.as_array(
+            _nfftlib.jnfft_adjoint_direct(self.plan), shape=(Ns * 2,)
+        ).view(np.complex128)
 
     def adjoint_direct(self):
         """

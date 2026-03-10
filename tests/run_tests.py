@@ -1,6 +1,6 @@
+import os
 import subprocess
 import sys
-import os
 
 
 # Script to run all tests and return any failures

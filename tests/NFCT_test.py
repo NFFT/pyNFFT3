@@ -1,5 +1,7 @@
+import os
+import sys
+
 import numpy as np
-import sys, os
 
 # Ensure src directory is in the PYTHONPATH
 sys.path.insert(

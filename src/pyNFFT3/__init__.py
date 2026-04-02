@@ -97,6 +97,7 @@ _fastsumlib = ctypes.CDLL(lib_path_fastsum)
 from .fastsum import *
 from .flags import *
 from .NFCT import *
+from .NFMT import *
 # Import modules
 from .NFFT import *
 from .NFST import *
@@ -105,6 +106,7 @@ from .NFST import *
 __all__ = [
     "NFFT",
     "NFCT",
+    "NFMT",
     "NFST",
     "NFSFT",
     "FSFT",

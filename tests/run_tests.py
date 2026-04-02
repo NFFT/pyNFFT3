@@ -8,6 +8,7 @@ def run_tests():
     test_files = [
         "tests/NFFT_test.py",
         "tests/NFCT_test.py",
+        "tests/NFMT_test.py",
         "tests/NFST_test.py",
         "tests/NFSFT_test.py",
         "tests/FSFT_test.py",

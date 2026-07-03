@@ -242,10 +242,10 @@ class NFST:
         if self.finalized:
             raise RuntimeError("NFST already finalized")
 
-        if not hasattr(self, "fhat"):
+        if not hasattr(self, "_fhat"):
             raise ValueError("fhat has not been set.")
 
-        if not hasattr(self, "x"):
+        if not hasattr(self, "_x"):
             raise ValueError("x has not been set.")
         self._f = np.ctypeslib.as_array(_nfstlib.jnfst_trafo(self.plan), shape=(self.M,)).copy()
 

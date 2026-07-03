@@ -222,10 +222,10 @@ class NFSFT:
         if self.finalized:
             raise RuntimeError("NFSFT already finalized")
 
-        if not hasattr(self, "fhat"):
+        if not hasattr(self, "_fhat"):
             raise ValueError("fhat has not been set.")
 
-        if not hasattr(self, "x"):
+        if not hasattr(self, "_x"):
             raise ValueError("x has not been set.")
         self._f = np.ctypeslib.as_array(
             _nfsftlib.jnfsft_trafo(self.plan), shape=(self.M * 2,)
@@ -269,10 +269,10 @@ class NFSFT:
         if self.finalized:
             raise RuntimeError("NFSFT already finalized")
 
-        if not hasattr(self, "f"):
+        if not hasattr(self, "_f"):
             raise ValueError("f has not been set.")
 
-        if not hasattr(self, "x"):
+        if not hasattr(self, "_x"):
             raise ValueError("x has not been set.")
         self._fhat = np.ctypeslib.as_array(
             _nfsftlib.jnfsft_adjoint(self.plan), shape=(N_total * 2,)
@@ -293,10 +293,10 @@ class NFSFT:
         if self.finalized:
             raise RuntimeError("NFSFT already finalized")
 
-        if not hasattr(self, "f"):
+        if not hasattr(self, "_f"):
             raise ValueError("f has not been set.")
 
-        if not hasattr(self, "x"):
+        if not hasattr(self, "_x"):
             raise ValueError("x has not been set.")
         self._fhat = np.ctypeslib.as_array(
             _nfsftlib.jnfsft_adjoint_direct(self.plan), shape=(N_total * 2,)

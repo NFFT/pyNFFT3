@@ -252,10 +252,10 @@ class NFFT:
         if self.finalized:
             raise RuntimeError("NFFT already finalized")
 
-        if not hasattr(self, "fhat"):
+        if not hasattr(self, "_fhat"):
             raise ValueError("fhat has not been set.")
 
-        if not hasattr(self, "x"):
+        if not hasattr(self, "_x"):
             raise ValueError("x has not been set.")
         self._f = np.ctypeslib.as_array(
             _nfftlib.jnfft_trafo(self.plan), shape=(self.M * 2,)
@@ -300,10 +300,10 @@ class NFFT:
         if self.finalized:
             raise RuntimeError("NFFT already finalized")
 
-        if not hasattr(self, "f"):
+        if not hasattr(self, "_f"):
             raise ValueError("f has not been set.")
 
-        if not hasattr(self, "x"):
+        if not hasattr(self, "_x"):
             raise ValueError("x has not been set.")
 
         self._fhat = np.ctypeslib.as_array(
@@ -325,10 +325,10 @@ class NFFT:
         if self.finalized:
             raise RuntimeError("NFFT already finalized")
 
-        if not hasattr(self, "f"):
+        if not hasattr(self, "_f"):
             raise ValueError("f has not been set.")
 
-        if not hasattr(self, "x"):
+        if not hasattr(self, "_x"):
             raise ValueError("x has not been set.")
 
         self._fhat = np.ctypeslib.as_array(

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>pyNFFT3.NFFT - NFFT Class &#8212; pyNFFT3 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=2bf1fcf8" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=a647a8c2" />
+    
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pyNFFT3.NFCT - NFCT Class" href="nfct.html" />
+    <link rel="prev" title="API Contents" href="../api.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="nfct.html" title="pyNFFT3.NFCT - NFCT Class"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../api.html" title="API Contents"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">pyNFFT3 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../api.html" accesskey="U">API Contents</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFFT</span></code> - NFFT Class</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="pynfft3-nfft-nfft-class">
+<h1><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFFT</span></code> - NFFT Class<a class="headerlink" href="#pynfft3-nfft-nfft-class" title="Link to this heading">¶</a></h1>
+<section id="nfft-methods">
+<h2>NFFT Methods<a class="headerlink" href="#nfft-methods" title="Link to this heading">¶</a></h2>
+</section>
+<section id="nfft-attributes">
+<h2>NFFT Attributes<a class="headerlink" href="#nfft-attributes" title="Link to this heading">¶</a></h2>
+<blockquote>
+<div><dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">plan</span> <span class="pre">&lt;nfft_plan&gt;</span></span></dt>
+<dd><p>NFFT plan (C pointer)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">N</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
+<dd><p>The multiband limit <span class="math notranslate nohighlight">\((N_1,N_2,...,N_D)\)</span> of the trigonometric polynomial <span class="math notranslate nohighlight">\(f\)</span>. Must contain positive and even integers.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">M</span> <span class="pre">&lt;int&gt;</span></span></dt>
+<dd><p>The number of nodes. Must be a positive integer.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">n</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
+<dd><p>The oversampling <span class="math notranslate nohighlight">\((n_1,n_2,...,n_D)\)</span> per dimension.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">m</span> <span class="pre">&lt;int&gt;</span></span></dt>
+<dd><p>The window size. A larger m results in more accuracy but at a higher computational cost.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">f1</span> <span class="pre">&lt;ctypes.c_uint32&gt;</span></span></dt>
+<dd><p>The NFFT flags.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">f2</span> <span class="pre">&lt;ctypes.c_unit32&gt;</span></span></dt>
+<dd><p>The FFTW flags.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">x</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
+<dd><p>Float array for sampling nodes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">f</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
+<dd><p>Complex array for NFFT values or coefficients for the adjoint NFFT.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">fhat</span> <span class="pre">&lt;numpy.ndarray&gt;</span></span></dt>
+<dd><p>Complex array of Fourier coefficients for the NFFT or values for the adjoint NFFT.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">D</span> <span class="pre">&lt;int&gt;</span></span></dt>
+<dd><p>The number of dimensions, which is equal to the length of <strong>N</strong>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">init_done</span> <span class="pre">&lt;boolean&gt;</span></span></dt>
+<dd><p>Boolean to indicate if the NFFT plan is initialized.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">finalized</span> <span class="pre">&lt;boolean&gt;</span></span></dt>
+<dd><p>Boolean to indicate if the NFFT plan is finalized.</p>
+</dd></dl>
+
+</div></blockquote>
+</section>
+<section id="nfft-flags">
+<h2>NFFT Flags<a class="headerlink" href="#nfft-flags" title="Link to this heading">¶</a></h2>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFFT</span></code> - NFFT Class</a><ul>
+<li><a class="reference internal" href="#nfft-methods">NFFT Methods</a></li>
+<li><a class="reference internal" href="#nfft-attributes">NFFT Attributes</a></li>
+<li><a class="reference internal" href="#nfft-flags">NFFT Flags</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="../api.html"
+                          title="previous chapter">API Contents</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="nfct.html"
+                          title="next chapter"><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFCT</span></code> - NFCT Class</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/nfft.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="nfct.html" title="pyNFFT3.NFCT - NFCT Class"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../api.html" title="API Contents"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">pyNFFT3 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../api.html" >API Contents</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="docutils literal notranslate"><span class="pre">pyNFFT3.NFFT</span></code> - NFFT Class</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, Michael Nolander.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    </div>
+  </body>
+</html>

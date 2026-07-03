@@ -1,0 +1,69 @@
+pyNFFT3 package
+===============
+
+Submodules
+----------
+
+pyNFFT3.FSFT module
+-------------------
+
+.. automodule:: pyNFFT3.FSFT
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+pyNFFT3.NFCT module
+-------------------
+
+.. automodule:: pyNFFT3.NFCT
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+pyNFFT3.NFFT module
+-------------------
+
+.. automodule:: pyNFFT3.NFFT
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+pyNFFT3.NFSFT module
+--------------------
+
+.. automodule:: pyNFFT3.NFSFT
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+pyNFFT3.NFST module
+-------------------
+
+.. automodule:: pyNFFT3.NFST
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+pyNFFT3.fastsum module
+----------------------
+
+.. automodule:: pyNFFT3.fastsum
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+pyNFFT3.flags module
+--------------------
+
+.. automodule:: pyNFFT3.flags
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: pyNFFT3
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -165,7 +165,7 @@ class NFCT:
 
     @property
     def x(self) -> np.ndarray:
-        return self._X
+        return self.X
 
     @x.setter
     def x(self, value: np.ndarray):
@@ -184,7 +184,7 @@ class NFCT:
                 shape = self.M
             else:
                 shape = (self.M, self.D)
-            self._X = np.ctypeslib.as_array(
+            self.X = np.ctypeslib.as_array(
                 _nfctlib.jnfct_set_x(self.plan, value), shape=(self.M * self.D,)
             ).reshape(shape)
 

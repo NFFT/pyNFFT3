@@ -196,3 +196,5 @@ __all__ = [
     "nfsft_default_nfft_cut_off",
     "nfsft_default_threshold",
 ]
+
+print("test 2")

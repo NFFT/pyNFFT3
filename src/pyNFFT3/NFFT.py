@@ -103,7 +103,7 @@ class NFFT:
         self.f2 = f2  # FFTW flags
         self.init_done = False  # bool for plan init
         self.finalized = False  # bool for finalizer
-        self._x = None  # nodes, will be set later
+        self._X = None  # nodes, will be set later
         self._f = None  # function values
         self._fhat = None  # Fourier coefficients
 
@@ -255,7 +255,7 @@ class NFFT:
         if not hasattr(self, "_fhat"):
             raise ValueError("fhat has not been set.")
 
-        if not hasattr(self, "_x"):
+        if not hasattr(self, "_X"):
             raise ValueError("x has not been set.")
         self._f = np.ctypeslib.as_array(
             _nfftlib.jnfft_trafo(self.plan), shape=(self.M * 2,)
@@ -278,7 +278,7 @@ class NFFT:
         if self._fhat is None:
             raise ValueError("fhat has not been set.")
 
-        if self._x is None:
+        if self._X is None:
             raise ValueError("x has not been set.")
 
         self._f = np.ctypeslib.as_array(
@@ -303,7 +303,7 @@ class NFFT:
         if not hasattr(self, "_f"):
             raise ValueError("f has not been set.")
 
-        if not hasattr(self, "_x"):
+        if not hasattr(self, "_X"):
             raise ValueError("x has not been set.")
 
         self._fhat = np.ctypeslib.as_array(
@@ -328,7 +328,7 @@ class NFFT:
         if not hasattr(self, "_f"):
             raise ValueError("f has not been set.")
 
-        if not hasattr(self, "_x"):
+        if not hasattr(self, "_X"):
             raise ValueError("x has not been set.")
 
         self._fhat = np.ctypeslib.as_array(

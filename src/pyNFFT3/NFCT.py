@@ -103,7 +103,7 @@ class NFCT:
         self.f2 = f2  # FFTW flags
         self.init_done = False  # bool for plan init
         self.finalized = False  # bool for finalizer
-        self._x = None  # nodes, will be set later
+        self._X = None  # nodes, will be set later
         self._f = None  # function values
         self._fhat = None  # Fourier coefficients
 
@@ -165,7 +165,7 @@ class NFCT:
 
     @property
     def x(self) -> np.ndarray:
-        return self._x
+        return self._X
 
     @x.setter
     def x(self, value: np.ndarray):
@@ -184,7 +184,7 @@ class NFCT:
                 shape = self.M
             else:
                 shape = (self.M, self.D)
-            self._x = np.ctypeslib.as_array(
+            self._X = np.ctypeslib.as_array(
                 _nfctlib.jnfct_set_x(self.plan, value), shape=(self.M * self.D,)
             ).reshape(shape)
 
@@ -246,7 +246,7 @@ class NFCT:
         if not hasattr(self, "_fhat"):
             raise ValueError("fhat has not been set.")
 
-        if not hasattr(self, "_x"):
+        if not hasattr(self, "_X"):
             raise ValueError("x has not been set.")
         self._f = np.ctypeslib.as_array(_nfctlib.jnfct_trafo(self.plan), shape=(self.M,)).copy()
 
@@ -267,7 +267,7 @@ class NFCT:
         if self._fhat is None:
             raise ValueError("fhat has not been set.")
 
-        if self._x is None:
+        if self._X is None:
             raise ValueError("x has not been set.")
         self._f = np.ctypeslib.as_array(
             _nfctlib.jnfct_trafo_direct(self.plan), shape=(self.M,)
@@ -292,7 +292,7 @@ class NFCT:
         if self._f is None:
             raise ValueError("f has not been set.")
 
-        if self._x is None:
+        if self._X is None:
             raise ValueError("x has not been set.")
         self._fhat = np.ctypeslib.as_array(
             _nfctlib.jnfct_adjoint(self.plan), shape=(Ns,)
@@ -310,7 +310,7 @@ class NFCT:
         if self._f is None:
             raise ValueError("f has not been set.")
 
-        if self._x is None:
+        if self._X is None:
             raise ValueError("x has not been set.")
         self._fhat = np.ctypeslib.as_array(
             _nfctlib.jnfct_adjoint_direct(self.plan), shape=(Ns,)

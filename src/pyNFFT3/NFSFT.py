@@ -65,7 +65,7 @@ class NFSFT:
         self.nfft_cutoff = nfft_cutoff
         self.init_done = False  # bool for plan init
         self.finalized = False  # bool for finalizer
-        self._x = None  # nodes, will be set later
+        self._X = None  # nodes, will be set later
         self._f = None  # function coefficients
         self._fhat = None  # spherical Fourier coefficients
 
@@ -225,7 +225,7 @@ class NFSFT:
         if not hasattr(self, "_fhat"):
             raise ValueError("fhat has not been set.")
 
-        if not hasattr(self, "_x"):
+        if not hasattr(self, "_X"):
             raise ValueError("x has not been set.")
         self._f = np.ctypeslib.as_array(
             _nfsftlib.jnfsft_trafo(self.plan), shape=(self.M * 2,)
@@ -248,7 +248,7 @@ class NFSFT:
         if self._fhat is None:
             raise ValueError("fhat has not been set.")
 
-        if self._x is None:
+        if self._X is None:
             raise ValueError("x has not been set.")
         self._f = np.ctypeslib.as_array(
             _nfsftlib.jnfsft_trafo_direct(self.plan), shape=(self.M * 2,)
@@ -272,7 +272,7 @@ class NFSFT:
         if not hasattr(self, "_f"):
             raise ValueError("f has not been set.")
 
-        if not hasattr(self, "_x"):
+        if not hasattr(self, "_X"):
             raise ValueError("x has not been set.")
         self._fhat = np.ctypeslib.as_array(
             _nfsftlib.jnfsft_adjoint(self.plan), shape=(N_total * 2,)
@@ -296,7 +296,7 @@ class NFSFT:
         if not hasattr(self, "_f"):
             raise ValueError("f has not been set.")
 
-        if not hasattr(self, "_x"):
+        if not hasattr(self, "_X"):
             raise ValueError("x has not been set.")
         self._fhat = np.ctypeslib.as_array(
             _nfsftlib.jnfsft_adjoint_direct(self.plan), shape=(N_total * 2,)

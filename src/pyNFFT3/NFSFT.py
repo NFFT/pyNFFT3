@@ -65,9 +65,9 @@ class NFSFT:
         self.nfft_cutoff = nfft_cutoff
         self.init_done = False  # bool for plan init
         self.finalized = False  # bool for finalizer
-        self.x = None  # nodes, will be set later
-        self.f = None  # function coefficients
-        self.fhat = None  # spherical Fourier coefficients
+        self._X = None  # nodes, will be set later
+        self._f = None  # function coefficients
+        self._fhat = None  # spherical Fourier coefficients
 
         if N <= 0:
             raise ValueError(f"Invalid N: {N}. Argument must be a positive integer")
@@ -222,14 +222,18 @@ class NFSFT:
         if self.finalized:
             raise RuntimeError("NFSFT already finalized")
 
-        if not hasattr(self, "fhat"):
+        if not hasattr(self, "_fhat"):
             raise ValueError("fhat has not been set.")
 
-        if not hasattr(self, "x"):
+        if not hasattr(self, "_X"):
             raise ValueError("x has not been set.")
-        self.f = np.ctypeslib.as_array(
-            _nfsftlib.jnfsft_trafo(self.plan), shape=(self.M * 2,)
-        ).view(np.complex128)
+        self._f = (
+            np.ctypeslib.as_array(
+                _nfsftlib.jnfsft_trafo(self.plan), shape=(self.M * 2,)
+            )
+            .view(np.complex128)
+            .copy()
+        )
 
     def trafo(self):
         """
@@ -245,14 +249,18 @@ class NFSFT:
         if self.finalized:
             raise RuntimeError("NFSFT already finalized")
 
-        if self.fhat is None:
+        if self._fhat is None:
             raise ValueError("fhat has not been set.")
 
-        if self.x is None:
+        if self._X is None:
             raise ValueError("x has not been set.")
-        self.f = np.ctypeslib.as_array(
-            _nfsftlib.jnfsft_trafo_direct(self.plan), shape=(self.M * 2,)
-        ).view(np.complex128)
+        self._f = (
+            np.ctypeslib.as_array(
+                _nfsftlib.jnfsft_trafo_direct(self.plan), shape=(self.M * 2,)
+            )
+            .view(np.complex128)
+            .copy()
+        )
 
     def trafo_direct(self):
         """
@@ -269,14 +277,18 @@ class NFSFT:
         if self.finalized:
             raise RuntimeError("NFSFT already finalized")
 
-        if not hasattr(self, "f"):
+        if not hasattr(self, "_f"):
             raise ValueError("f has not been set.")
 
-        if not hasattr(self, "x"):
+        if not hasattr(self, "_X"):
             raise ValueError("x has not been set.")
-        self.fhat = np.ctypeslib.as_array(
-            _nfsftlib.jnfsft_adjoint(self.plan), shape=(N_total * 2,)
-        ).view(np.complex128)
+        self._fhat = (
+            np.ctypeslib.as_array(
+                _nfsftlib.jnfsft_adjoint(self.plan), shape=(N_total * 2,)
+            )
+            .view(np.complex128)
+            .copy()
+        )
 
     def adjoint(self):
         """
@@ -293,14 +305,18 @@ class NFSFT:
         if self.finalized:
             raise RuntimeError("NFSFT already finalized")
 
-        if not hasattr(self, "f"):
+        if not hasattr(self, "_f"):
             raise ValueError("f has not been set.")
 
-        if not hasattr(self, "x"):
+        if not hasattr(self, "_X"):
             raise ValueError("x has not been set.")
-        self.fhat = np.ctypeslib.as_array(
-            _nfsftlib.jnfsft_adjoint_direct(self.plan), shape=(N_total * 2,)
-        ).view(np.complex128)
+        self._fhat = (
+            np.ctypeslib.as_array(
+                _nfsftlib.jnfsft_adjoint_direct(self.plan), shape=(N_total * 2,)
+            )
+            .view(np.complex128)
+            .copy()
+        )
 
     def adjoint_direct(self):
         """

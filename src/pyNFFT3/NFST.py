@@ -102,9 +102,9 @@ class NFST:
         self.f2 = f2  # FFTW flags
         self.init_done = False  # bool for plan init
         self.finalized = False  # bool for finalizer
-        self.x = None  # nodes, will be set later
-        self.f = None  # function values
-        self.fhat = None  # Fourier coefficients
+        self._X = None  # nodes, will be set later
+        self._f = None  # function values
+        self._fhat = None  # Fourier coefficients
 
     def __del__(self):
         self.finalize_plan()
@@ -242,12 +242,14 @@ class NFST:
         if self.finalized:
             raise RuntimeError("NFST already finalized")
 
-        if not hasattr(self, "fhat"):
+        if not hasattr(self, "_fhat"):
             raise ValueError("fhat has not been set.")
 
-        if not hasattr(self, "x"):
+        if not hasattr(self, "_X"):
             raise ValueError("x has not been set.")
-        self.f = np.ctypeslib.as_array(_nfstlib.jnfst_trafo(self.plan), shape=(self.M,))
+        self._f = np.ctypeslib.as_array(
+            _nfstlib.jnfst_trafo(self.plan), shape=(self.M,)
+        ).copy()
 
     def trafo(self):
         """
@@ -263,14 +265,14 @@ class NFST:
         if self.finalized:
             raise RuntimeError("NFST already finalized")
 
-        if self.fhat is None:
+        if self._fhat is None:
             raise ValueError("fhat has not been set.")
 
-        if self.x is None:
+        if self._X is None:
             raise ValueError("x has not been set.")
-        self.f = np.ctypeslib.as_array(
+        self._f = np.ctypeslib.as_array(
             _nfstlib.jnfst_trafo_direct(self.plan), shape=(self.M,)
-        )
+        ).copy()
 
     def trafo_direct(self):
         """
@@ -287,14 +289,14 @@ class NFST:
         if self.finalized:
             raise RuntimeError("NFST already finalized")
 
-        if self.f is None:
+        if self._f is None:
             raise ValueError("f has not been set.")
 
-        if self.x is None:
+        if self._X is None:
             raise ValueError("x has not been set.")
-        self.fhat = np.ctypeslib.as_array(
+        self._fhat = np.ctypeslib.as_array(
             _nfstlib.jnfst_adjoint(self.plan), shape=(Ns,)
-        )
+        ).copy()
 
     def nfst_transposed_direct(self):
         """
@@ -305,14 +307,14 @@ class NFST:
         if self.finalized:
             raise RuntimeError("NFST already finalized")
 
-        if self.f is None:
+        if self._f is None:
             raise ValueError("f has not been set.")
 
-        if self.x is None:
+        if self._X is None:
             raise ValueError("x has not been set.")
-        self.fhat = np.ctypeslib.as_array(
+        self._fhat = np.ctypeslib.as_array(
             _nfstlib.jnfst_adjoint_direct(self.plan), shape=(Ns,)
-        )
+        ).copy()
 
     def nfst_adjoint(self):
         """

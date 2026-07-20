@@ -4,14 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pyNFFT3"
-version = "1.0.1"
+version = "1.0.2"
 authors = [
   { name="Michael Nolander", email="nolander.michael@gmail.com" },
 ]
 maintainers = [
   { name="Pascal Schröter", email="pascal.schroeter@mathematik.tu-chemnitz.de"}
 ]
-description = "Python interface for the NFFT C library"
+description = "Python interface to the NFFT C library, with the compiled NFFT/FFTW binaries bundled in the wheel (no separate C library or compiler needed)"
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [

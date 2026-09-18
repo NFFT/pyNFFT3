@@ -210,9 +210,13 @@ class FSFT:
 
         if not hasattr(self, "_fhat"):
             raise ValueError("fhat has not been set.")
-        self._f = np.ctypeslib.as_array(
-            _nfsftlib.jnfsft_trafo(self.plan), shape=(self.M * 2,)
-        ).view(np.complex128).copy()
+        self._f = (
+            np.ctypeslib.as_array(
+                _nfsftlib.jnfsft_trafo(self.plan), shape=(self.M * 2,)
+            )
+            .view(np.complex128)
+            .copy()
+        )
         # Same underlying nfsft_trafo() as NFSFT: without NFSFT_PRESERVE_F_HAT
         # it overwrites fhat in place with internal FPT/FFT scratch data.
         if not (self.flags & NFSFT_PRESERVE_F_HAT):
@@ -244,9 +248,13 @@ class FSFT:
 
         if self._fhat is None:
             raise ValueError("fhat has not been set.")
-        self._f = np.ctypeslib.as_array(
-            _nfsftlib.jnfsft_trafo_direct(self.plan), shape=(self.M * 2,)
-        ).view(np.complex128).copy()
+        self._f = (
+            np.ctypeslib.as_array(
+                _nfsftlib.jnfsft_trafo_direct(self.plan), shape=(self.M * 2,)
+            )
+            .view(np.complex128)
+            .copy()
+        )
 
     def trafo_direct(self):
         """
@@ -265,9 +273,13 @@ class FSFT:
 
         if not hasattr(self, "_f"):
             raise ValueError("f has not been set.")
-        self._fhat = np.ctypeslib.as_array(
-            _nfsftlib.jnfsft_adjoint(self.plan), shape=(N_total * 2,)
-        ).view(np.complex128).copy()
+        self._fhat = (
+            np.ctypeslib.as_array(
+                _nfsftlib.jnfsft_adjoint(self.plan), shape=(N_total * 2,)
+            )
+            .view(np.complex128)
+            .copy()
+        )
         self._fhat_corrupted_by_fast_trafo = False
 
     def adjoint(self):
@@ -287,9 +299,13 @@ class FSFT:
 
         if not hasattr(self, "_f"):
             raise ValueError("f has not been set.")
-        self._fhat = np.ctypeslib.as_array(
-            _nfsftlib.jnfsft_adjoint_direct(self.plan), shape=(N_total * 2,)
-        ).view(np.complex128).copy()
+        self._fhat = (
+            np.ctypeslib.as_array(
+                _nfsftlib.jnfsft_adjoint_direct(self.plan), shape=(N_total * 2,)
+            )
+            .view(np.complex128)
+            .copy()
+        )
         self._fhat_corrupted_by_fast_trafo = False
 
     def adjoint_direct(self):

@@ -68,7 +68,7 @@ class NFSFT:
         self._X = None  # nodes, will be set later
         self._f = None  # function coefficients
         self._fhat = None  # spherical Fourier coefficients
-        self._fast_used = False  # whether trafo()/adjoint() has run on this plan
+        self._fhat_corrupted_by_fast_trafo = False
 
         if N <= 0:
             raise ValueError(f"Invalid N: {N}. Argument must be a positive integer")
@@ -203,6 +203,7 @@ class NFSFT:
             self._fhat = np.ctypeslib.as_array(
                 _nfsftlib.jnfsft_set_fhat(self.plan, value), shape=(N_total * 2,)
             ).view(np.complex128)
+            self._fhat_corrupted_by_fast_trafo = False
 
     @property
     def num_threads(self) -> int:
@@ -231,7 +232,12 @@ class NFSFT:
         self._f = np.ctypeslib.as_array(
             _nfsftlib.jnfsft_trafo(self.plan), shape=(self.M * 2,)
         ).view(np.complex128).copy()
-        self._fast_used = True
+        # Without NFSFT_PRESERVE_F_HAT the C library overwrites fhat in place
+        # with internal FPT/FFT scratch data as a side effect of trafo() (see
+        # nfsft_trafo() in kernel/nfsft/nfsft.c) - remember that so
+        # nfsft_trafo_direct() can refuse to trust it afterwards.
+        if not (self.flags & NFSFT_PRESERVE_F_HAT):
+            self._fhat_corrupted_by_fast_trafo = True
 
     def trafo(self):
         """
@@ -247,12 +253,14 @@ class NFSFT:
         if self.finalized:
             raise RuntimeError("NFSFT already finalized")
 
-        if self._fast_used:
+        if getattr(self, "_fhat_corrupted_by_fast_trafo", False):
             raise RuntimeError(
-                "nfsft_trafo_direct() cannot be called on a plan after "
-                "nfsft_trafo()/nfsft_adjoint() has run on it (the underlying NFSFT "
-                "library returns incorrect results for that order). Call the "
-                "*_direct() variant first, or create a new NFSFT plan."
+                "nfsft_trafo_direct() cannot be trusted on this plan: "
+                "nfsft_trafo() already overwrote fhat in place with internal "
+                "scratch data (expected behaviour of the underlying library "
+                "without the NFSFT_PRESERVE_F_HAT flag - see simpleTest/"
+                "example_nfsft.py). Set fhat again, pass NFSFT_PRESERVE_F_HAT "
+                "explicitly, or create a new NFSFT plan."
             )
 
         if self._fhat is None:
@@ -287,7 +295,10 @@ class NFSFT:
         self._fhat = np.ctypeslib.as_array(
             _nfsftlib.jnfsft_adjoint(self.plan), shape=(N_total * 2,)
         ).view(np.complex128).copy()
-        self._fast_used = True
+        # nfsft_adjoint() writes a fresh fhat (it does not read/reuse the
+        # previous one), so any earlier trafo()-induced corruption no longer
+        # matters.
+        self._fhat_corrupted_by_fast_trafo = False
 
     def adjoint(self):
         """
@@ -304,14 +315,6 @@ class NFSFT:
         if self.finalized:
             raise RuntimeError("NFSFT already finalized")
 
-        if self._fast_used:
-            raise RuntimeError(
-                "nfsft_adjoint_direct() cannot be called on a plan after "
-                "nfsft_trafo()/nfsft_adjoint() has run on it (the underlying NFSFT "
-                "library returns incorrect results for that order). Call the "
-                "*_direct() variant first, or create a new NFSFT plan."
-            )
-
         if not hasattr(self, "_f"):
             raise ValueError("f has not been set.")
 
@@ -320,6 +323,7 @@ class NFSFT:
         self._fhat = np.ctypeslib.as_array(
             _nfsftlib.jnfsft_adjoint_direct(self.plan), shape=(N_total * 2,)
         ).view(np.complex128).copy()
+        self._fhat_corrupted_by_fast_trafo = False
 
     def adjoint_direct(self):
         """

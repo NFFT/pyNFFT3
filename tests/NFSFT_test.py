@@ -19,55 +19,49 @@ X = np.random.rand(2, M)
 X[0, :] -= 0.5
 X[1, :] *= 0.5
 
-# NOTE: each operation below uses its own, freshly initialized plan. The
-# underlying NFSFT library corrupts its internal state if a *_direct()
-# method is called on the same plan after trafo()/adjoint() has already run
-# on it (returns silently wrong results, or worse) - so direct and fast
-# variants must never share a plan.
-
-# test trafo direct
-plan_direct = NFSFT(N, M)
-plan_direct.x = X
+# test init and setting x
+plan = NFSFT(N, M)
+plan.x = X
 
 # generate pseudo-random Fourier coefficients
-fhat = np.zeros((2 * plan_direct.N + 2) ** 2, dtype=np.complex128)
+fhat = np.zeros((2 * plan.N + 2) ** 2, dtype=np.complex128)
 for k in range(N + 1):
     for n in range(-k, k + 1):
-        index = plan_direct.nfsft_index(k, n)
+        index = plan.nfsft_index(k, n)
         fhat[index] = (np.random.rand() - 0.5) + 1j * (np.random.rand() - 0.5)
+plan.fhat = fhat
 
-plan_direct.fhat = fhat
-plan_direct.trafo_direct()
-f1 = np.copy(plan_direct.f)
+# test trafo direct
+plan.trafo_direct()
+f1 = np.copy(plan.f)
 
 # test trafo
-plan_fast = NFSFT(N, M)
-plan_fast.x = X
-plan_fast.fhat = fhat
-plan_fast.trafo()
-f2 = np.copy(plan_fast.f)
+# NOTE: nfsft_default does not include NFSFT_PRESERVE_F_HAT, so trafo()
+# overwrites plan.fhat in place with internal FPT/FFT scratch data as a side
+# effect (see kernel/nfsft/nfsft.c: nfsft_trafo() aliases
+# f_hat_intern = f_hat instead of copying unless that flag is set). This is
+# expected behaviour of the underlying library, not a bug - see
+# simpleTest/example_nfsft.py for a worked-through explanation. It also means
+# trafo_direct() must run BEFORE trafo() on a shared plan, as done here,
+# since trafo_direct() only ever reads fhat.
+plan.trafo()
+f2 = np.copy(plan.f)
 
-# test adjoint direct (using f2 as input, like the trafo() output would be used downstream)
-plan_adj_direct = NFSFT(N, M)
-plan_adj_direct.x = X
-plan_adj_direct.f = f2
-plan_adj_direct.adjoint_direct()
-f3 = np.zeros_like(plan_adj_direct.fhat, dtype=np.complex128)
-for k in range(plan_adj_direct.N + 1):
+# test adjoint direct
+plan.adjoint_direct()
+f3 = np.zeros_like(plan.fhat, dtype=np.complex128)
+for k in range(plan.N + 1):
     for n in range(-k, k + 1):
-        index = plan_adj_direct.nfsft_index(k, n)
-        f3[index] = plan_adj_direct.fhat[index]
+        index = plan.nfsft_index(k, n)
+        f3[index] = plan.fhat[index]
 
 # test fast approximate adjoint
-plan_adj_fast = NFSFT(N, M)
-plan_adj_fast.x = X
-plan_adj_fast.f = f2
-plan_adj_fast.adjoint()
-f4 = np.zeros_like(plan_adj_fast.fhat, dtype=np.complex128)
-for k in range(0, plan_adj_fast.N + 1):
+plan.adjoint()
+f4 = np.zeros_like(plan.fhat, dtype=np.complex128)
+for k in range(0, plan.N + 1):
     for n in range(-k, k + 1):
-        index = plan_adj_fast.nfsft_index(k, n)
-        f4[index] = plan_adj_fast.fhat[index]
+        index = plan.nfsft_index(k, n)
+        f4[index] = plan.fhat[index]
 
 # calculate the error vectors
 error_vector_traf = f1 - f2

@@ -48,12 +48,36 @@ plan.fhat = fhat
 ## NFSFT auswerten      ##
 ##########################
 
-# Hinweis: trafo_direct() muss VOR trafo() aufgerufen werden, sonst liefert
-# trafo_direct() auf demselben Plan falsche Werte (siehe NFSFT_test.py).
+# Wichtiger Hinweis zum Verhalten der zugrunde liegenden C-Bibliothek:
+# trafo() (die schnelle NFSFT) benutzt den Speicher von fhat intern als
+# Arbeitsspeicher fuer einen FPT/FFT-Zwischenschritt und ueberschreibt ihn
+# dabei - plan.fhat enthaelt NACH einem trafo()-Aufruf also nicht mehr die
+# urspruenglichen Koeffizienten, sondern library-interne Zwischendaten!
+# (siehe kernel/nfsft/nfsft.c in github.com/NFFT/nfft: nfsft_trafo() setzt
+# f_hat_intern = f_hat, statt eine Kopie anzulegen, sofern man nicht explizit
+# das Flag NFSFT_PRESERVE_F_HAT setzt.) Das ist so gewolltes/dokumentiertes
+# Verhalten der Bibliothek (Performance: keine zusaetzliche Kopie), keine
+# Einschraenkung von pyNFFT3 selbst.
+#
+# Konsequenzen fuer die Nutzung:
+#   - trafo_direct() liest fhat nur (schreibt es nie) - daher MUSS
+#     trafo_direct() vor trafo() auf demselben Plan aufgerufen werden, sonst
+#     benutzt trafo_direct() die bereits von trafo() ueberschriebenen,
+#     "falschen" Koeffizienten. pyNFFT3 erkennt diesen Fall und wirft einen
+#     RuntimeError, statt stillschweigend falsche Werte zu liefern.
+#   - Wer fhat nach trafo() noch braucht, muss es entweder erneut setzen
+#     (plan.fhat = fhat.copy()) oder beim Erzeugen des Plans das Flag
+#     NFSFT_PRESERVE_F_HAT übergeben (kostet dafür eine zusaetzliche Kopie
+#     pro trafo()-Aufruf):
+#         from pyNFFT3.flags import nfsft_default, NFSFT_PRESERVE_F_HAT
+#         plan = NFSFT(N, M, flags=nfsft_default | NFSFT_PRESERVE_F_HAT)
+#   - adjoint()/adjoint_direct() sind davon NICHT betroffen: beide schreiben
+#     fhat immer frisch aus f, ohne den alten Inhalt zu benoetigen.
+
 plan.trafo_direct()  # langsame, direkte Auswertung (NDSFT) zum Vergleich
 f_direct = plan.f.copy()
 
-plan.trafo()  # schnelle NFSFT
+plan.trafo()  # schnelle NFSFT - ueberschreibt plan.fhat intern als Nebeneffekt!
 f_fast = plan.f.copy()
 
 print(f"max |f_schnell - f_direkt| = {np.max(np.abs(f_fast - f_direct)):.2e}")

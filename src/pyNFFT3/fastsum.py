@@ -192,7 +192,9 @@ class FASTSUM:
             if self.finalized:
                 raise RuntimeError("Plan already finalized")
             X_fort = np.asfortranarray(value)
-            norm_x = np.linalg.norm(X_fort, axis=1)
+            norm_x = (
+                np.abs(X_fort) if X_fort.ndim == 1 else np.linalg.norm(X_fort, axis=1)
+            )
             max_allowed_norm = 0.5 * (0.5 - self.eps_B)
             if np.any(norm_x > max_allowed_norm):
                 raise ValueError(
@@ -234,7 +236,9 @@ class FASTSUM:
             if self.init_done is False:
                 self.init()
             Y_fort = np.asfortranarray(value)
-            norm_y = np.linalg.norm(Y_fort, axis=1)
+            norm_y = (
+                np.abs(Y_fort) if Y_fort.ndim == 1 else np.linalg.norm(Y_fort, axis=1)
+            )
             max_allowed_norm = 0.5 * (0.5 - self.eps_B)
             if np.any(norm_y > max_allowed_norm):
                 raise ValueError(

@@ -64,6 +64,7 @@ class FSFT:
         # self.x = None  # nodes, will be set later
         self._f = None  # function coefficients
         self._fhat = None  # spherical Fourier coefficients
+        self._fast_used = False  # whether trafo()/adjoint() has run on this plan
 
         if N <= 0:
             raise ValueError(f"Invalid N: {N}. Argument must be a positive integer")
@@ -202,6 +203,7 @@ class FSFT:
         self._f = np.ctypeslib.as_array(
             _nfsftlib.jnfsft_trafo(self.plan), shape=(self.M * 2,)
         ).view(np.complex128).copy()
+        self._fast_used = True
 
     def trafo(self):
         """
@@ -216,6 +218,14 @@ class FSFT:
         # Prevent bad stuff from happening
         if self.finalized:
             raise RuntimeError("FSFT already finalized")
+
+        if self._fast_used:
+            raise RuntimeError(
+                "fsft_trafo_direct() cannot be called on a plan after "
+                "fsft_trafo()/fsft_adjoint() has run on it (the underlying FSFT "
+                "library returns incorrect results for that order). Call the "
+                "*_direct() variant first, or create a new FSFT plan."
+            )
 
         if self._fhat is None:
             raise ValueError("fhat has not been set.")
@@ -243,6 +253,7 @@ class FSFT:
         self._fhat = np.ctypeslib.as_array(
             _nfsftlib.jnfsft_adjoint(self.plan), shape=(N_total * 2,)
         ).view(np.complex128).copy()
+        self._fast_used = True
 
     def adjoint(self):
         """
@@ -258,6 +269,14 @@ class FSFT:
         # Prevent bad stuff from happening
         if self.finalized:
             raise RuntimeError("FSFT already finalized")
+
+        if self._fast_used:
+            raise RuntimeError(
+                "fsft_adjoint_direct() cannot be called on a plan after "
+                "fsft_trafo()/fsft_adjoint() has run on it (the underlying FSFT "
+                "library returns incorrect results for that order). Call the "
+                "*_direct() variant first, or create a new FSFT plan."
+            )
 
         if not hasattr(self, "_f"):
             raise ValueError("f has not been set.")

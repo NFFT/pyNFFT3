@@ -41,7 +41,7 @@ elif os.uname().sysname == "Darwin":  # macOS
 else:  # Linux
     ending = ".so"
     glibcver = "glibc2.40"
-    if Version(os.confstr("CS_GNU_LIBC_VERSION").split(" ")[1]) < Version("2.35"):
+    if Version(os.confstr("CS_GNU_LIBC_VERSION").split(" ")[1]) <= Version("2.35"):
         glibcver = "glibc2.22"
 
 if "avx2" in get_cpu_info()["flags"]:
@@ -52,20 +52,6 @@ elif "sse2" in get_cpu_info()["flags"]:
     flag = "SSE2"
 else:
     raise RuntimeError("CPU type not supported")
-
-    glibcver = "glibc2.40"
-    if Version(os.confstr("CS_GNU_LIBC_VERSION").split(" ")[1]) < Version("2.35"):
-        glibcver = "glibc2.22"
-
-if "avx2" in get_cpu_info()["flags"]:
-    flag = "AVX2"
-elif "avx" in get_cpu_info()["flags"]:
-    flag = "AVX"
-elif "sse2" in get_cpu_info()["flags"]:
-    flag = "SSE2"
-else:
-    raise RuntimeError("CPU type not supported")
-
 
 # Check for CPU features and adjust library paths
 package_dir = os.path.dirname(__file__)

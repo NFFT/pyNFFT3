@@ -349,6 +349,17 @@ nfsft_default = NFSFT_MALLOC_X | NFSFT_MALLOC_F | NFSFT_MALLOC_F_HAT
 nfsft_default
 
 Default NFSFT flags.
+
+Note: without NFSFT_PRESERVE_F_HAT (not part of this default), the
+underlying C library's fast nfsft_trafo() overwrites the plan's fhat buffer
+in place with internal FPT/FFT scratch data as a side effect (it treats
+fhat as reusable workspace unless told to copy it first) - so fhat no
+longer holds the original coefficients after a trafo() call. This is
+expected behaviour of the underlying library, not a bug; pass
+NFSFT_PRESERVE_F_HAT explicitly if you need fhat to survive a trafo() call.
+See kernel/nfsft/nfsft.c in the NFFT/nfft repository (jnfsft_trafo ->
+nfsft_trafo) for the underlying code, and simpleTest/example_nfsft.py for a
+worked example of this behaviour.
 """
 
 nfsft_nfft_default = ctypes.c_uint32(

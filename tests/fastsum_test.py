@@ -60,3 +60,35 @@ assert (
 assert (
     E_infty < 1e-5
 ), f"TEST FAILED: Infinity norm ({E_infty}) for trafo test is not less than 1e-5"
+
+# Regression test for d=1 (the x/y setters used to crash with an AxisError
+# for 1D coordinate arrays, since np.linalg.norm(..., axis=1) requires ndim>=2)
+d1 = 1
+N1 = 200
+M1 = 200
+kernel1 = "gaussian"
+c1 = 1 / np.sqrt(N1)
+
+plan1 = FASTSUM(d1, N1, M1, kernel1, c1, eps_B=eps_B)
+
+x1 = (np.random.rand(N1) - 0.5) * (0.25 - eps_B / 2)
+plan1.x = x1
+
+alpha1 = np.random.rand(N1) + 1j * np.random.rand(N1)
+plan1.alpha = alpha1
+
+y1 = (np.random.rand(M1) - 0.5) * (0.25 - eps_B / 2)
+plan1.y = y1
+
+plan1.fastsum_trafo()
+f1_1d = np.copy(plan1.f)
+
+plan1.fastsum_trafo_exact()
+f2_1d = np.copy(plan1.f)
+
+error_vector_1d = f1_1d - f2_1d
+E_2_1d = np.linalg.norm(error_vector_1d) / np.linalg.norm(f1_1d)
+print("E_2 (d=1): ", E_2_1d)
+assert (
+    E_2_1d < 1e-5
+), f"TEST FAILED: Euclidiean norm ({E_2_1d}) for d=1 trafo test is not less than 1e-5"

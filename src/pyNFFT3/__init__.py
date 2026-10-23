@@ -94,12 +94,14 @@ from .NFCT import *
 # Import modules
 from .NFFT import *
 from .NFST import *
+from .NFMT import *
 
 # Export functions and flags
 __all__ = [
     "NFFT",
     "NFCT",
     "NFST",
+    "NFMT",
     "NFSFT",
     "FSFT",
     "FASTSUM",

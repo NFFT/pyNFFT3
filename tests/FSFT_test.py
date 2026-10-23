@@ -12,23 +12,15 @@ from pyNFFT3.flags import *
 from pyNFFT3.FSFT import *
 
 # NOTE on FSFT and *_direct(): nfsft_trafo_direct()/nfsft_adjoint_direct()
-# (shared with NFSFT) unconditionally read/write plan->x for node positions,
-# but FSFT never initializes x itself (there is no x setter - the whole point
-# of NFSFT_EQUISPACED is that the grid is implicit in N). The underlying C
-# library is documented to auto-fill plan->x with the equispaced grid during
-# init precisely so trafo_direct() still works (see the "Set equispaced
-# nodes" comment in nfsft_init_guru(), kernel/nfsft/nfsft.c) - but empirically
-# (see the FSFT PR this fix was made in) two separately-constructed FSFT
-# plans with the *same* N disagree on trafo_direct()/adjoint_direct() output
-# most of the time, while repeated calls *on the same plan* always agree
-# exactly (checked 15/15). That means plan->x is not being populated
-# consistently across plan instances in the bundled library build - possibly
-# an older build than its "3.6.0" label suggests - so trafo_direct()/
-# adjoint_direct() can only be smoke-tested (finite, deterministic across
-# repeated calls on one plan), never compared across two different plans, for
-# *any* N - not just at/above NFSFT_BREAK_EVEN (bandwidth 5) where trafo()
-# additionally switches to a distinct FFT-based algorithm that never touches
-# x at all.
+# (shared with NFSFT) unconditionally read plan->x for node positions. FSFT
+# has no x setter of its own (the whole point of NFSFT_EQUISPACED is that the
+# grid is implicit in N) - fsft_init() now sets it to the equispaced grid
+# itself (mirroring the "Set equispaced nodes" code in nfsft_init_guru(),
+# kernel/nfsft/nfsft.c), since the bundled library does not reliably do this
+# on its own (verified: two separately-constructed FSFT plans with the same N
+# used to disagree on trafo_direct() output most of the time before this
+# fix, 0/60 after). That makes trafo_direct()/adjoint_direct() trustworthy
+# cross-plan references for any N, not just a same-plan smoke test.
 
 # IMPORTANT ordering note: NFSFT/FSFT share one process-global "wisdom"
 # precompute (see nfsft_precompute()/wisdom.initialized in
@@ -38,78 +30,94 @@ from pyNFFT3.FSFT import *
 # first N silently gets NaN from trafo()/adjoint() (wisdom.N_MAX check).
 # So the larger bandwidth must run first in this file.
 
-# --- at/above NFSFT_BREAK_EVEN (5): only a smoke test - trafo()/adjoint() use
-# --- a distinct FFT-based algorithm here that never touches x at all, so
-# --- there is currently no independent, trustworthy reference to validate it
-# --- against from Python.
+
+def random_fhat(plan, N):
+    fhat = np.zeros((2 * plan.N + 2) ** 2, dtype=np.complex128)
+    for k in range(N + 1):
+        for n in range(-k, k + 1):
+            fhat[plan.fsft_index(k, n)] = (np.random.rand() - 0.5) + 1j * (
+                np.random.rand() - 0.5
+            )
+    return fhat
+
+
+def valid_entries(plan, N):
+    """
+    Only indices (k, n) with |n| <= k <= N correspond to actual spherical
+    Fourier coefficients; without NFSFT_ZERO_F_HAT (not part of the default
+    flags), adjoint()/adjoint_direct() leave every other entry in the padded
+    N_total-sized fhat array as unspecified scratch content, which the two
+    algorithms are not expected to agree on (see NFSFT_ZERO_F_HAT in
+    src/pyNFFT3/flags.py) - so comparisons must only look at these indices,
+    exactly like tests/NFSFT_test.py does for NFSFT.
+    """
+    out = np.zeros_like(plan.fhat)
+    for k in range(N + 1):
+        for n in range(-k, k + 1):
+            index = plan.fsft_index(k, n)
+            out[index] = plan.fhat[index]
+    return out
+
+
+def check(label, a, b, tol):
+    err = np.linalg.norm(a - b) / np.linalg.norm(a)
+    print(f"{label}: {err}")
+    assert err < tol, f"TEST FAILED: {label} = {err} is not less than {tol}"
+
+
+# --- at/above NFSFT_BREAK_EVEN (5): trafo()/adjoint() use a distinct,
+# --- FFT-based fast algorithm here, genuinely independent of trafo_direct().
 N = 6
 
 plan = FSFT(N, 1)  # M is ignored/overridden by FSFT for the actual grid size
-fhat = np.zeros((2 * plan.N + 2) ** 2, dtype=np.complex128)
-for k in range(N + 1):
-    for n in range(-k, k + 1):
-        fhat[plan.fsft_index(k, n)] = (np.random.rand() - 0.5) + 1j * (
-            np.random.rand() - 0.5
-        )
+fhat = random_fhat(plan, N)
 plan.fhat = fhat
 
+plan.trafo_direct()
+f1 = np.copy(plan.f)
+
+# nfsft_default does not set NFSFT_PRESERVE_F_HAT, so fsft_trafo() overwrites
+# plan.fhat in place with internal FPT/FFT scratch data (expected behaviour
+# of the underlying library, see simpleTest/example_nfsft.py) - so
+# trafo_direct() (which only reads fhat) must run before trafo() on a shared
+# plan, as done here.
 plan.trafo()
-f_first = np.copy(plan.f)
-assert np.all(np.isfinite(f_first)), "TRAFO TEST FAILED: fsft_trafo() produced NaN/Inf"
+f2 = np.copy(plan.f)
+check("E_2 (trafo test, N >= NFSFT_BREAK_EVEN)", f1, f2, 1e-9)
 
-# nfsft_default does not set NFSFT_PRESERVE_F_HAT, so fsft_trafo() has just
-# overwritten plan.fhat in place with internal FPT/FFT scratch data (expected
-# behaviour of the underlying library, see simpleTest/example_nfsft.py) -
-# fhat must be set again before trafo() can be trusted to reproduce the same
-# result.
-assert not np.array_equal(
-    plan.fhat, fhat
-), "fhat was unexpectedly left untouched by trafo() (NFSFT_PRESERVE_F_HAT not set)"
-plan.fhat = fhat
-plan.trafo()
-f_second = np.copy(plan.f)
-assert np.array_equal(
-    f_first, f_second
-), "TRAFO TEST FAILED: fsft_trafo() is not deterministic for identical input"
+plan.adjoint_direct()
+f3 = valid_entries(plan, N)
 
-print(
-    "fsft_trafo() smoke test (N >= NFSFT_BREAK_EVEN) passed: finite and deterministic"
-)
+plan.adjoint()
+f4 = valid_entries(plan, N)
+check("E_2 (adjoint test, N >= NFSFT_BREAK_EVEN)", f3, f4, 1e-9)
 
-# --- below NFSFT_BREAK_EVEN: trafo() literally calls trafo_direct() on the
-# --- SAME plan internally (see kernel/nfsft/nfsft.c), so this is still only a
-# --- same-plan smoke test (finite, deterministic across repeated calls) - NOT
-# --- a comparison across two separately-constructed plans, which the
-# --- plan->x inconsistency documented above makes meaningless for any N.
-# --- Must run after the N=6 block above (see ordering note).
+# --- below NFSFT_BREAK_EVEN: trafo()/adjoint() literally call
+# --- trafo_direct()/adjoint_direct() internally (see kernel/nfsft/nfsft.c),
+# --- so this is an exact-agreement check, not just an accuracy check. Must
+# --- run after the N=6 block above (see ordering note).
 N_small = 3
 
-plan_small = FSFT(
-    N_small, 1
-)  # M is ignored/overridden by FSFT for the actual grid size
-fhat_small = np.zeros((2 * plan_small.N + 2) ** 2, dtype=np.complex128)
-for k in range(N_small + 1):
-    for n in range(-k, k + 1):
-        fhat_small[plan_small.fsft_index(k, n)] = (np.random.rand() - 0.5) + 1j * (
-            np.random.rand() - 0.5
-        )
+plan_small = FSFT(N_small, 1)
+fhat_small = random_fhat(plan_small, N_small)
 plan_small.fhat = fhat_small
 
-plan_small.trafo()  # N < NFSFT_BREAK_EVEN -> internally calls trafo_direct()
-f_small_first = np.copy(plan_small.f)
-assert np.all(
-    np.isfinite(f_small_first)
-), "TRAFO TEST FAILED: fsft_trafo() produced NaN/Inf for N < NFSFT_BREAK_EVEN"
+plan_small.trafo_direct()
+f1_small = np.copy(plan_small.f)
 
-plan_small.fhat = fhat_small  # trafo() overwrote fhat in place, see note above
 plan_small.trafo()
-f_small_second = np.copy(plan_small.f)
+f2_small = np.copy(plan_small.f)
 assert np.array_equal(
-    f_small_first, f_small_second
-), "TRAFO TEST FAILED: fsft_trafo() is not deterministic for identical input (N < NFSFT_BREAK_EVEN)"
+    f1_small, f2_small
+), "TRAFO TEST FAILED: fsft_trafo() does not exactly match fsft_trafo_direct() for N < NFSFT_BREAK_EVEN"
 
-print("fsft_trafo() smoke test (N < NFSFT_BREAK_EVEN) passed: finite and deterministic")
+plan_small.adjoint_direct()
+f3_small = valid_entries(plan_small, N_small)
 
-# TODO: fsft_adjoint()/fsft_adjoint_direct() still need a trustworthy,
-# independent reference before they can be tested properly - same plan->x
-# caveat as above, plus adjoint_direct() shares the trafo_direct() limitation.
+plan_small.adjoint()
+f4_small = valid_entries(plan_small, N_small)
+assert np.array_equal(
+    f3_small, f4_small
+), "ADJOINT TEST FAILED: fsft_adjoint() does not exactly match fsft_adjoint_direct() for N < NFSFT_BREAK_EVEN"
+
+print("FSFT trafo/adjoint tests (both N >= and N < NFSFT_BREAK_EVEN) passed")

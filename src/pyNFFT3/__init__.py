@@ -93,8 +93,8 @@ from .flags import *
 from .NFCT import *
 # Import modules
 from .NFFT import *
-from .NFST import *
 from .NFMT import *
+from .NFST import *
 
 # Export functions and flags
 __all__ = [

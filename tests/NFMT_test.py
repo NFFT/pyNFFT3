@@ -57,7 +57,13 @@ def getMat(bandwidths, M, X, basis_vect):
         n = n.reshape(1, -1)
     n = n.shape[1]
     F = np.array(
-        [[getphi(basis_vect, X[:, j], getk(basis_vect, bandwidths, l)) for l in range(1, n + 1)] for j in range(M)],
+        [
+            [
+                getphi(basis_vect, X[:, j], getk(basis_vect, bandwidths, l))
+                for l in range(1, n + 1)
+            ]
+            for j in range(M)
+        ],
         dtype=np.complex128,
     )
     return F
@@ -149,7 +155,9 @@ f3_adj = plan.fhat
 
 error_vector_adj = f1_adj - f3_adj
 norm_euclidean_adj_direct = np.linalg.norm(error_vector_adj) / np.linalg.norm(f1_adj)
-norm_infinity_adj_direct = np.linalg.norm(error_vector_adj, np.inf) / np.linalg.norm(plan.f, 1)
+norm_infinity_adj_direct = np.linalg.norm(error_vector_adj, np.inf) / np.linalg.norm(
+    plan.f, 1
+)
 print("Euclidean norm for direct adjoint test:", norm_euclidean_adj_direct)
 print("Infinity norm for direct adjoint test:", norm_infinity_adj_direct)
 assert (
@@ -183,7 +191,9 @@ F_real = getMat(N_real, M_real, X_real_jl, basis_real)
 f1_real = (F_real @ fhat_real.astype(np.complex128)).real
 
 plan_real.trafo()
-assert plan_real.f.dtype == np.float64, "real fhat + all cos/alg should yield real f (NFCT backend)"
+assert (
+    plan_real.f.dtype == np.float64
+), "real fhat + all cos/alg should yield real f (NFCT backend)"
 err_real = np.linalg.norm(plan_real.f - f1_real) / np.linalg.norm(f1_real)
 print("Euclidean norm for real-backend (NFCT) fast trafo test:", err_real)
 assert (
@@ -199,8 +209,12 @@ assert (
 
 f1_real_adj = (F_real.conj().T @ f1_real.astype(np.complex128)).real
 plan_real.adjoint()
-assert plan_real.fhat.dtype == np.float64, "adjoint on the NFCT backend should yield real fhat"
-err_real_adj = np.linalg.norm(plan_real.fhat - f1_real_adj) / np.linalg.norm(f1_real_adj)
+assert (
+    plan_real.fhat.dtype == np.float64
+), "adjoint on the NFCT backend should yield real fhat"
+err_real_adj = np.linalg.norm(plan_real.fhat - f1_real_adj) / np.linalg.norm(
+    f1_real_adj
+)
 print("Euclidean norm for real-backend (NFCT) fast adjoint test:", err_real_adj)
 assert (
     err_real_adj < 1e-6
@@ -209,13 +223,22 @@ assert (
 # a complex-dtype fhat on an all-cos/alg plan still uses the general NFFT path
 plan_mixed_dtype = NFMT(N_real, M_real, basis_real)
 plan_mixed_dtype.x = X_real
-fhat_complex = (np.random.rand(nf_real) + 1j * np.random.rand(nf_real)).astype(np.complex128)
+fhat_complex = (np.random.rand(nf_real) + 1j * np.random.rand(nf_real)).astype(
+    np.complex128
+)
 plan_mixed_dtype.fhat = fhat_complex
 plan_mixed_dtype.trafo()
-assert plan_mixed_dtype.f.dtype == np.complex128, "complex fhat should always use the NFFT backend"
+assert (
+    plan_mixed_dtype.f.dtype == np.complex128
+), "complex fhat should always use the NFFT backend"
 f1_complex = F_real @ fhat_complex
-err_complex = np.linalg.norm(plan_mixed_dtype.f - f1_complex) / np.linalg.norm(f1_complex)
-print("Euclidean norm for all-cos/alg plan with complex fhat (NFFT backend) trafo test:", err_complex)
+err_complex = np.linalg.norm(plan_mixed_dtype.f - f1_complex) / np.linalg.norm(
+    f1_complex
+)
+print(
+    "Euclidean norm for all-cos/alg plan with complex fhat (NFFT backend) trafo test:",
+    err_complex,
+)
 assert (
     err_complex < 1e-6
 ), f"TEST FAILED: relative error ({err_complex}) for complex-on-cos/alg trafo test is not less than 1e-6"
@@ -223,6 +246,8 @@ assert (
 # once a plan has picked the real NFCT backend, complex data must be rejected
 try:
     plan_real.fhat = fhat_complex
-    raise AssertionError("TEST FAILED: assigning complex fhat to an NFCT-backed plan did not raise")
+    raise AssertionError(
+        "TEST FAILED: assigning complex fhat to an NFCT-backed plan did not raise"
+    )
 except RuntimeError:
     pass

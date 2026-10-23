@@ -33,7 +33,9 @@ for k, val in freqs.items():
 ## Erzeugung der Knoten   ##
 ############################
 
-x = np.ascontiguousarray(rng.random(M) - 0.5)  # zufaellig verteilte Knoten in [-0.5, 0.5)
+x = np.ascontiguousarray(
+    rng.random(M) - 0.5
+)  # zufaellig verteilte Knoten in [-0.5, 0.5)
 
 ##########################
 ## NFFT auswerten       ##
@@ -50,7 +52,9 @@ plan.trafo_direct()  # langsame, direkte Auswertung (NDFT) zum Vergleich
 f_direct = plan.f.copy()
 
 print(f"max |f_schnell - f_direkt| = {np.max(np.abs(f_fast - f_direct)):.2e}")
-print("-> die schnelle NFFT liefert (bis auf Rundungsfehler) dasselbe wie die direkte Summe")
+print(
+    "-> die schnelle NFFT liefert (bis auf Rundungsfehler) dasselbe wie die direkte Summe"
+)
 
 ################################################
 ## Visualisierung: Polynom auf feinem Gitter  ##

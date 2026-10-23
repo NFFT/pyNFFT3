@@ -99,8 +99,19 @@ jobs:
         pattern: python-package-distributions-*
         path: dist/
         merge-multiple: true
+    - name: Set up Python
+      # sigstore/gh-action-sigstore-python builds its own venv using
+      # whatever "python" is already on PATH (see its setup/setup.bash) -
+      # without this, that's the runner image's ambient default Python,
+      # which has drifted to a version (3.14) newer than the sigstore
+      # action's pinned dependencies (pydantic-core's pyo3 build) support,
+      # failing the whole job. Pin a known-good, released version instead of
+      # relying on the runner image's ambient default to stay compatible.
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
     - name: Sign the dists
-      uses: sigstore/gh-action-sigstore-python@v3.0.1
+      uses: sigstore/gh-action-sigstore-python@v3.5.0
       with:
         inputs: >-
           ./dist/*.tar.gz

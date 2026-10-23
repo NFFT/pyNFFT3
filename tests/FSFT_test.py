@@ -66,7 +66,9 @@ assert np.array_equal(
     f_first, f_second
 ), "TRAFO TEST FAILED: fsft_trafo() is not deterministic for identical input"
 
-print("fsft_trafo() smoke test (N >= NFSFT_BREAK_EVEN) passed: finite and deterministic")
+print(
+    "fsft_trafo() smoke test (N >= NFSFT_BREAK_EVEN) passed: finite and deterministic"
+)
 
 # --- below NFSFT_BREAK_EVEN: trafo() literally calls trafo_direct() (see
 # --- kernel/nfsft/nfsft.c), so comparing them here is meaningful - it doesn't

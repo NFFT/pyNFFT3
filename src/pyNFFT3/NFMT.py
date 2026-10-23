@@ -1,6 +1,7 @@
 import numpy as np
 
 from .flags import BASES, default_window_cut_off, f2_default
+from .NFCT import NFCT
 from .NFFT import NFFT
 
 
@@ -56,6 +57,12 @@ def _reduced_size(N, bases):
     return int(np.prod(N) // (2**a))
 
 
+def _all_cos_alg(bases):
+    """True if no dimension uses the exp basis, i.e. the transform is
+    real-valued and can be realised with a plain NFCT instead of an NFFT."""
+    return all(BASES[b] > 0 for b in bases)
+
+
 def _prefix_products_full(N):
     d = len(N)
     pv = np.ones(d, dtype=np.int64)
@@ -108,7 +115,6 @@ def _expand_reduced_to_full_fhat(fhat_reduced, N, bases):
     carried out by a plain NFFT. See NFFT3.jl's NFMT.jl (Base.setproperty!
     for :fhat) for the reference this mirrors.
     """
-    d = len(N)
     p = int(np.prod(N))
     pv_exp = _prefix_products_full(N)
     pv_red = _prefix_products_reduced(N, bases)
@@ -131,7 +137,6 @@ def _reduce_full_to_reduced_fhat(fhat_full, N, bases):
     chosen, reduce(expand(x)) == x exactly - see NFFT3.jl's NFMT.jl
     (Base.getproperty for :fhat).
     """
-    d = len(N)
     p = int(np.prod(N))
     pv_exp = _prefix_products_full(N)
     pv_red = _prefix_products_reduced(N, bases)
@@ -143,6 +148,44 @@ def _reduce_full_to_reduced_fhat(fhat_full, N, bases):
             reduced[idx_red] += (np.sqrt(2.0) ** e) * fhat_full[i]
 
     return reduced
+
+
+def _cos_alg_scale_factors(N, bases):
+    """
+    sqrt(2)**e per reduced index, e = number of dimensions with k_j != 0 -
+    the mixed-basis normalisation needed on top of a plain NFCT. Only valid
+    when every dimension is cos/alg (_all_cos_alg(bases)): NFCT's own N_j is
+    then exactly N_j/2 (see _real_backend_bandwidths) and its native linear
+    index already equals this module's reduced index one for one (same
+    row-major strides, see _prefix_products_reduced), with no folding or
+    Nyquist exclusion needed - contrast with _expand_reduced_to_full_fhat,
+    which is needed whenever an exp dimension is mixed in.
+    """
+    nf = _reduced_size(N, bases)
+    pv_red = _prefix_products_reduced(N, bases)
+    half_N = [int(n) // 2 for n in N]
+    scale = np.empty(nf, dtype=np.float64)
+    for i in range(nf):
+        e = 0
+        for j in range(len(N)):
+            k_j = (i // pv_red[j]) % half_N[j]
+            if k_j != 0:
+                e += 1
+        scale[i] = np.sqrt(2.0) ** e
+    return scale
+
+
+def _real_backend_bandwidths(N):
+    half = [int(n) // 2 for n in N]
+    if any(h % 2 != 0 for h in half):
+        raise ValueError(
+            f"Real-valued NFMT (NFCT backend) requires N/2 to be even in "
+            f"every dimension, since NFCT itself needs an even bandwidth; "
+            f"got N={list(N)} -> N/2={half}. Use an N that is a multiple of "
+            f"4 in every dimension, or pass complex128 fhat/f to use the "
+            f"general NFFT-based path instead."
+        )
+    return tuple(half)
 
 
 def _check_node_domain(col, basis, dim):
@@ -160,11 +203,17 @@ def _check_node_domain(col, basis, dim):
         raise ValueError(f"Unknown basis id for {basis}")
 
 
-def _node_to_nfft_domain(col, basis):
+def _node_to_backend_domain(col, basis):
+    """
+    Maps nodes into the native domain [-0.5, 0.5) (NFFT) resp. [0, 0.5]
+    (NFCT) - both backends share this image exactly for cos/alg dimensions,
+    so this transform is the same regardless of which backend ends up being
+    used (see NFMT.jl's Base.setproperty! for :x in NFFT3.jl).
+    """
     b = BASES[basis]
     if b == 0:  # exp: already on the NFFT's native domain [-0.5, 0.5)
         return col
-    elif b == 1:  # cos on [0, 1] -> NFFT domain via a half-scale
+    elif b == 1:  # cos on [0, 1] -> native domain via a half-scale
         return col / 2.0
     elif b == 2:  # alg (Chebyshev-type) on [0, 1] via arccos substitution
         return np.arccos(2.0 * col - 1.0) / (2.0 * np.pi)
@@ -178,15 +227,25 @@ class NFMT:
     D-dimensional trigonometric polynomial where each dimension independently
     uses an exp(onential), cos(ine) or alg(ebraic/Chebyshev) basis.
 
-    Internally this reduces the mixed transform to a plain NFFT: node
-    coordinates are remapped into the NFFT's native domain per dimension
+    Internally this reduces the mixed transform to a plain NFFT or NFCT: node
+    coordinates are remapped into the backend's native domain per dimension
     (cos/alg nodes via a scale/arccos substitution), and the one-sided
-    mixed-basis coefficients are expanded into/folded back from the full,
-    centered NFFT coefficient array - see nfmt.jl in NFFT3.jl for the
-    reference this mirrors. trafo()/adjoint() therefore run the real fast
-    NFFT algorithm, and trafo_direct()/adjoint_direct() the real direct NDFT,
-    both from the underlying C library - unlike a dense matrix-vector
-    reimplementation, this scales like NFFT, not like a naive O(M*N) sum.
+    mixed-basis coefficients are expanded into/folded back from the backend's
+    own coefficient array - see nfmt.jl in NFFT3.jl for the reference this
+    mirrors. trafo()/adjoint() therefore run the real fast algorithm, and
+    trafo_direct()/adjoint_direct() the real direct transform, both from the
+    underlying C library - unlike a dense matrix-vector reimplementation,
+    this scales like NFFT/NFCT, not like a naive O(M*N) sum.
+
+    fhat/f may be given as either a complex128 or a real float64 array. The
+    backend is chosen lazily from whichever of fhat/f is assigned first: a
+    real array is realised with a plain NFCT (cheaper: half the data, real
+    arithmetic throughout) whenever every dimension uses a cos/alg basis -
+    the only case where the result is guaranteed real - and with an NFFT
+    (upcast to complex128) otherwise, e.g. when any dimension is exp, or
+    when complex data is passed explicitly. Once chosen for a plan, the
+    backend cannot change: assigning complex data to a plan that already
+    picked the real NFCT backend raises an error.
     """
 
     def __init__(
@@ -207,10 +266,13 @@ class NFMT:
         if self.M <= 0:
             raise ValueError("M must be positive")
 
-        self._nfft = NFFT(
-            tuple(int(v) for v in self.N), self.M, n=n, m=m, f1=f1, f2=f2
-        )
-        self._x = None  # cached, untransformed nodes as given by the caller
+        self._n = n
+        self._m = m
+        self._f1 = f1
+        self._f2 = f2
+        self._backend = None  # "nfft" or "nfct", chosen lazily - see fhat/f setters
+        self._plan = None  # the wrapped NFFT or NFCT instance
+        self._x_raw = None  # cached, untransformed nodes pending a backend choice
         self.finalized = False
 
     def __del__(self):
@@ -218,17 +280,17 @@ class NFMT:
 
     def nfmt_finalize_plan(self):
         """
-        Finalizes an NFMT plan (and the NFFT plan it wraps).
+        Finalizes an NFMT plan (and the NFFT/NFCT plan it wraps).
         This function does not have to be called by the user.
         """
         # getattr-guarded: __del__ runs even if __init__ raised before
-        # self.finalized/self._nfft were ever assigned (e.g. invalid N/M/bases).
+        # self.finalized/self._plan were ever assigned (e.g. invalid N/M/bases).
         if getattr(self, "finalized", True):
             return
         self.finalized = True
-        nfft = getattr(self, "_nfft", None)
-        if nfft is not None and nfft.init_done:
-            nfft.finalize_plan()
+        plan = getattr(self, "_plan", None)
+        if plan is not None and plan.init_done:
+            plan.finalize_plan()
 
     def finalize_plan(self):
         """
@@ -236,18 +298,63 @@ class NFMT:
         """
         return self.nfmt_finalize_plan()
 
+    def _ensure_backend(self, want_complex: bool):
+        if self._backend == "nfct" and want_complex:
+            raise RuntimeError(
+                "This NFMT plan already uses the real-valued NFCT backend "
+                "(its first fhat/f assignment was real); it cannot accept "
+                "complex data afterwards. Create a new NFMT plan to use "
+                "complex coefficients on it."
+            )
+        if self._backend is not None:
+            return
+
+        if want_complex or not _all_cos_alg(self.bases):
+            self._backend = "nfft"
+            self._plan = NFFT(
+                tuple(int(v) for v in self.N),
+                self.M,
+                n=self._n,
+                m=self._m,
+                f1=self._f1,
+                f2=self._f2,
+            )
+        else:
+            self._backend = "nfct"
+            self._plan = NFCT(
+                _real_backend_bandwidths(self.N),
+                self.M,
+                n=self._n,
+                m=self._m,
+                f1=self._f1,
+                f2=self._f2,
+            )
+
+        if self._x_raw is not None:
+            self._plan.x = np.ascontiguousarray(self._transform_x(self._x_raw))
+
+    def _transform_x(self, arr: np.ndarray) -> np.ndarray:
+        if self.D == 1:
+            return _node_to_backend_domain(arr, self.bases[0])
+        transformed = np.empty_like(arr)
+        for j, basis in enumerate(self.bases):
+            transformed[:, j] = _node_to_backend_domain(arr[:, j], basis)
+        return transformed
+
     @property
     def num_threads(self) -> int:
-        return self._nfft.num_threads
+        if self._plan is None:
+            raise ValueError("NFMT not initialized.")
+        return self._plan.num_threads
 
     @property
     def x(self) -> np.ndarray:
-        return self._x
+        return self._x_raw
 
     @x.setter
     def x(self, value: np.ndarray):
         if value is None:
-            self._x = None
+            self._x_raw = None
             return
         if self.finalized:
             raise RuntimeError("Plan already finalized")
@@ -258,56 +365,89 @@ class NFMT:
             if arr.shape != (self.M,):
                 raise ValueError(f"x must have shape ({self.M},)")
             _check_node_domain(arr, self.bases[0], 0)
-            transformed = _node_to_nfft_domain(arr, self.bases[0])
         else:
             if arr.ndim == 1:
                 arr = arr.reshape(-1, 1)
             if arr.shape != (self.M, self.D):
                 raise ValueError(f"x must have shape ({self.M}, {self.D})")
-            transformed = np.empty_like(arr)
             for j, basis in enumerate(self.bases):
                 _check_node_domain(arr[:, j], basis, j)
-                transformed[:, j] = _node_to_nfft_domain(arr[:, j], basis)
 
-        self._nfft.x = np.ascontiguousarray(transformed)
-        self._x = arr.copy()
+        self._x_raw = arr.copy()
+        if self._plan is not None:
+            self._plan.x = np.ascontiguousarray(self._transform_x(self._x_raw))
 
     @property
     def f(self) -> np.ndarray:
-        return self._nfft.f
+        if self._plan is None:
+            return None
+        return self._plan.f
 
     @f.setter
     def f(self, value: np.ndarray):
-        self._nfft.f = value
+        if value is None:
+            if self._plan is not None:
+                self._plan.f = None
+            return
+        if self.finalized:
+            raise RuntimeError("Plan already finalized")
+        arr = np.asarray(value)
+        if arr.ndim != 1 or arr.shape[0] != self.M:
+            raise ValueError(f"f must be a one-dimensional array of size {self.M}")
+        self._ensure_backend(np.iscomplexobj(arr))
+        if self._backend == "nfft":
+            self._plan.f = np.ascontiguousarray(arr, dtype=np.complex128)
+        else:
+            self._plan.f = np.ascontiguousarray(arr, dtype=np.float64)
 
     @property
     def fhat(self) -> np.ndarray:
-        full = self._nfft.fhat
-        if full is None:
+        if self._plan is None:
             return None
-        return _reduce_full_to_reduced_fhat(full, self.N, self.bases)
+        raw = self._plan.fhat
+        if raw is None:
+            return None
+        if self._backend == "nfft":
+            return _reduce_full_to_reduced_fhat(raw, self.N, self.bases)
+        return raw * _cos_alg_scale_factors(self.N, self.bases)
 
     @fhat.setter
     def fhat(self, value: np.ndarray):
         if value is None:
-            self._nfft.fhat = None
+            if self._plan is not None:
+                self._plan.fhat = None
             return
-        arr = np.asarray(value, dtype=np.complex128)
+        if self.finalized:
+            raise RuntimeError("Plan already finalized")
+        arr = np.asarray(value)
         nf = _reduced_size(self.N, self.bases)
         if arr.ndim != 1 or arr.shape[0] != nf:
             raise ValueError(f"fhat must be a one-dimensional array of size {nf}")
-        full = _expand_reduced_to_full_fhat(arr, self.N, self.bases)
-        self._nfft.fhat = full
+
+        self._ensure_backend(np.iscomplexobj(arr))
+        if self._backend == "nfft":
+            full = _expand_reduced_to_full_fhat(
+                arr.astype(np.complex128, copy=False), self.N, self.bases
+            )
+            self._plan.fhat = full
+        else:
+            scale = _cos_alg_scale_factors(self.N, self.bases)
+            self._plan.fhat = np.ascontiguousarray(
+                arr.astype(np.float64, copy=False) * scale
+            )
 
     def nfmt_trafo(self):
         """
-        Computes the NFMT using the fast approximate NFFT algorithm for the
-        provided nodes in **x** and coefficients in **fhat**.
+        Computes the NFMT using the fast approximate algorithm (NFFT or
+        NFCT, depending on the backend) for the provided nodes in **x** and
+        coefficients in **fhat**.
         """
         if self.finalized:
             raise RuntimeError("NFMT already finalized")
-        self._nfft.trafo()
-        return self._nfft.f
+        if self._plan is None:
+            raise ValueError("fhat has not been set.")
+        self._plan.trafo()
+        return self.f
 
     def trafo(self):
         """
@@ -322,8 +462,10 @@ class NFMT:
         """
         if self.finalized:
             raise RuntimeError("NFMT already finalized")
-        self._nfft.trafo_direct()
-        return self._nfft.f
+        if self._plan is None:
+            raise ValueError("fhat has not been set.")
+        self._plan.trafo_direct()
+        return self.f
 
     def trafo_direct(self):
         """
@@ -333,12 +475,15 @@ class NFMT:
 
     def nfmt_adjoint(self):
         """
-        Computes the adjoint NFMT using the fast approximate NFFT algorithm
-        for the provided nodes in **x** and coefficients in **f**.
+        Computes the adjoint NFMT using the fast approximate algorithm (NFFT
+        or NFCT, depending on the backend) for the provided nodes in **x**
+        and coefficients in **f**.
         """
         if self.finalized:
             raise RuntimeError("NFMT already finalized")
-        self._nfft.adjoint()
+        if self._plan is None:
+            raise ValueError("f has not been set.")
+        self._plan.adjoint()
         return self.fhat
 
     def adjoint(self):
@@ -354,7 +499,9 @@ class NFMT:
         """
         if self.finalized:
             raise RuntimeError("NFMT already finalized")
-        self._nfft.adjoint_direct()
+        if self._plan is None:
+            raise ValueError("f has not been set.")
+        self._plan.adjoint_direct()
         return self.fhat
 
     def adjoint_direct(self):

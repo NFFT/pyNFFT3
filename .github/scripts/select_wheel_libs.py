@@ -14,6 +14,7 @@ Each positional argument is either:
     and next to the Linux glibc2.*/ subdirectories - under the same ARCH
     directory, so an extension filter is needed to tell them apart).
 """
+
 import sys
 from pathlib import Path
 
@@ -37,9 +38,7 @@ def main(specs):
         if path.is_dir():
             continue
         rel = path.relative_to(LIB_DIR)
-        if rel in keep_files or any(
-            str(rel).startswith(f"{d}/") for d in keep_dirs
-        ):
+        if rel in keep_files or any(str(rel).startswith(f"{d}/") for d in keep_dirs):
             continue
         path.unlink()
 

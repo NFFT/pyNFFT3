@@ -1,6 +1,7 @@
 import ctypes
 import io
 import os
+import platform
 import sys
 
 from cpuinfo import get_cpu_info
@@ -32,6 +33,9 @@ class fastsum_plan(ctypes.Structure):
     pass
 
 
+# ARM64 (Linux aarch64, Windows ARM64, Apple Silicon) has a single build
+is_arm64 = platform.machine().lower() in ("arm64", "aarch64")
+
 glibcver = ""
 # Determine the file extension for shared libraries based on the operating system
 if os.name == "nt":  # Windows
@@ -41,10 +45,14 @@ elif os.uname().sysname == "Darwin":  # macOS
 else:  # Linux
     ending = ".so"
     glibcver = "glibc2.40"
-    if Version(os.confstr("CS_GNU_LIBC_VERSION").split(" ")[1]) <= Version("2.35"):
+    glibc = Version(os.confstr("CS_GNU_LIBC_VERSION").split(" ")[1])
+    # the glibc2.40 builds need glibc 2.35 (x86_64) or glibc 2.40 (ARM64)
+    if (is_arm64 and glibc < Version("2.40")) or glibc <= Version("2.35"):
         glibcver = "glibc2.22"
 
-if "avx2" in get_cpu_info()["flags"]:
+if is_arm64:
+    flag = "ARM64"
+elif "avx2" in get_cpu_info()["flags"]:
     flag = "AVX2"
 elif "avx" in get_cpu_info()["flags"]:
     flag = "AVX"

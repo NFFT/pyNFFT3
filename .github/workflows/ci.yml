@@ -11,13 +11,18 @@ jobs:
     strategy:
       matrix:
         # ubuntu-latest now resolves to a newer Ubuntu release than
-        # actions/setup-python has prebuilt Python 3.8/3.9/3.10 for - pin an
+        # actions/setup-python has prebuilt Python 3.9/3.10 for - pin an
         # older Ubuntu LTS for those so "Set up Python" doesn't fail outright
-        # (3.8 only has a 20.04 build left; 3.9/3.10 need 22.04 or 24.04). See
+        # (3.9/3.10 need 22.04 or 24.04). See
         # https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json
+        # Python 3.8 has no prebuilt Linux binary at all anymore (its last
+        # one, for ubuntu-20.04, disappeared when GitHub removed that runner
+        # image in April 2025), so that job skips actions/setup-python and
+        # runs directly inside the official python:3.8-slim container image.
         include:
           - python-version: '3.8'
-            os: ubuntu-20.04
+            os: ubuntu-latest
+            container: 'python:3.8-slim'
           - python-version: '3.8'
             os: windows-latest
           - python-version: '3.9'
@@ -38,10 +43,12 @@ jobs:
             os: windows-latest
     name: Python ${{ matrix.python-version }} - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Set up Python
+        if: ${{ !matrix.container }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}

@@ -84,7 +84,9 @@ print(
 # --- Must run after the N=6 block above (see ordering note).
 N_small = 3
 
-plan_small = FSFT(N_small, 1)  # M is ignored/overridden by FSFT for the actual grid size
+plan_small = FSFT(
+    N_small, 1
+)  # M is ignored/overridden by FSFT for the actual grid size
 fhat_small = np.zeros((2 * plan_small.N + 2) ** 2, dtype=np.complex128)
 for k in range(N_small + 1):
     for n in range(-k, k + 1):
@@ -106,9 +108,7 @@ assert np.array_equal(
     f_small_first, f_small_second
 ), "TRAFO TEST FAILED: fsft_trafo() is not deterministic for identical input (N < NFSFT_BREAK_EVEN)"
 
-print(
-    "fsft_trafo() smoke test (N < NFSFT_BREAK_EVEN) passed: finite and deterministic"
-)
+print("fsft_trafo() smoke test (N < NFSFT_BREAK_EVEN) passed: finite and deterministic")
 
 # TODO: fsft_adjoint()/fsft_adjoint_direct() still need a trustworthy,
 # independent reference before they can be tested properly - same plan->x

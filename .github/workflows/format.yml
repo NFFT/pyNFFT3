@@ -1,5 +1,13 @@
 name: Format Python Code
-on: push
+on:
+  push:
+    branches:
+      - "**"
+    # Excludes tag pushes: a tag checks out a detached commit, and
+    # create-pull-request below needs a real branch as its PR base (it would
+    # otherwise fail with "the 'base' input must be supplied"). Reformatting
+    # a tagged commit also doesn't make sense - it was already formatted (or
+    # not) on the branch it came from.
 jobs:
   python-code-format:
     runs-on: ubuntu-latest

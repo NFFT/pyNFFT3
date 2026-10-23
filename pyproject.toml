@@ -17,8 +17,22 @@ requires-python = ">=3.8"
 dependencies = [
   "numpy>=2.0.0",
   "py-cpuinfo>=9.0.0",
-  "packaging>=24.1",
 ]
 
 [project.urls]
 Homepage = "https://github.com/NFFT/pyNFFT3"
+
+[tool.hatch.build.hooks.custom]
+# See hatch_build.py: lets CI set an explicit platform tag (PYNFFT3_WHEEL_TAG
+# env var) so release.yml can build one wheel per (OS, arch, glibc floor)
+# combination instead of one oversized wheel bundling every platform's
+# binaries (which exceeded PyPI's 100 MB per-file limit). A plain local
+# `pip install .`/`python -m build` without that variable is unaffected.
+
+[tool.hatch.build.targets.sdist]
+# The sdist is source-only: this project vendors prebuilt NFFT/FFTW
+# binaries rather than compiling anything, so there is no meaningful
+# "build from sdist" path anyway, and including every platform's binaries
+# here hit the same 100 MB PyPI limit as the old universal wheel. Install
+# from one of the platform-specific wheels instead.
+exclude = ["src/pyNFFT3/lib"]

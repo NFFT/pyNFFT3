@@ -8,8 +8,8 @@ on:
       - 'pyproject.toml'  # Ensure the project details have been changed
 
 jobs:
-  build:
-    name: Build distribution
+  build-sdist:
+    name: Build source distribution
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -18,24 +18,76 @@ jobs:
       with:
         python-version: "3.x"
     - name: Install pypa/build
-      run: >-
-        python3 -m
-        pip install
-        build
-        --user
-    - name: Build a binary wheel and a source tarball
-      run: python3 -m build
-    - name: Store the distribution packages
+      run: python3 -m pip install build --user
+    - name: Build the source tarball
+      run: python3 -m build --sdist
+    - name: Store the source tarball
       uses: actions/upload-artifact@v4
       with:
-        name: python-package-distributions
-        path: dist/
+        name: python-package-distributions-sdist
+        path: dist/*.tar.gz
+
+  build-wheels:
+    name: Build wheel (${{ matrix.tag }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux: one wheel per (SIMD-level bundle, glibc floor) - the
+          # glibc version is baked into the tag since manylinux wheels
+          # encode a glibc floor pip can match at install time, instead of
+          # bundling both floors into one wheel with runtime detection (see
+          # src/pyNFFT3/__init__.py).
+          - tag: manylinux_2_22_x86_64
+            keep: AVX/glibc2.22 AVX2/glibc2.22 SSE2/glibc2.22
+          - tag: manylinux_2_40_x86_64
+            keep: AVX/glibc2.40 AVX2/glibc2.40 SSE2/glibc2.40
+          - tag: manylinux_2_22_aarch64
+            keep: ARM64/glibc2.22
+          - tag: manylinux_2_40_aarch64
+            keep: ARM64/glibc2.40
+          # Windows and macOS have no glibc floor; SIMD level (AVX/AVX2/SSE2)
+          # is still chosen at runtime (see src/pyNFFT3/__init__.py), since
+          # there is no wheel-tag mechanism for CPU features.
+          - tag: win_amd64
+            keep: AVX:dll AVX2:dll SSE2:dll
+          - tag: win_arm64
+            keep: ARM64:dll
+          - tag: macosx_10_9_x86_64
+            keep: AVX:dylib AVX2:dylib SSE2:dylib
+          - tag: macosx_11_0_arm64
+            keep: ARM64:dylib
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.x"
+    - name: Install pypa/build
+      run: python3 -m pip install build --user
+    - name: Keep only this wheel's bundled libraries
+      # Removes every src/pyNFFT3/lib/ file not needed for this platform, so
+      # the wheel only bundles the relevant subset instead of every platform
+      # at once (which used to produce an 114+ MB wheel, over PyPI's 100 MB
+      # per-file limit). See .github/scripts/select_wheel_libs.py.
+      run: python3 .github/scripts/select_wheel_libs.py ${{ matrix.keep }}
+    - name: Build the wheel
+      env:
+        PYNFFT3_WHEEL_TAG: py3-none-${{ matrix.tag }}
+      run: python3 -m build --wheel
+    - name: Store the wheel
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-package-distributions-${{ matrix.tag }}
+        path: dist/*.whl
 
   github-release:
     name: >-
-      Sign distribution and upload to GitHub
+      Sign distributions and upload to GitHub
     needs:
-    - build
+    - build-sdist
+    - build-wheels
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -44,26 +96,38 @@ jobs:
     - name: Download the dists
       uses: actions/download-artifact@v4
       with:
-        name: python-package-distributions
+        pattern: python-package-distributions-*
         path: dist/
+        merge-multiple: true
     - name: Sign the dists
       uses: sigstore/gh-action-sigstore-python@v3.0.1
       with:
         inputs: >-
           ./dist/*.tar.gz
           ./dist/*.whl
-    - name: Upload artifact signatures to GitHub Release
+    - name: Create GitHub Release (or upload to it if it already exists)
       env:
         GITHUB_TOKEN: ${{ github.token }}
-      run: >-
-        gh release upload
-        '${{ github.ref_name }}' dist/**
-        --repo '${{ github.repository }}'
+      # `gh release upload` assumes a Release already exists for the tag,
+      # which is only true if one was created separately (e.g. via the
+      # GitHub UI) - a plain `git push --tags` never creates one, and then
+      # upload fails outright. `gh release create` instead creates the
+      # Release and attaches these files in one step; fall back to upload
+      # (with --clobber, for a re-run) if the Release was already created.
+      run: |
+        TAG='${{ github.ref_name }}'
+        REPO='${{ github.repository }}'
+        if gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
+          gh release upload "$TAG" dist/** --repo "$REPO" --clobber
+        else
+          gh release create "$TAG" dist/** --repo "$REPO" --generate-notes
+        fi
 
   publish-to-pypi:
-    name: Publish Python distribution to PyPI
+    name: Publish Python distributions to PyPI
     needs:
-    - build
+    - build-sdist
+    - build-wheels
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -74,7 +138,8 @@ jobs:
     - name: Download the dists
       uses: actions/download-artifact@v4
       with:
-        name: python-package-distributions
+        pattern: python-package-distributions-*
         path: dist/
-    - name: Publish distribution to PyPI
+        merge-multiple: true
+    - name: Publish distributions to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1

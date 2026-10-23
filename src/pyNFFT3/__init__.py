@@ -5,7 +5,6 @@ import platform
 import sys
 
 from cpuinfo import get_cpu_info
-from packaging.version import Version
 
 
 # Create dummy classes for plans
@@ -36,7 +35,6 @@ class fastsum_plan(ctypes.Structure):
 # ARM64 (Linux aarch64, Windows ARM64, Apple Silicon) has a single build
 is_arm64 = platform.machine().lower() in ("arm64", "aarch64")
 
-glibcver = ""
 # Determine the file extension for shared libraries based on the operating system
 if os.name == "nt":  # Windows
     ending = ".dll"
@@ -44,11 +42,6 @@ elif os.uname().sysname == "Darwin":  # macOS
     ending = ".dylib"
 else:  # Linux
     ending = ".so"
-    glibcver = "glibc2.40"
-    glibc = Version(os.confstr("CS_GNU_LIBC_VERSION").split(" ")[1])
-    # the glibc2.40 builds need glibc 2.35 (x86_64) or glibc 2.40 (ARM64)
-    if (is_arm64 and glibc < Version("2.40")) or glibc <= Version("2.35"):
-        glibcver = "glibc2.22"
 
 if is_arm64:
     flag = "ARM64"
@@ -61,8 +54,26 @@ elif "sse2" in get_cpu_info()["flags"]:
 else:
     raise RuntimeError("CPU type not supported")
 
-# Check for CPU features and adjust library paths
 package_dir = os.path.dirname(__file__)
+
+glibcver = ""
+if ending == ".so":  # Linux
+    # Each Linux wheel bundles binaries for exactly one glibc floor (see
+    # hatch_build.py and release.yml) - use whichever glibc2.* subdirectory
+    # is actually present instead of guessing from the host's glibc version
+    # at runtime (which used to pick the wrong build on some systems).
+    arch_dir = os.path.join(package_dir, "lib", flag)
+    present = [
+        d
+        for d in ("glibc2.40", "glibc2.22")
+        if os.path.isdir(os.path.join(arch_dir, d))
+    ]
+    if not present:
+        raise RuntimeError(
+            f"No glibc-tagged library directory found under {arch_dir!r}. "
+            "This pyNFFT3 wheel appears to be missing its bundled libraries."
+        )
+    glibcver = present[0]
 lib_path_nfft = os.path.join(
     package_dir, "lib", flag, glibcver, "libnfftjulia" + ending
 )

@@ -18,6 +18,11 @@ _nfsftlib.jnfsft_init.argtypes = [
 _nfsftlib.jnfsft_alloc.restype = ctypes.POINTER(fsft_plan)
 _nfsftlib.jnfsft_finalize.argtypes = (ctypes.POINTER(fsft_plan),)
 
+_nfsftlib.jnfsft_set_x.argtypes = [
+    ctypes.POINTER(fsft_plan),
+    np.ctypeslib.ndpointer(np.float64, flags="C"),
+]
+_nfsftlib.jnfsft_set_x.restype = ctypes.POINTER(ctypes.c_double)
 _nfsftlib.jnfsft_set_f.argtypes = [
     ctypes.POINTER(fsft_plan),
     np.ctypeslib.ndpointer(np.complex128, flags="C"),
@@ -127,6 +132,33 @@ class FSFT:
             ctypes.c_int(self.nfft_cutoff),
         )
         self.init_done = True
+
+        # nfsft_trafo_direct()/nfsft_adjoint_direct() (shared with NFSFT)
+        # unconditionally read plan->x for node positions, including when
+        # called internally by trafo()/adjoint() for N < NFSFT_BREAK_EVEN -
+        # but FSFT has no x setter of its own (the whole point of
+        # NFSFT_EQUISPACED is that the grid is implicit in N), and
+        # empirically plan->x is left uninitialized rather than auto-filled
+        # with the equispaced grid as kernel/nfsft/nfsft.c's
+        # nfsft_init_guru() comments suggest it should be - this produced
+        # NaN/garbage results that varied by process/heap state (see the
+        # FSFT_test.py fix this was found in). Set the equispaced grid
+        # ourselves via jnfsft_set_x, mirroring that same C code:
+        #   x[2*(i*(N+2)+j)]   = (i-N-1)/(2N+2)   for i in 0..2N+1
+        #   x[2*(i*(N+2)+j)+1] =      j/(2N+2)    for j in 0..N+1
+        # jnfsft_set_x additionally expects its input in "raw angle" units
+        # (it divides by 2*pi itself, with a wraparound for the first
+        # component) rather than plan->x's own normalized units directly, so
+        # the values below are first scaled back up by 2*pi to compensate.
+        i = np.arange(2 * self.N + 2, dtype=np.float64)
+        j = np.arange(self.N + 2, dtype=np.float64)
+        I, J = np.meshgrid(i, j, indexing="ij")  # I, J both shape (2N+2, N+2)
+        phi = (I - self.N - 1) / (2.0 * self.N + 2)
+        theta = J / (2.0 * self.N + 2)
+        grid = np.empty(self.M * 2, dtype=np.float64)
+        grid[0::2] = (phi * 2.0 * np.pi).ravel()
+        grid[1::2] = (theta * 2.0 * np.pi).ravel()
+        _nfsftlib.jnfsft_set_x(self.plan, grid)
 
     def init(self):
         """
